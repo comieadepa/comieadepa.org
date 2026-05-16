@@ -287,7 +287,7 @@ export default function Home() {
             <p className="text-sm font-black uppercase tracking-[0.2em] text-[#8b2f2b]">Palavra do presidente</p>
             <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] sm:text-5xl">Firmes no propósito, unidos na fé, avançando na missão.</h2>
             <p className="mt-7 max-w-2xl text-lg leading-8 text-[#4b3b23]">
-              "A COMIEADEPA avança com a certeza de que Deus está no controle da Sua obra. Convoco cada ministro e cada congregação à unidade fraternal, à oração constante e ao compromisso inabalável com o Evangelho de nosso Senhor Jesus Cristo. Sigamos juntos, firmes na fé e ardentes no espírito." — Pr. Océlio Nauar, Presidente da COMIEADEPA
+              &ldquo;A COMIEADEPA avança com a certeza de que Deus está no controle da Sua obra. Convoco cada ministro e cada congregação à unidade fraternal, à oração constante e ao compromisso inabalável com o Evangelho de nosso Senhor Jesus Cristo. Sigamos juntos, firmes na fé e ardentes no espírito.&rdquo; — Pr. Océlio Nauar, Presidente da COMIEADEPA
             </p>
             <a href="#" className="mt-9 inline-flex items-center gap-3 bg-[#171006] px-7 py-4 text-sm font-black uppercase tracking-[0.14em] !text-[#f4cf6a] transition hover:-translate-y-1">
               Ler mensagem
