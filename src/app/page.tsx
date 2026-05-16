@@ -26,27 +26,27 @@ const eventsPortalUrl = "https://eventos.siscomieadepa.org/eventos-publicos";
 const navItems = ["A COMIEADEPA", "Presidência", "Eventos", "Notícias", "Departamentos", "Contato"];
 
 const stats = [
-  { value: "1921", label: "Fundação" },
-  { value: "103+", label: "Anos de história" },
-  { value: "Pará", label: "Berço pentecostal" },
-  { value: "Brasil", label: "Referência nacional" },
+  { value: "1921", label: "Fundada em" },
+  { value: "100+", label: "Anos de história" },
+  { value: "20 mil+", label: "Templos no Pará" },
+  { value: "1ª", label: "Convenção assembleiana do Brasil" },
 ];
 
 const events = [
   {
-    title: "Assembleia Geral Ordinária",
-    date: "Agenda oficial",
-    description: "Reunião convencional com ministros, liderança e campos eclesiásticos.",
+    title: "125ª Assembleia Geral Ordinária",
+    date: "Agenda 2025",
+    description: "A maior reunião deliberativa da COMIEADEPA, reunindo ministros e campos eclesiásticos de todo o Pará para governo, unidade e avanço da obra missionária.",
   },
   {
-    title: "Congresso de Lideranças",
-    date: "Programação em breve",
-    description: "Formação, unidade espiritual e alinhamento institucional para a obra.",
+    title: "Congresso de Ministros",
+    date: "Programação oficial",
+    description: "Encontro ministerial de formação espiritual, comunhão fraterna e alinhamento institucional entre os obreiros credenciados da convenção.",
   },
   {
-    title: "Culto de Gratidão",
+    title: "Congresso da Juventude — UMADESPA",
     date: "Calendário anual",
-    description: "Celebração pública da história, missão e expansão pentecostal.",
+    description: "Mobilização da juventude assembleiana paraense para o evangelismo, o serviço e o compromisso inabalável com a obra missionária no Pará e além.",
   },
 ];
 
@@ -169,10 +169,10 @@ export default function Home() {
               COMIEADEPA
             </h1>
             <p className="mt-6 max-w-3xl text-2xl font-semibold leading-tight text-[#f4cf6a] sm:text-4xl">
-              Uma convenção histórica com presença digital à altura da sua missão.
+              A primeira convenção assembleiana do Brasil, fundada em 18 de agosto de 1921, no estado do Pará.
             </p>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-white/76">
-              Fé, governo ministerial, memória pentecostal e comunicação oficial reunidos em uma experiência institucional forte, moderna e viva.
+              Mais de cem anos proclamando o Evangelho, reunindo ministros, igrejas e congregações em todo o Pará. Uma convenção edificada sobre fé, missão e fidelidade inabalável à Palavra de Deus.
             </p>
             <div className="mt-10 flex flex-col gap-3 sm:flex-row">
               <a href="#a-comieadepa" className="group inline-flex items-center justify-center gap-3 bg-[#f4cf6a] px-7 py-4 text-sm font-black uppercase tracking-[0.14em] text-[#171006] transition hover:-translate-y-1 hover:bg-white">
@@ -261,13 +261,13 @@ export default function Home() {
           <div>
             <p className="text-sm font-black uppercase tracking-[0.22em] text-[#f4cf6a]">A COMIEADEPA</p>
             <h2 className="mt-5 font-serif text-4xl font-black leading-[1.02] text-white sm:text-5xl">
-              Tradição que não fica parada no tempo.
+              A primeira convenção assembleiana do Brasil.
             </h2>
             <p className="mt-7 max-w-2xl text-lg leading-8 text-white/68">
-              O portal precisa carregar a solenidade do brasão, a força dos grandes eventos e a proximidade da liderança. Não é apenas uma página bonita: é uma porta oficial para a história, a agenda e a comunicação da convenção.
+              Fundada em 18 de agosto de 1921, a COMIEADEPA é reconhecida como a primeira convenção das Assembleias de Deus no Brasil. Nascida no solo paraense, onde o pentecostalismo clássico floresceu, a convenção reúne milhares de ministros, igrejas e congregações em centenas de campos eclesiásticos por todo o Pará — reconhecida como Patrimônio Cultural Material e Imaterial do Estado.
             </p>
             <div className="mt-9 grid gap-4 sm:grid-cols-3">
-              {["Memória", "Governo", "Expansão"].map((item) => (
+              {["Evangelismo", "Missões", "Ação Social"].map((item) => (
                 <div key={item} className="border border-white/10 bg-white/[0.055] p-5 backdrop-blur transition hover:bg-white/[0.085]">
                   <ShieldCheck className="text-[#f4cf6a]" size={22} />
                   <p className="mt-5 font-serif text-2xl font-bold text-white">{item}</p>
@@ -285,9 +285,9 @@ export default function Home() {
         <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div>
             <p className="text-sm font-black uppercase tracking-[0.2em] text-[#8b2f2b]">Palavra do presidente</p>
-            <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] sm:text-5xl">Uma liderança visível, humana e institucional.</h2>
+            <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] sm:text-5xl">Firmes no propósito, unidos na fé, avançando na missão.</h2>
             <p className="mt-7 max-w-2xl text-lg leading-8 text-[#4b3b23]">
-              A seção da presidência ganha protagonismo: foto oficial, mensagem pastoral e chamada para unidade, serviço e compromisso com a Palavra.
+              "A COMIEADEPA avança com a certeza de que Deus está no controle da Sua obra. Convoco cada ministro e cada congregação à unidade fraternal, à oração constante e ao compromisso inabalável com o Evangelho de nosso Senhor Jesus Cristo. Sigamos juntos, firmes na fé e ardentes no espírito." — Pr. Océlio Nauar, Presidente da COMIEADEPA
             </p>
             <a href="#" className="mt-9 inline-flex items-center gap-3 bg-[#171006] px-7 py-4 text-sm font-black uppercase tracking-[0.14em] !text-[#f4cf6a] transition hover:-translate-y-1">
               Ler mensagem
@@ -310,10 +310,10 @@ export default function Home() {
           <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
             <div>
               <p className="text-sm font-black uppercase tracking-[0.22em] text-[#f4cf6a]">Eventos oficiais</p>
-              <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-white sm:text-5xl">A agenda como experiência.</h2>
+              <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-white sm:text-5xl">Eventos que edificam a história pentecostal do Pará.</h2>
             </div>
             <p className="max-w-2xl text-lg leading-8 text-white/62">
-              Congressos, assembleias e encontros aparecem com destaque visual de grande evento, reforçando organização, escala e presença institucional.
+              Da Assembleia Geral Ordinária aos congressos regionais, a COMIEADEPA promove encontros que fortalecem a fé, celebram mais de um século de história e mobilizam a obra missionária em todo o território paraense.
             </p>
           </div>
           <div className="mt-12 grid overflow-hidden border border-[#f4cf6a]/18 bg-white/[0.055] shadow-[0_28px_70px_rgba(0,0,0,.24)] backdrop-blur-xl lg:grid-cols-[0.92fr_1.08fr]">
@@ -327,7 +327,7 @@ export default function Home() {
               <p className="text-sm font-black uppercase tracking-[0.2em] text-[#f4cf6a]">125ª AGO</p>
               <h3 className="mt-4 font-serif text-3xl font-black leading-tight text-white sm:text-4xl">Obreiro segundo o coração de Deus.</h3>
               <p className="mt-5 max-w-xl leading-8 text-white/64">
-                A próxima Assembleia Geral Ordinária pode ganhar aqui uma chamada oficial com tema, data, local, inscrição, programação e cobertura.
+                A 125ª Assembleia Geral Ordinária é o maior evento convencional da COMIEADEPA, reunindo ministros credenciados, liderança e campos eclesiásticos de todo o Pará. Acompanhe a programação oficial, as deliberações e a cobertura completa deste marco histórico.
               </p>
               <a href={eventsPortalUrl} target="_blank" rel="noreferrer" className="mt-7 inline-flex items-center gap-3 border border-[#f4cf6a]/35 bg-[#f4cf6a]/10 px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-[#f4cf6a] transition hover:bg-[#f4cf6a] hover:text-[#171006]">
                 Acompanhar AGO
@@ -359,10 +359,10 @@ export default function Home() {
         <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.72fr_1fr]">
           <div>
             <p className="text-sm font-black uppercase tracking-[0.22em] text-[#f4cf6a]">Notícias</p>
-            <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-white sm:text-5xl">Comunicação com peso oficial.</h2>
+            <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-white sm:text-5xl">A voz oficial da COMIEADEPA.</h2>
           </div>
           <div className="grid gap-4">
-            {["Comunicados da convenção", "Cobertura de eventos", "Notas institucionais"].map((title) => (
+            {["Comunicados Oficiais da Convenção", "Cobertura da 125ª Assembleia Geral Ordinária", "Notas e Deliberações Convencioanais"].map((title) => (
               <a key={title} href="#" className="group flex items-center justify-between border border-white/12 bg-[#120f0a]/62 p-6 backdrop-blur-xl transition hover:border-[#f4cf6a]/60 hover:bg-[#120f0a]/82">
                 <span className="font-serif text-2xl font-bold text-white">{title}</span>
                 <ArrowRight className="text-[#f4cf6a] transition group-hover:translate-x-2" size={24} />
@@ -382,7 +382,7 @@ export default function Home() {
               <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-white sm:text-5xl">A convenção em movimento.</h2>
             </div>
             <p className="max-w-2xl text-lg leading-8 text-white/62">
-              Uma vitrine audiovisual para cortes rápidos, registros oficiais e momentos de impacto da programação.
+              Registros oficiais de congressos, assembleias e momentos marcantes da maior e mais histórica convenção assembleiana do Brasil.
             </p>
           </div>
 
@@ -421,10 +421,10 @@ export default function Home() {
           <div className="grid gap-8 lg:grid-cols-[0.78fr_1fr] lg:items-end">
             <div>
               <p className="text-sm font-black uppercase tracking-[0.2em] text-[#8b2f2b]">Departamentos</p>
-              <h2 className="mt-5 max-w-3xl font-serif text-4xl font-black leading-[1.03] sm:text-5xl">Organização para servir melhor.</h2>
+              <h2 className="mt-5 max-w-3xl font-serif text-4xl font-black leading-[1.03] sm:text-5xl">Ministérios e departamentos da convenção.</h2>
             </div>
             <p className="max-w-2xl text-lg leading-8 text-[#5a472c]">
-              Cada área do portal deve parecer parte de uma estrutura oficial: clara, organizada e visualmente conectada à identidade da convenção.
+              A COMIEADEPA organiza sua missão por meio de ministérios especializados, cada um com propósito, identidade e compromisso com o crescimento da obra assembleiana no estado do Pará.
             </p>
           </div>
           <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
@@ -475,7 +475,7 @@ export default function Home() {
             <p className="text-sm font-black uppercase tracking-[0.22em] text-[#f4cf6a]">Área do Ministro</p>
             <h2 className="mt-4 max-w-3xl font-serif text-4xl font-black leading-[1.03] text-white sm:text-5xl">O acesso ministerial continua no sistema oficial.</h2>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-white/64">
-              O portal valoriza a navegação pública e conduz ministros para o ambiente já existente, sem duplicar login, cadastros ou regras internas.
+              Ministros credenciados acessam o sistema oficial da COMIEADEPA para gestão de documentos, credenciais ministeriais, comunicados convencioanais e demais serviços institucionais. Utilize suas credenciais para entrar.
             </p>
           </div>
           <a href={ministerPortalUrl} className="flex h-full min-h-40 items-center justify-center bg-[#f4cf6a] px-12 text-sm font-black uppercase tracking-[0.16em] text-[#171006] transition hover:bg-white">
