@@ -20,7 +20,7 @@ import {
 import Image from "next/image";
 import { useState } from "react";
 
-const ministerPortalUrl = "#";
+const ministerPortalUrl = "https://www.siscomieadepa.org/login";
 const eventsPortalUrl = "https://eventos.siscomieadepa.org/eventos-publicos";
 
 const navItems = ["A COMIEADEPA", "Presidência", "Eventos", "Notícias", "Departamentos", "Contato"];
@@ -225,7 +225,7 @@ export default function Home() {
               transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
               className="absolute -bottom-16 right-0 w-[430px]"
             >
-              <Image src="/assets/presidente-comieadepa.png" alt="Pr. Océlio Nauar e esposa" width={860} height={700} className="h-auto w-full drop-shadow-[0_38px_46px_rgba(0,0,0,.58)]" />
+              <Image src="/img/presidente.png" alt="Pr. Océlio Nauar e esposa" width={860} height={700} className="h-auto w-full drop-shadow-[0_38px_46px_rgba(0,0,0,.58)]" />
             </motion.div>
           </motion.div>
         </div>
@@ -289,14 +289,14 @@ export default function Home() {
             <p className="mt-7 max-w-2xl text-lg leading-8 text-[#4b3b23]">
               A seção da presidência ganha protagonismo: foto oficial, mensagem pastoral e chamada para unidade, serviço e compromisso com a Palavra.
             </p>
-            <a href="#" className="mt-9 inline-flex items-center gap-3 bg-[#171006] px-7 py-4 text-sm font-black uppercase tracking-[0.14em] text-[#f4cf6a] transition hover:-translate-y-1">
+            <a href="#" className="mt-9 inline-flex items-center gap-3 bg-[#171006] px-7 py-4 text-sm font-black uppercase tracking-[0.14em] !text-[#f4cf6a] transition hover:-translate-y-1">
               Ler mensagem
               <ArrowRight size={18} />
             </a>
           </div>
           <div className="relative min-h-[520px]">
             <div className="absolute bottom-0 left-1/2 h-[390px] w-[74%] -translate-x-1/2 bg-[#171006]/92 backdrop-blur [clip-path:polygon(10%_0,100%_0,90%_100%,0_100%)]" />
-            <Image src="/assets/presidente-comieadepa.png" alt="Pr. Océlio Nauar e esposa" fill className="object-contain object-bottom drop-shadow-[0_30px_42px_rgba(0,0,0,.35)]" />
+            <Image src="/img/presidente.png" alt="Pr. Océlio Nauar e esposa" fill className="object-contain object-bottom drop-shadow-[0_30px_42px_rgba(0,0,0,.35)]" />
           </div>
         </div>
       </section>
