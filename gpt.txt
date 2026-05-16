@@ -1,0 +1,674 @@
+Encontrei várias “convenções” ligadas a Brasília, mas não consegui identificar qual site específico você quer que eu
+
+https://comadebg.com.br/ - esse é o site
+
+Acessei o site da COMADEBG e já deu para perceber a proposta visual dele.
+
+Minha análise do layout:
+
+Pontos fortes
+Visual moderno e limpo
+Boa hierarquia de informações
+Uso elegante de cores escuras com dourado
+Banner principal bem institucional
+Sensação de “grande convenção”
+Estrutura parecida com portais ministeriais atuais
+Boa presença de identidade visual
+O que mais chama atenção
+
+O site trabalha muito bem:
+
+espaçamento,
+tipografia,
+cards organizados,
+banners amplos,
+menus minimalistas,
+áreas institucionais com aparência premium.
+
+Ele foge daquele estilo “site de igreja antigo” e entra mais numa estética de:
+
+portal institucional,
+conferência internacional,
+organização ministerial moderna.
+O que percebi tecnicamente
+
+O layout parece inspirado em:
+
+WordPress premium/theme builder
+ou
+design feito em Elementor/Bricks.
+
+A estrutura visual usa:
+
+seções largas,
+sombras suaves,
+gradientes discretos,
+imagens com overlay escuro,
+fontes fortes para títulos.
+O que pode servir para o seu projeto
+
+Pelo que já vi dos seus sistemas e projetos ministeriais, principalmente os ligados à:
+
+eventos,
+convenção,
+credenciamento,
+CRM ministerial,
+COMIEADEPA,
+congressos,
+
+esse estilo combina MUITO com algo que transmita:
+
+autoridade,
+organização,
+tecnologia,
+seriedade ministerial.
+Elementos que eu replicaria/adaptaria
+Hero section grande
+(com imagem impactante + CTA)
+Cards institucionais modernos
+(com ícones minimalistas)
+Área de eventos em destaque
+(com calendário visual)
+Estatísticas institucionais
+(ex: igrejas, pastores, campos, membros)
+Área de liderança elegante
+(com fotos padronizadas)
+Menu transparente no topo
+(fica muito premium)
+Footer mais robusto
+(com contatos, redes, departame
+Vamos tratar isso como um projeto institucional de alto nível: não apenas “um site bonito”, mas um portal oficial com presença, governança, eventos e área restrita. Vou estruturar a visão técnica e visual para já virar direção de desenvolvimento.
+
+Pensou por dois segundos
+
+Perfeito. Eu escolheria uma stack moderna, séria e escalável:
+
+Stack recomendada
+
+Frontend / Portal
+
+Next.js 15
+React
+TypeScript
+Tailwind CSS
+Shadcn UI
+Framer Motion
+
+Backend
+
+Next.js API Routes / Server Actions
+Prisma ORM
+PostgreSQL
+Supabase ou Neon Database
+
+Autenticação
+
+Auth.js / NextAuth
+Login por perfil:
+administrador
+secretaria
+pastor
+obreiro
+operador de evento
+
+Hospedagem
+
+Vercel para o portal
+VPS própria para serviços críticos, se necessário
+Cloudflare para DNS, cache e segurança
+
+Mídia
+
+Cloudinary ou Supabase Storage
+YouTube/Vimeo para transmissões e vídeos institucionais
+
+CMS administrativo
+
+Painel próprio dentro do sistema
+Nada de depender de WordPress
+Nome do projeto
+Portal Institucional COMIEADEPA
+
+Subtítulo conceitual:
+
+A primeira e maior convenção evangélica do Brasil, agora representada por uma presença digital à altura da sua história.
+
+Visão do portal
+
+O novo portal precisa transmitir:
+
+autoridade espiritual;
+história centenária;
+organização administrativa;
+grandeza ministerial;
+tecnologia;
+confiança pública;
+governança;
+excelência visual.
+
+Não será apenas um site.
+
+Será uma plataforma institucional oficial.
+
+Estrutura principal
+1. Home institucional premium
+
+Seções:
+
+Banner cinematográfico
+Chamada institucional forte
+Números da convenção
+Palavra da presidência
+História da COMIEADEPA
+Diretoria e liderança
+Eventos oficiais
+Notícias institucionais
+Departamentos
+Portal ministerial / SISCOMIEADEPA
+Galeria e mídia
+Rodapé robusto
+Identidade visual sugerida
+Cores
+Azul-marinho profundo
+Dourado fosco
+Branco pérola
+Cinza institucional
+Preto suave
+Estilo
+visual escuro premium;
+imagens grandes;
+tipografia forte;
+cards elegantes;
+transições suaves;
+layout espaçado;
+sensação de instituição nacional.
+Funcionalidades essenciais
+Portal público
+Página inicial
+História
+Diretoria
+Secretaria
+Departamentos
+Igrejas e campos
+Eventos
+Notícias
+Galeria
+Downloads oficiais
+Contato
+Transparência institucional
+Portal de eventos
+Inscrição
+Credenciamento
+Check-in
+Programação
+Preletores
+Certificados
+Relatórios
+QR Code
+Área do operador
+Área ministerial
+Login de pastores/obreiros
+Cadastro ministerial
+Atualização de dados
+Documentos
+Comunicados oficiais
+Situação cadastral
+Histórico de eventos
+Painel administrativo
+Gerenciar notícias
+Gerenciar eventos
+Gerenciar departamentos
+Gerenciar lideranças
+Gerenciar banners
+Gerenciar documentos
+Gerenciar usuários
+Relatórios gerais
+Arquitetura do projeto
+/comieadepa-portal
+ ├── src
+ │   ├── app
+ │   │   ├── page.tsx
+ │   │   ├── historia
+ │   │   ├── diretoria
+ │   │   ├── eventos
+ │   │   ├── noticias
+ │   │   ├── departamentos
+ │   │   ├── portal
+ │   │   └── admin
+ │   ├── components
+ │   │   ├── layout
+ │   │   ├── home
+ │   │   ├── cards
+ │   │   ├── ui
+ │   │   └── sections
+ │   ├── lib
+ │   ├── prisma
+ │   └── styles
+ ├── prisma
+ │   └── schema.prisma
+ ├── public
+ └── package.json
+Primeira etapa de desenvolvimento
+
+Eu começaria com:
+
+Criar a nova identidade visual da Home
+Montar layout base com header, hero, seções e footer
+Criar estrutura de páginas institucionais
+Criar painel administrativo inicial
+Integrar eventos e notícias
+Depois conectar com SISCOMIEADEPA
+Direção criativa da Home
+
+A primeira dobra precisa impactar:
+
+COMIEADEPA
+Primeira e maior Convenção Evangélica do Brasil
+Uma história de fé, liderança e expansão do Reino de Deus.
+
+Botões:
+
+Conheça nossa história
+Acesse o portal ministerial
+Eventos oficiais
+
+Esse projeto precisa nascer com cara de instituição histórica, séria e grandiosa — não de template adaptado.
+
+sobre o login e usuarios... já temos uma "ÁREA DO MINISTRO" e precisamos apenas do botão onde fornecerei a URL
+
+Excelente. Então isso muda completamente a arquitetura — e melhora muito o projeto.
+
+Se a “Área do Ministro” já existe e funciona bem, o novo portal NÃO deve duplicar:
+
+autenticação,
+usuários,
+cadastro ministerial,
+regras ministeriais,
+permissões.
+
+O portal institucional deve apenas:
+
+integrar,
+valorizar,
+centralizar a navegação.
+
+Isso é arquitetura madura.
+
+Melhor decisão técnica
+O novo portal será:
+um HUB institucional oficial.
+
+E a Área do Ministro continuará:
+
+como sistema ministerial especializado.
+Como ficará
+No menu principal
+HOME
+A COMIEADEPA
+DIRETORIA
+EVENTOS
+NOTÍCIAS
+DEPARTAMENTOS
+ÁREA DO MINISTRO
+
+O botão:
+
+“ÁREA DO MINISTRO”
+
+apenas redireciona para a URL fornecida.
+
+Melhor ainda
+
+Eu recomendo abrir:
+
+na mesma aba se houver integração visual;
+ou
+nova aba se for sistema separado.
+O ideal visualmente
+
+O usuário não deve sentir:
+
+“fui para outro sistema”.
+
+Então precisamos:
+
+1. Mesma identidade visual
+cores
+logo
+tipografia
+header
+footer
+2. Mesmo padrão visual
+botões
+cards
+menus
+espaçamentos
+3. Mesmo domínio institucional
+
+Exemplo ideal:
+
+comieadepa.org
+portal.comieadepa.org
+ministerio.comieadepa.org
+sis.comieadepa.org
+Arquitetura correta agora
+Portal Institucional
+
+Responsável por:
+
+imagem pública;
+eventos;
+notícias;
+liderança;
+comunicação;
+departamentos;
+mídia;
+transparência;
+presença institucional.
+Área do Ministro
+
+Responsável por:
+
+login;
+cadastros;
+secretaria;
+documentos;
+atualização ministerial;
+serviços internos.
+O que isso resolve
+
+✅ evita duplicidade
+✅ reduz complexidade
+✅ reduz custo
+✅ acelera desenvolvimento
+✅ mantém segurança do sistema atual
+✅ preserva base ministerial já existente
+✅ cria ecossistema integrado
+
+Minha recomendação estratégica
+
+A Home precisa ter um botão MUITO forte:
+
+“Portal do Ministro”
+
+Com visual premium.
+
+Exemplo:
+
+━━━━━━━━━━━━━━━━━━━━━━
+Portal do Ministro
+Acesse os serviços ministeriais,
+cadastro, documentos e área oficial.
+[ ACESSAR PORTAL ]
+━━━━━━━━━━━━━━━━━━━━━━
+O que eu faria tecnicamente
+Componente isolado
+<Button asChild>
+   <Link href="https://seudominio.com">
+      Área do Ministro
+   </Link>
+</Button>
+E o próximo passo agora?
+
+O ideal é começarmos:
+
+1. Definição da identidade visual
+cores
+estilo
+tipografia
+layout
+2. Estrutura da Home
+3. Wireframe das seções
+4. Construção do design system
+5. Desenvolvimento da landing institucional
+
+E sinceramente?
+A COMIEADEPA merece um portal que, ao abrir, a pessoa pense:
+
+“isso representa uma das maiores instituições pentecostais do Brasil.”
+
+logo e algumas imagens para definir o proximo passo
+
+Agora ficou muito claro qual deve ser a direção visual correta.
+
+Essas imagens mostram algo IMPORTANTÍSSIMO:
+
+A COMIEADEPA possui:
+
+patrimônio visual forte;
+simbologia histórica;
+arquitetura institucional;
+grandes eventos;
+multidões;
+tradição pentecostal;
+autoridade centenária.
+
+O problema nunca foi “falta de conteúdo visual”.
+O problema sempre foi:
+
+direção de branding digital.
+O que vejo na identidade visual
+O brasão
+
+O brasão transmite:
+
+tradição;
+legitimidade;
+história;
+autoridade eclesiástica.
+
+Mas hoje ele está:
+
+visualmente datado;
+com muitos detalhes pequenos;
+difícil adaptação digital;
+sem versão moderna responsiva.
+O que eu faria IMEDIATAMENTE
+Criar 03 versões oficiais da marca
+1. Brasão Oficial
+
+(uso institucional solene)
+
+documentos;
+atas;
+certificados;
+presidência;
+cerimônias.
+2. Logo moderna institucional
+
+(uso digital)
+
+Exemplo:
+
+COMIEADEPA
+1921 • BERÇO DO PENTECOSTES NO BRASIL
+
+Minimalista.
+Elegante.
+Forte.
+
+3. Símbolo simplificado
+
+Para:
+
+favicon;
+app;
+loading;
+redes sociais;
+watermark;
+sistemas.
+A imagem do prédio
+
+A sede da COMIEADEPA é MUITO forte visualmente.
+
+Ela deveria ser:
+
+protagonista da Home.
+
+Mas precisamos:
+
+fotografia premium;
+tratamento cinematográfico;
+drone;
+iluminação;
+correção de perspectiva;
+identidade visual consistente.
+A imagem do congresso
+
+Essa imagem é ouro institucional.
+
+Ela comunica:
+
+grandeza;
+multidão;
+relevância;
+autoridade;
+alcance.
+
+Isso precisa virar:
+
+HERO SECTION principal.
+A direção visual correta
+Conceito:
+“Herança, Expansão e Governo”
+
+Misturando:
+
+tradição pentecostal;
+excelência institucional;
+modernidade digital.
+Paleta oficial que eu recomendo
+Primárias
+Azul profundo institucional
+Dourado fosco elegante
+Secundárias
+Branco suave
+Bege quente
+Preto carvão
+Tipografia
+Títulos
+
+Elegantíssima.
+Algo como:
+
+Cinzel
+Cormorant Garamond
+Playfair Display
+Textos
+Inter
+Manrope
+Plus Jakarta Sans
+
+Mistura perfeita de:
+
+clássico
+moderno
+O portal NÃO pode parecer
+
+❌ site de igreja local
+❌ template WordPress
+❌ portal de notícias antigo
+❌ sistema administrativo frio
+
+O portal DEVE parecer
+
+✅ instituição histórica
+✅ convenção nacional
+✅ sede ministerial
+✅ organização centenária
+✅ portal governamental eclesiástico
+
+Agora o MAIS IMPORTANTE
+Estrutura da primeira dobra (hero)
+
+Visualize isso:
+
+HERO SECTION
+
+Vídeo/imagem:
+
+congresso lotado
+sede COMIEADEPA
+tomadas aéreas
+ministros
+bandeiras
+multidões
+
+Overlay escuro elegante.
+
+Texto central
+COMIEADEPA
+Primeira e maior Convenção Evangélica do Brasil
+
+Desde 1921 proclamando o Evangelho e fortalecendo a obra pentecostal no Pará, no Brasil e no mundo.
+
+Botões:
+
+Conheça nossa história
+Eventos oficiais
+Área do Ministro
+Segunda seção
+Números institucionais
+
+Exemplo:
+
+104 anos
+milhares de igrejas
+milhares de ministros
+missionários
+campos eclesiásticos
+
+Isso gera impacto IMEDIATO.
+
+Terceira seção
+Palavra da presidência
+
+Foto institucional premium.
+
+Quarta seção
+Próximos eventos
+
+Visual estilo:
+
+Apple Events
+Summit institucional
+conferência premium
+O que eu sugiro AGORA como próximo passo
+FASE 1 — IDENTIDADE E EXPERIÊNCIA
+
+Precisamos definir:
+
+1. Estilo final
+
+(escuro premium ou claro institucional)
+
+2. Paleta oficial
+3. Tipografia oficial
+4. Estrutura da Home
+5. Wireframe completo
+6. Design system
+Minha recomendação definitiva
+Fundo escuro premium.
+
+Porque:
+
+valoriza dourado;
+valoriza fotos;
+valoriza iluminação;
+transmite autoridade;
+diferencia dos sites comuns de igreja.
+Visual que imagino
+
+Algo entre:
+
+Vaticano moderno
+portal presidencial
+conferência internacional
+instituição centenária
+tecnologia premium
+
+E sinceramente?
+
+A COMIEADEPA tem material institucional suficiente para ter:
+
+um dos portais evangélicos mais impressionantes do Brasil.
