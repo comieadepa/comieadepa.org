@@ -539,26 +539,6 @@ export default function Home() {
               A agenda convencional reúne assembleias, congressos, capacitações e encontros ministeriais que organizam a comunhão da obra, fortalecem departamentos e conectam ministros, igrejas e regiões em torno da missão da COMIEADEPA.
             </p>
           </div>
-          <div className="mt-12 grid overflow-hidden border border-[#f4cf6a]/18 bg-white/[0.055] shadow-[0_28px_70px_rgba(0,0,0,.24)] backdrop-blur-xl lg:grid-cols-[0.92fr_1.08fr]">
-            <div className="relative min-h-[310px]">
-              <Image src="/assets/congresso-comieadepa.jpg" alt="Auditório em evento da COMIEADEPA" fill className="object-cover" />
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(18,15,10,.10),rgba(18,15,10,.72))]" />
-            </div>
-            <div className="relative overflow-hidden p-8 lg:p-10">
-              <Image src="/assets/selo-125-ago.png" alt="" width={260} height={260} className="absolute -right-8 -top-10 h-64 w-64 object-contain opacity-18" />
-              <div className="relative">
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-[#f4cf6a]">125ª AGO</p>
-              <h3 className="mt-4 font-serif text-3xl font-black leading-tight text-white sm:text-4xl">Obreiro segundo o coração de Deus.</h3>
-              <p className="mt-5 max-w-xl leading-8 text-white/64">
-                A 125ª Assembleia Geral Ordinária é o maior evento convencional da COMIEADEPA, reunindo ministros credenciados, liderança e campos eclesiásticos de todo o Pará. Acompanhe a programação oficial, as deliberações e a cobertura completa deste marco histórico.
-              </p>
-              <a href={eventsPortalUrl} target="_blank" rel="noreferrer" className="mt-7 inline-flex items-center gap-3 border border-[#f4cf6a]/35 bg-[#f4cf6a]/10 px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-[#f4cf6a] transition hover:bg-[#f4cf6a] hover:text-[#171006]">
-                Em breve
-                <ArrowRight size={18} />
-              </a>
-              </div>
-            </div>
-          </div>
           <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
             {eventsLoading &&
               [0, 1].map((item) => (
