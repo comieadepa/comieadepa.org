@@ -28,6 +28,7 @@ const ministerPortalUrl = "https://www.siscomieadepa.org/login";
 const eventsPortalUrl = "https://eventos.siscomieadepa.org/eventos-publicos";
 const supabaseUrl = "https://wtifljxpoinpbzyugrfc.supabase.co";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseSiteSchema = process.env.NEXT_PUBLIC_SUPABASE_SITE_SCHEMA ?? "site";
 
 const navItems = ["A COMIEADEPA", "Presidência", "Eventos", "Notícias", "Departamentos", "Contato"];
 
@@ -77,6 +78,187 @@ type EventRegistrationType = {
   valor: number | null;
 };
 
+type PortalVideo = {
+  id: string;
+  title: string;
+  label: string;
+};
+
+type PortalDepartment = {
+  slug: string;
+  logo: string;
+  title: string;
+  text: string;
+  accent: string;
+};
+
+type CmsVideo = {
+  id: string;
+  titulo: string | null;
+  youtube_id: string | null;
+  youtube_url: string | null;
+  tipo: string | null;
+  departamento_id: string | null;
+};
+
+type PortalNews = {
+  title: string;
+  category: string;
+  url: string;
+};
+
+type CmsPost = {
+  id: string;
+  titulo: string | null;
+  slug: string | null;
+  resumo: string | null;
+  categoria_id: string | null;
+  departamento_id: string | null;
+  publicado_em: string | null;
+  created_at: string | null;
+};
+
+type CmsLookup = {
+  id: string;
+  nome: string | null;
+};
+
+type CmsDepartmentCard = CmsLookup & {
+  slug: string;
+  titulo: string | null;
+  resumo: string | null;
+  logo_url: string | null;
+};
+
+type CmsSetting = {
+  chave: string;
+  valor: unknown;
+};
+
+type PortalConfig = {
+  ministerPortalUrl: string;
+  eventsPortalUrl: string;
+  youtubeChannelUrl: string;
+  facebookUrl: string;
+  instagramUrl: string;
+  contactAddress: string;
+  contactPhone: string;
+  contactEmail: string;
+  contactHours: string;
+};
+
+type PortalHomeContent = {
+  heroBadge: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  heroText: string;
+  heroPrimaryLabel: string;
+  heroPrimaryUrl: string;
+  heroSecondaryLabel: string;
+  agoBadge: string;
+  agoTitle: string;
+  aboutBadge: string;
+  aboutTitle: string;
+  aboutText: string;
+  aboutImageUrl: string;
+  aboutSealUrl: string;
+  aboutDate: string;
+  aboutCaption: string;
+  aboutPillars: string[];
+  presidencyImageUrl: string;
+  presidencyName: string;
+  presidencyRole: string;
+  presidencyInitials: string;
+  presidencyBadge: string;
+  presidencyTitleLine1: string;
+  presidencyTitleHighlight: string;
+  presidencyTitleLine2: string;
+  presidencyParagraphs: string[];
+  eventsBadge: string;
+  eventsTitle: string;
+  eventsText: string;
+  newsBadge: string;
+  newsTitle: string;
+  videosBadge: string;
+  videosTitle: string;
+  videosText: string;
+  videosButtonLabel: string;
+  departmentsBadge: string;
+  departmentsTitle: string;
+  departmentsText: string;
+  eventVideosBadge: string;
+  eventVideosTitle: string;
+  eventVideosText: string;
+  eventVideosButtonLabel: string;
+  eventVideosSubscribers: string;
+};
+
+const defaultPortalConfig: PortalConfig = {
+  ministerPortalUrl,
+  eventsPortalUrl,
+  youtubeChannelUrl: "https://www.youtube.com/@comieadepa",
+  facebookUrl: "",
+  instagramUrl: "",
+  contactAddress: "Rodovia Mário Covas, 2500",
+  contactPhone: "55 (91) 0000-0000",
+  contactEmail: "secretaria@comieadepa.com.br",
+  contactHours: "9h às 17h - Segunda a Sexta",
+};
+
+const defaultPortalHomeContent: PortalHomeContent = {
+  heroBadge: "Berço do pentecostes no Brasil",
+  heroTitle: "COMIEADEPA",
+  heroSubtitle: "A primeira convenção assembleiana do Brasil, fundada em 18 de agosto de 1921, no estado do Pará.",
+  heroText:
+    "Mais de cem anos proclamando o Evangelho, reunindo ministros, igrejas e congregações em todo o Pará. Uma convenção edificada sobre fé, missão e fidelidade inabalável à Palavra de Deus.",
+  heroPrimaryLabel: "Conheça a história",
+  heroPrimaryUrl: "#a-comieadepa",
+  heroSecondaryLabel: "Eventos oficiais",
+  agoBadge: "Próxima AGO",
+  agoTitle: "125ª Assembleia Geral Ordinária",
+  aboutBadge: "A COMIEADEPA",
+  aboutTitle: "A primeira convenção assembleiana do Brasil.",
+  aboutText:
+    "Fundada em 18 de agosto de 1921, a COMIEADEPA é reconhecida como a primeira convenção das Assembleias de Deus no Brasil. Nascida no solo paraense, onde o pentecostalismo clássico floresceu, a convenção reúne milhares de ministros, igrejas e congregações em centenas de campos eclesiásticos por todo o Pará — reconhecida como Patrimônio Cultural Material e Imaterial do Estado.",
+  aboutImageUrl: "/assets/sede-aerea-comieadepa.jpg",
+  aboutSealUrl: "/assets/selo-comieadepa-dourado.png",
+  aboutDate: "18.08.1921",
+  aboutCaption: "Berço do pentecostes no Brasil",
+  aboutPillars: ["Evangelismo", "Missões", "Ação Social"],
+  presidencyImageUrl: "/assets/presidente-comieadepa.png",
+  presidencyName: "Pr. Océlio Nauar",
+  presidencyRole: "Presidente COMIEADEPA",
+  presidencyInitials: "ON",
+  presidencyBadge: "Palavra do Presidente",
+  presidencyTitleLine1: "Servindo com",
+  presidencyTitleHighlight: "Integridade",
+  presidencyTitleLine2: "e Fidelidade",
+  presidencyParagraphs: [
+    "A COMIEADEPA segue firme no propósito de servir a Deus com integridade, unidade e compromisso com a Palavra.",
+    "A cada pastor, líder e membro, reafirmamos: sua dedicação não é em vão. Mesmo diante dos desafios, Deus sustenta e honra os que O servem com fidelidade.",
+    "Sigamos em oração, com visão espiritual e amor pelas almas. O Senhor é conosco e maiores ainda são as obras que Ele realizará!",
+  ],
+  eventsBadge: "Eventos oficiais",
+  eventsTitle: "Eventos que edificam a história pentecostal do Pará.",
+  eventsText:
+    "A agenda convencional reúne assembleias, congressos, capacitações e encontros ministeriais que organizam a comunhão da obra, fortalecem departamentos e conectam ministros, igrejas e regiões em torno da missão da COMIEADEPA.",
+  newsBadge: "Notícias",
+  newsTitle: "A voz oficial da COMIEADEPA.",
+  videosBadge: "Vídeos",
+  videosTitle: "A convenção em movimento.",
+  videosText: "Registros oficiais de congressos, assembleias e momentos marcantes da maior e mais histórica convenção assembleiana do Brasil.",
+  videosButtonLabel: "Ver todos os vídeos",
+  departmentsBadge: "Departamentos",
+  departmentsTitle: "Conselhos, comissões e departamentos da convenção.",
+  departmentsText:
+    "Uma rede de trabalho que sustenta a vida convencional: formação, cuidado, juventude, ensino e serviço caminhando juntos para fortalecer igrejas, famílias ministeriais e a missão em todo o Pará.",
+  eventVideosBadge: "YouTube",
+  eventVideosTitle: "Assista Nossos Eventos",
+  eventVideosText: "Confira transmissões, gravações e registros oficiais dos congressos, assembleias e reuniões ministeriais.",
+  eventVideosButtonLabel: "Inscreva-se no Canal",
+  eventVideosSubscribers: "15.3K inscritos",
+};
+
 const fallbackEvents: EventCard[] = [
   {
     title: "Treinamento Regional AD Curralinho",
@@ -106,26 +288,30 @@ const fallbackEvents: EventCard[] = [
   },
 ];
 
-const departments = [
+const fallbackDepartmentCards: PortalDepartment[] = [
   {
+    slug: "seiadepa",
     logo: "/assets/departamento-seiadepa.png",
     title: "SEIADEPA",
     text: "Departamento infantil, ensino bíblico e formação cristã para crianças.",
     accent: "#2aa8e8",
   },
   {
+    slug: "conec",
     logo: "/assets/departamento-conec.png",
     title: "CONEC",
     text: "Conselho de Educação Cristã, ensino, currículo e fortalecimento bíblico.",
     accent: "#c89a2d",
   },
   {
+    slug: "aemadepa",
     logo: "/assets/departamento-aemadepa.png",
     title: "AEMADEPA",
     text: "Associação de esposas de ministros, fortalecendo comunhão, cuidado e apoio às famílias ministeriais.",
     accent: "#b46b2b",
   },
   {
+    slug: "qgu",
     logo: "/assets/departamento-qgu.png",
     title: "QGU",
     text: "Quartel General UMADESPA, mobilizando a juventude para serviço, unidade e compromisso com a obra.",
@@ -133,11 +319,17 @@ const departments = [
   },
 ];
 
-const videos = [
+const fallbackVideos: PortalVideo[] = [
   { id: "SfBqj_dhhgw", title: "Cobertura oficial", label: "Shorts" },
   { id: "YJ6-AG7c0ww", title: "Momentos da convenção", label: "Shorts" },
   { id: "Mg07zDoUVhs", title: "Registro institucional", label: "Shorts" },
   { id: "Ko3czCnuasY", title: "Destaque da AGO", label: "Shorts" },
+];
+
+const fallbackNews: PortalNews[] = [
+  { title: "Comunicados Oficiais da Convenção", category: "Notícia", url: "#" },
+  { title: "Cobertura da 125ª Assembleia Geral Ordinária", category: "Notícia", url: "#" },
+  { title: "Notas e Deliberações Convencionais", category: "Notícia", url: "#" },
 ];
 
 const eventVideos = [
@@ -163,6 +355,11 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [eventCards, setEventCards] = useState<EventCard[]>(supabaseAnonKey ? [] : fallbackEvents);
   const [eventsLoading, setEventsLoading] = useState(Boolean(supabaseAnonKey));
+  const [portalVideos, setPortalVideos] = useState<PortalVideo[]>(fallbackVideos);
+  const [portalNews, setPortalNews] = useState<PortalNews[]>(fallbackNews);
+  const [portalDepartments, setPortalDepartments] = useState<PortalDepartment[]>(fallbackDepartmentCards);
+  const [portalConfig, setPortalConfig] = useState<PortalConfig>(defaultPortalConfig);
+  const [portalHomeContent, setPortalHomeContent] = useState<PortalHomeContent>(defaultPortalHomeContent);
   const { scrollY } = useScroll();
   const heroImageY = useTransform(scrollY, [0, 900], [0, 150]);
   const heroCopyY = useTransform(scrollY, [0, 900], [0, 42]);
@@ -185,18 +382,7 @@ export default function Home() {
           limit: "4",
         });
 
-        const response = await fetch(`${supabaseUrl}/rest/v1/eventos?${params.toString()}`, {
-          headers: {
-            apikey: supabaseAnonKey,
-            Authorization: `Bearer ${supabaseAnonKey}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Supabase retornou ${response.status}`);
-        }
-
-        const data = (await response.json()) as SupabaseEvent[];
+        const data = await fetchSupabasePublic<SupabaseEvent>("v_eventos_publicos", params.toString());
         const registrationTypes = await loadEventRegistrationTypes(data.map((event) => event.id));
         const eventsWithTypes = data.map((event) => ({
           ...event,
@@ -219,7 +405,57 @@ export default function Home() {
       }
     }
 
+    async function loadCmsPublicContent() {
+      if (!supabaseAnonKey) {
+        return;
+      }
+
+      try {
+        const [videosResponse, postsResponse, categoriesResponse, departmentsResponse, settingsResponse] = await Promise.all([
+          fetchSupabasePublic<CmsVideo>(
+            "cms_videos",
+            "select=id,titulo,youtube_id,youtube_url,tipo,departamento_id&ativo=eq.true&destaque_home=eq.true&order=ordem.asc.nullslast,created_at.desc&limit=4",
+          ),
+          fetchSupabasePublic<CmsPost>(
+            "cms_posts",
+            `select=id,titulo,slug,resumo,categoria_id,departamento_id,publicado_em,created_at&status=eq.publicado&destaque_home=eq.true${getPublishedPostsPublicFilter()}&order=publicado_em.desc.nullslast,created_at.desc&limit=3`,
+          ),
+          fetchSupabasePublic<CmsLookup>("cms_categorias", "select=id,nome&order=nome.asc"),
+          fetchSupabasePublic<CmsDepartmentCard>("cms_departamentos", "select=id,slug,nome,titulo,resumo,logo_url&ativo=eq.true&order=ordem.asc,nome.asc"),
+          fetchSupabasePublic<CmsSetting>("cms_configuracoes", "select=chave,valor&publico=eq.true"),
+        ]);
+
+        const categoryMap = buildCmsLookupMap(categoriesResponse);
+        const departmentMap = buildCmsLookupMap(departmentsResponse);
+        const mappedVideos = videosResponse.map((video) => mapCmsVideoToPortalVideo(video, departmentMap)).filter(Boolean) as PortalVideo[];
+        const mappedNews = postsResponse.map((post) => mapCmsPostToPortalNews(post, categoryMap, departmentMap)).filter(Boolean) as PortalNews[];
+        const mappedDepartments = departmentsResponse.map(mapCmsDepartmentToPortalDepartment);
+        const mappedConfig = mapCmsSettingsToPortalConfig(settingsResponse);
+        const mappedHomeContent = mapCmsSettingsToPortalHomeContent(settingsResponse);
+
+        if (isMounted) {
+          setPortalConfig(mappedConfig);
+          setPortalHomeContent(mappedHomeContent);
+        }
+
+        if (isMounted && mappedVideos.length > 0) {
+          setPortalVideos(mappedVideos);
+        }
+
+        if (isMounted && mappedNews.length > 0) {
+          setPortalNews(mappedNews);
+        }
+
+        if (isMounted && mappedDepartments.length > 0) {
+          setPortalDepartments(mappedDepartments);
+        }
+      } catch (error) {
+        console.warn("Não foi possível carregar conteúdo do CMS.", error);
+      }
+    }
+
     loadSupabaseEvents();
+    loadCmsPublicContent();
 
     return () => {
       isMounted = false;
@@ -249,7 +485,7 @@ export default function Home() {
           </nav>
 
           <a
-            href={ministerPortalUrl}
+            href={portalConfig.ministerPortalUrl}
             className="hidden bg-[#f4cf6a] px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-[#171006] shadow-[0_16px_40px_rgba(244,207,106,.22)] transition hover:-translate-y-0.5 hover:bg-white lg:inline-flex"
           >
             Área do Ministro
@@ -273,7 +509,7 @@ export default function Home() {
                   {item}
                 </a>
               ))}
-              <a href={ministerPortalUrl} className="mt-2 bg-[#f4cf6a] px-4 py-3 text-center font-black uppercase text-[#171006]">
+              <a href={portalConfig.ministerPortalUrl} className="mt-2 bg-[#f4cf6a] px-4 py-3 text-center font-black uppercase text-[#171006]">
                 Área do Ministro
               </a>
             </nav>
@@ -296,24 +532,24 @@ export default function Home() {
           <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} style={{ y: heroCopyY }} className="relative z-20 max-w-3xl min-w-0">
             <div className="mb-6 inline-flex items-center gap-3 border border-[#f4cf6a]/45 bg-black/22 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-[#f4cf6a] shadow-[0_16px_40px_rgba(0,0,0,.18)] backdrop-blur-md">
               <Sparkles size={16} />
-              Berço do pentecostes no Brasil
+              {portalHomeContent.heroBadge}
             </div>
             <h1 className="max-w-full font-serif text-[clamp(3.05rem,15.5vw,7.4rem)] font-black leading-[0.86] text-white drop-shadow-[0_14px_38px_rgba(0,0,0,.45)] sm:text-[clamp(4.3rem,8vw,7.4rem)]">
-              COMIEADEPA
+              {portalHomeContent.heroTitle}
             </h1>
             <p className="mt-6 max-w-3xl text-2xl font-semibold leading-tight text-[#f4cf6a] sm:text-4xl">
-              A primeira convenção assembleiana do Brasil, fundada em 18 de agosto de 1921, no estado do Pará.
+              {portalHomeContent.heroSubtitle}
             </p>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-white/76">
-              Mais de cem anos proclamando o Evangelho, reunindo ministros, igrejas e congregações em todo o Pará. Uma convenção edificada sobre fé, missão e fidelidade inabalável à Palavra de Deus.
+              {portalHomeContent.heroText}
             </p>
             <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-              <a href="#a-comieadepa" className="group inline-flex items-center justify-center gap-3 bg-[#f4cf6a] px-7 py-4 text-sm font-black uppercase tracking-[0.14em] text-[#171006] transition hover:-translate-y-1 hover:bg-white">
-                Conheça a história
+              <a href={portalHomeContent.heroPrimaryUrl} className="group inline-flex items-center justify-center gap-3 bg-[#f4cf6a] px-7 py-4 text-sm font-black uppercase tracking-[0.14em] text-[#171006] transition hover:-translate-y-1 hover:bg-white">
+                {portalHomeContent.heroPrimaryLabel}
                 <ArrowRight size={18} className="transition group-hover:translate-x-1" />
               </a>
-              <a href={eventsPortalUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center border border-white/24 bg-white/8 px-7 py-4 text-sm font-black uppercase tracking-[0.14em] text-white backdrop-blur transition hover:-translate-y-1 hover:border-[#f4cf6a] hover:text-[#f4cf6a]">
-                Eventos oficiais
+              <a href={portalConfig.eventsPortalUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center border border-white/24 bg-white/8 px-7 py-4 text-sm font-black uppercase tracking-[0.14em] text-white backdrop-blur transition hover:-translate-y-1 hover:border-[#f4cf6a] hover:text-[#f4cf6a]">
+                {portalHomeContent.heroSecondaryLabel}
               </a>
             </div>
             <motion.div
@@ -323,8 +559,8 @@ export default function Home() {
             >
               <Image src="/assets/selo-125-ago.png" alt="Selo da 125ª AGO" width={82} height={82} className="h-16 w-16 shrink-0 object-contain drop-shadow-[0_0_18px_rgba(244,207,106,.28)] sm:h-20 sm:w-20" />
               <div className="min-w-0">
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-[#f4cf6a]">Próxima AGO</p>
-                <p className="mt-1 font-serif text-xl font-black leading-tight text-white sm:text-2xl">125ª Assembleia Geral Ordinária</p>
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-[#f4cf6a]">{portalHomeContent.agoBadge}</p>
+                <p className="mt-1 font-serif text-xl font-black leading-tight text-white sm:text-2xl">{portalHomeContent.agoTitle}</p>
               </div>
             </motion.div>
           </motion.div>
@@ -390,7 +626,7 @@ export default function Home() {
               style={{ y: sedeParallaxY }}
               className="absolute left-0 top-6 h-[430px] w-[86%] overflow-hidden border border-[#f4cf6a]/22 bg-[#221a0f] shadow-[0_46px_100px_rgba(0,0,0,.42)] [clip-path:polygon(0_0,100%_0,88%_100%,0_92%)]"
             >
-              <Image src="/assets/sede-aerea-comieadepa.jpg" alt="Sede aérea da COMIEADEPA" fill className="object-cover object-center" />
+              <Image src={portalHomeContent.aboutImageUrl} alt="Sede aérea da COMIEADEPA" fill className="object-cover object-center" />
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(244,207,106,.02)_0%,rgba(244,207,106,.23)_56%,rgba(18,15,10,.78)_100%)]" />
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_32%_20%,rgba(255,255,255,.20),transparent_26%)]" />
             </motion.div>
@@ -402,7 +638,7 @@ export default function Home() {
             >
               <div className="absolute inset-8 rounded-full bg-[#f4cf6a]/20 blur-2xl" />
               <Image
-                src="/assets/selo-comieadepa-dourado.png"
+                src={portalHomeContent.aboutSealUrl}
                 alt="Selo dourado COMIEADEPA"
                 width={330}
                 height={330}
@@ -422,8 +658,8 @@ export default function Home() {
                 <span className="h-px flex-1 bg-[#171006]/24" />
                 <span className="text-xs font-black uppercase tracking-[0.18em]">Desde</span>
               </div>
-              <p className="mt-6 font-serif text-4xl font-black leading-none">18.08.1921</p>
-              <p className="mt-3 text-sm font-black uppercase tracking-[0.16em]">Berço do pentecostes no Brasil</p>
+              <p className="mt-6 font-serif text-4xl font-black leading-none">{portalHomeContent.aboutDate}</p>
+              <p className="mt-3 text-sm font-black uppercase tracking-[0.16em]">{portalHomeContent.aboutCaption}</p>
             </motion.div>
           </motion.div>
 
@@ -433,15 +669,15 @@ export default function Home() {
             viewport={{ once: true, amount: 0.34 }}
             transition={{ duration: 0.82, ease: "easeOut" }}
           >
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-[#f4cf6a]">A COMIEADEPA</p>
+            <p className="text-sm font-black uppercase tracking-[0.22em] text-[#f4cf6a]">{portalHomeContent.aboutBadge}</p>
             <h2 className="mt-5 font-serif text-4xl font-black leading-[1.02] text-white sm:text-5xl">
-              A primeira convenção assembleiana do Brasil.
+              {portalHomeContent.aboutTitle}
             </h2>
             <p className="mt-7 max-w-2xl text-lg leading-8 text-white/68">
-              Fundada em 18 de agosto de 1921, a COMIEADEPA é reconhecida como a primeira convenção das Assembleias de Deus no Brasil. Nascida no solo paraense, onde o pentecostalismo clássico floresceu, a convenção reúne milhares de ministros, igrejas e congregações em centenas de campos eclesiásticos por todo o Pará — reconhecida como Patrimônio Cultural Material e Imaterial do Estado.
+              {portalHomeContent.aboutText}
             </p>
             <div className="mt-9 hidden gap-4 sm:grid sm:grid-cols-3">
-              {["Evangelismo", "Missões", "Ação Social"].map((item) => (
+              {portalHomeContent.aboutPillars.map((item) => (
                 <div key={item} className="border border-white/10 bg-white/[0.055] p-5 backdrop-blur transition hover:bg-white/[0.085]">
                   <ShieldCheck className="text-[#f4cf6a]" size={22} />
                   <p className="mt-5 font-serif text-2xl font-bold text-white">{item}</p>
@@ -471,15 +707,15 @@ export default function Home() {
             <div className="relative overflow-hidden rounded-xl border border-white/10 bg-[#11100f] shadow-[16px_16px_0_rgba(242,160,0,.22),0_28px_80px_rgba(0,0,0,.34)]">
               <div className="relative min-h-[520px]">
                 <Image
-                  src="/assets/presidente-comieadepa.png"
-                  alt="Pr. Océlio Nauar e esposa"
+                  src={portalHomeContent.presidencyImageUrl}
+                  alt={portalHomeContent.presidencyName}
                   fill
                   className="object-contain object-bottom"
                 />
                 <div className="absolute inset-x-0 bottom-0 h-56 bg-[linear-gradient(0deg,rgba(17,16,15,.96),rgba(17,16,15,0))]" />
                 <div className="absolute bottom-8 left-7">
                   <p className="text-sm font-black uppercase tracking-[0.14em] text-[#f2a000]">Presidente</p>
-                  <h3 className="mt-2 text-2xl font-black text-white">Pr. Océlio Nauar</h3>
+                  <h3 className="mt-2 text-2xl font-black text-white">{portalHomeContent.presidencyName}</h3>
                 </div>
               </div>
             </div>
@@ -493,31 +729,27 @@ export default function Home() {
             className="max-w-2xl"
           >
             <span className="inline-flex rounded-full bg-[#f2a000]/16 px-5 py-2 text-sm font-black uppercase tracking-[0.08em] text-[#f2a000]">
-              Palavra do Presidente
+              {portalHomeContent.presidencyBadge}
             </span>
             <h2 className="mt-8 text-5xl font-black leading-[0.98] text-white sm:text-6xl">
-              Servindo com <br />
-              <span className="text-[#f2a000]">Integridade</span> e Fidelidade
+              {portalHomeContent.presidencyTitleLine1} <br />
+              <span className="text-[#f2a000]">{portalHomeContent.presidencyTitleHighlight}</span> {portalHomeContent.presidencyTitleLine2}
             </h2>
             <div className="mt-8 space-y-6 text-lg leading-8 text-white/84">
-              <p>
-                A COMIEADEPA segue firme no propósito de servir a Deus com integridade, unidade e compromisso com a Palavra.
-              </p>
-              <p>
-                A cada pastor, líder e membro, reafirmamos: sua dedicação não é em vão. Mesmo diante dos desafios, Deus sustenta e honra os que O servem com fidelidade.
-              </p>
-              <p className="font-semibold text-white">
-                Sigamos em oração, com visão espiritual e amor pelas almas. O Senhor é conosco e maiores ainda são as obras que Ele realizará!
-              </p>
+              {portalHomeContent.presidencyParagraphs.map((paragraph, index) => (
+                <p key={paragraph} className={index === portalHomeContent.presidencyParagraphs.length - 1 ? "font-semibold text-white" : undefined}>
+                  {paragraph}
+                </p>
+              ))}
             </div>
             <div className="my-9 h-px w-full bg-white/12" />
             <div className="flex items-center gap-4">
               <div className="grid h-16 w-16 place-items-center rounded-full bg-[#f2a000] text-xl font-black text-white">
-                ON
+                {portalHomeContent.presidencyInitials}
               </div>
               <div>
-                <p className="font-black text-white">Pr. Océlio Nauar</p>
-                <p className="text-white/62">Presidente COMIEADEPA</p>
+                <p className="font-black text-white">{portalHomeContent.presidencyName}</p>
+                <p className="text-white/62">{portalHomeContent.presidencyRole}</p>
               </div>
             </div>
           </motion.div>
@@ -532,11 +764,11 @@ export default function Home() {
         <div className="relative mx-auto max-w-7xl">
           <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.22em] text-[#f4cf6a]">Eventos oficiais</p>
-              <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-white sm:text-5xl">Eventos que edificam a história pentecostal do Pará.</h2>
+              <p className="text-sm font-black uppercase tracking-[0.22em] text-[#f4cf6a]">{portalHomeContent.eventsBadge}</p>
+              <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-white sm:text-5xl">{portalHomeContent.eventsTitle}</h2>
             </div>
             <p className="max-w-2xl text-lg leading-8 text-white/62">
-              A agenda convencional reúne assembleias, congressos, capacitações e encontros ministeriais que organizam a comunhão da obra, fortalecem departamentos e conectam ministros, igrejas e regiões em torno da missão da COMIEADEPA.
+              {portalHomeContent.eventsText}
             </p>
           </div>
           <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -607,7 +839,7 @@ export default function Home() {
                   </div>
 
                   <a
-                    href={event.url}
+                    href={portalConfig.eventsPortalUrl || event.url}
                     target="_blank"
                     rel="noreferrer"
                     aria-label={`${event.actionLabel} - ${event.title}`}
@@ -634,13 +866,16 @@ export default function Home() {
         <div className="absolute inset-0 bg-[#211709]/76 backdrop-blur-[1px]" />
         <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.72fr_1fr]">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-[#f4cf6a]">Notícias</p>
-            <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-white sm:text-5xl">A voz oficial da COMIEADEPA.</h2>
+            <p className="text-sm font-black uppercase tracking-[0.22em] text-[#f4cf6a]">{portalHomeContent.newsBadge}</p>
+            <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-white sm:text-5xl">{portalHomeContent.newsTitle}</h2>
           </div>
           <div className="grid gap-4">
-            {["Comunicados Oficiais da Convenção", "Cobertura da 125ª Assembleia Geral Ordinária", "Notas e Deliberações Convencioanais"].map((title) => (
-              <a key={title} href="#" className="group flex items-center justify-between border border-white/12 bg-[#120f0a]/62 p-6 backdrop-blur-xl transition hover:border-[#f4cf6a]/60 hover:bg-[#120f0a]/82">
-                <span className="font-serif text-2xl font-bold text-white">{title}</span>
+            {portalNews.map((post) => (
+              <a key={post.title} href={post.url} className="group flex items-center justify-between gap-5 border border-white/12 bg-[#120f0a]/62 p-6 backdrop-blur-xl transition hover:border-[#f4cf6a]/60 hover:bg-[#120f0a]/82">
+                <span>
+                  <span className="text-xs font-black uppercase tracking-[0.2em] text-[#f4cf6a]">{post.category}</span>
+                  <span className="mt-2 block font-serif text-2xl font-bold text-white">{post.title}</span>
+                </span>
                 <ArrowRight className="text-[#f4cf6a] transition group-hover:translate-x-2" size={24} />
               </a>
             ))}
@@ -654,16 +889,16 @@ export default function Home() {
         <div className="relative mx-auto max-w-7xl">
           <div className="grid gap-8 lg:grid-cols-[0.82fr_1fr] lg:items-end">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.22em] text-[#f4cf6a]">Vídeos</p>
-              <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-white sm:text-5xl">A convenção em movimento.</h2>
+              <p className="text-sm font-black uppercase tracking-[0.22em] text-[#f4cf6a]">{portalHomeContent.videosBadge}</p>
+              <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-white sm:text-5xl">{portalHomeContent.videosTitle}</h2>
             </div>
             <p className="max-w-2xl text-lg leading-8 text-white/62">
-              Registros oficiais de congressos, assembleias e momentos marcantes da maior e mais histórica convenção assembleiana do Brasil.
+              {portalHomeContent.videosText}
             </p>
           </div>
 
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {videos.map((video, index) => (
+            {portalVideos.map((video, index) => (
               <article
                 key={video.id}
                 className={`group relative overflow-hidden border border-white/10 bg-white/[0.055] p-3 shadow-[0_22px_60px_rgba(0,0,0,.22)] backdrop-blur-xl transition hover:-translate-y-2 hover:border-[#f4cf6a]/45 hover:bg-white/[0.075] ${index > 0 ? "hidden sm:block" : ""}`}
@@ -687,6 +922,15 @@ export default function Home() {
               </article>
             ))}
           </div>
+
+          <div className="mt-10 text-center">
+            <a
+              href="/videos"
+              className="inline-flex items-center gap-3 border border-[#f4cf6a]/35 px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-[#f4cf6a] transition hover:-translate-y-1 hover:bg-[#f4cf6a] hover:text-[#171006]"
+            >
+              {portalHomeContent.videosButtonLabel} <ArrowRight size={18} />
+            </a>
+          </div>
         </div>
       </section>
 
@@ -696,17 +940,18 @@ export default function Home() {
         <div className="relative mx-auto max-w-7xl">
           <div className="grid gap-8 lg:grid-cols-[0.78fr_1fr] lg:items-end">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-[#8b2f2b]">Departamentos</p>
-              <h2 className="mt-5 max-w-3xl font-serif text-4xl font-black leading-[1.03] sm:text-5xl">Conselhos, comissões e departamentos da convenção.</h2>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-[#8b2f2b]">{portalHomeContent.departmentsBadge}</p>
+              <h2 className="mt-5 max-w-3xl font-serif text-4xl font-black leading-[1.03] sm:text-5xl">{portalHomeContent.departmentsTitle}</h2>
             </div>
             <p className="max-w-2xl text-lg leading-8 text-[#5a472c]">
-              Uma rede de trabalho que sustenta a vida convencional: formação, cuidado, juventude, ensino e serviço caminhando juntos para fortalecer igrejas, famílias ministeriais e a missão em todo o Pará.
+              {portalHomeContent.departmentsText}
             </p>
           </div>
           <div className="mt-12 flex snap-x gap-5 overflow-x-auto pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {departments.map((department, index) => (
-              <motion.article
+            {portalDepartments.map((department, index) => (
+              <motion.a
                 key={department.title}
+                href={`/departamentos/${department.slug}`}
                 initial={{ opacity: 0, y: 26 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
@@ -735,7 +980,7 @@ export default function Home() {
                   <h3 className="mt-2 font-serif text-3xl font-black">{department.title}</h3>
                   <p className="mt-4 leading-7 text-[#5a472c]">{department.text}</p>
                 </div>
-              </motion.article>
+              </motion.a>
             ))}
           </div>
         </div>
@@ -755,11 +1000,11 @@ export default function Home() {
           >
             <span className="inline-flex items-center gap-2 rounded-full bg-[#e62b2b]/18 px-5 py-2 text-sm font-black text-[#ff6b6b]">
               <Youtube size={16} />
-              YouTube
+              {portalHomeContent.eventVideosBadge}
             </span>
-            <h2 className="mt-6 text-5xl font-black leading-tight text-white sm:text-6xl">Assista Nossos Eventos</h2>
+            <h2 className="mt-6 text-5xl font-black leading-tight text-white sm:text-6xl">{portalHomeContent.eventVideosTitle}</h2>
             <p className="mt-4 text-lg text-white/64">
-              Confira transmissões, gravações e registros oficiais dos congressos, assembleias e reuniões ministeriais.
+              {portalHomeContent.eventVideosText}
             </p>
           </motion.div>
 
@@ -808,17 +1053,17 @@ export default function Home() {
 
           <div className="mt-12 text-center">
             <a
-              href="https://www.youtube.com/@comieadepa"
+              href={portalConfig.youtubeChannelUrl}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-3 rounded-full bg-[#e62b2b] px-8 py-4 text-sm font-black !text-white transition hover:-translate-y-1 hover:bg-[#ff3838]"
             >
               <Youtube size={18} />
-              Inscreva-se no Canal
+              {portalHomeContent.eventVideosButtonLabel}
             </a>
             <p className="mt-4 inline-flex items-center gap-2 text-sm text-white/36">
               <Users size={16} />
-              15.3K inscritos
+              {portalHomeContent.eventVideosSubscribers}
             </p>
           </div>
         </div>
@@ -840,6 +1085,8 @@ export default function Home() {
             <a href="#eventos" className="transition hover:text-[#ffe28a]">Mídias</a>
             <a href="#noticias" className="transition hover:text-[#ffe28a]">Notícias</a>
             <a href="#contato" className="transition hover:text-[#ffe28a]">Contatos</a>
+            <a href="/privacidade" className="transition hover:text-[#ffe28a]">Privacidade</a>
+            <a href="/termos" className="transition hover:text-[#ffe28a]">Termos de Uso</a>
           </nav>
 
           <div>
@@ -847,21 +1094,21 @@ export default function Home() {
             <div className="mt-4 grid gap-4 text-sm text-white/92">
               <span className="inline-flex items-start gap-3">
                 <MapPin size={18} className="mt-0.5 shrink-0 text-[#f4cf6a]" />
-                Rodovia Mário Covas, 2500
+                {portalConfig.contactAddress}
               </span>
               <span className="inline-flex items-center gap-3">
                 <Phone size={18} className="shrink-0 text-[#f4cf6a]" />
-                55 (91) 0000-0000
+                {portalConfig.contactPhone}
               </span>
               <span className="inline-flex items-center gap-3">
                 <Clock size={18} className="shrink-0 text-[#f4cf6a]" />
-                9h às 17h - Segunda a Sexta
+                {portalConfig.contactHours}
               </span>
               <span className="inline-flex items-center gap-3">
                 <Mail size={18} className="shrink-0 text-[#f4cf6a]" />
-                secretaria@comieadepa.com.br
+                {portalConfig.contactEmail}
               </span>
-              <a href="mailto:secretaria@comieadepa.com.br" className="w-fit border border-[#f4cf6a]/70 px-7 py-2 text-sm font-semibold text-[#f4cf6a] transition hover:bg-[#f4cf6a] hover:text-[#171006]">
+              <a href={`mailto:${portalConfig.contactEmail}`} className="w-fit border border-[#f4cf6a]/70 px-7 py-2 text-sm font-semibold text-[#f4cf6a] transition hover:bg-[#f4cf6a] hover:text-[#171006]">
                 Fale conosco
               </a>
             </div>
@@ -872,13 +1119,13 @@ export default function Home() {
               Siga-nos nas <span className="text-[#f4cf6a]">redes sociais</span>
             </h3>
             <div className="mt-5 flex gap-7">
-              <a href="#" aria-label="Facebook" className="grid h-9 w-9 place-items-center bg-[#f4cf6a] text-[#171006] transition hover:-translate-y-1 hover:bg-white">
+              <a href={portalConfig.facebookUrl || "#"} target={portalConfig.facebookUrl ? "_blank" : undefined} rel={portalConfig.facebookUrl ? "noreferrer" : undefined} aria-label="Facebook" className="grid h-9 w-9 place-items-center bg-[#f4cf6a] text-[#171006] transition hover:-translate-y-1 hover:bg-white">
                 <Facebook size={20} />
               </a>
-              <a href="#" aria-label="Instagram" className="grid h-9 w-9 place-items-center bg-[#f4cf6a] text-[#171006] transition hover:-translate-y-1 hover:bg-white">
+              <a href={portalConfig.instagramUrl || "#"} target={portalConfig.instagramUrl ? "_blank" : undefined} rel={portalConfig.instagramUrl ? "noreferrer" : undefined} aria-label="Instagram" className="grid h-9 w-9 place-items-center bg-[#f4cf6a] text-[#171006] transition hover:-translate-y-1 hover:bg-white">
                 <Instagram size={20} />
               </a>
-              <a href="#" aria-label="YouTube" className="grid h-9 w-9 place-items-center bg-[#f4cf6a] text-[#171006] transition hover:-translate-y-1 hover:bg-white">
+              <a href={portalConfig.youtubeChannelUrl} target="_blank" rel="noreferrer" aria-label="YouTube" className="grid h-9 w-9 place-items-center bg-[#f4cf6a] text-[#171006] transition hover:-translate-y-1 hover:bg-white">
                 <Youtube size={20} />
               </a>
             </div>
@@ -895,6 +1142,205 @@ function slugify(value: string) {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/\s+/g, "-");
+}
+
+async function fetchSupabasePublic<TResult>(table: string, query: string) {
+  if (!supabaseAnonKey) {
+    return [] as TResult[];
+  }
+
+  const response = await fetch(`${supabaseUrl}/rest/v1/${table}?${query}`, {
+    headers: {
+      apikey: supabaseAnonKey,
+      Authorization: `Bearer ${supabaseAnonKey}`,
+      ...getReadSchemaHeaders(table),
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Supabase retornou ${response.status} ao ler ${table}.`);
+  }
+
+  return (await response.json()) as TResult[];
+}
+
+function getReadSchemaHeaders(table: string) {
+  return table.startsWith("cms_") || table.startsWith("v_") ? { "Accept-Profile": supabaseSiteSchema } : {};
+}
+
+function buildCmsLookupMap(rows: CmsLookup[]) {
+  return new Map(rows.map((row) => [row.id, row.nome?.trim() ?? ""]));
+}
+
+function resolveCmsContentLabel(categoryId: string | null, departmentId: string | null, categoryMap: Map<string, string>, departmentMap: Map<string, string>) {
+  return categoryMap.get(categoryId ?? "") || departmentMap.get(departmentId ?? "") || "Notícia";
+}
+
+function getPublishedPostsPublicFilter() {
+  return `&or=(publicado_em.is.null,publicado_em.lte.${encodeURIComponent(new Date().toISOString())})`;
+}
+
+function mapCmsDepartmentToPortalDepartment(department: CmsDepartmentCard): PortalDepartment {
+  const fallback = fallbackDepartmentCards.find((item) => item.slug === department.slug);
+
+  return {
+    slug: department.slug,
+    logo: department.logo_url?.trim() || fallback?.logo || "/assets/logo-comieadepa.png",
+    title: department.nome?.trim() || fallback?.title || "COMIEADEPA",
+    text: department.resumo?.trim() || department.titulo?.trim() || fallback?.text || "Página institucional editável pelo painel administrativo.",
+    accent: fallback?.accent || getDepartmentAccent(department.slug),
+  };
+}
+
+function mapCmsVideoToPortalVideo(video: CmsVideo, departmentMap: Map<string, string>) {
+  const youtubeId = video.youtube_id || getYoutubeVideoId(video.youtube_url ?? "");
+
+  if (!youtubeId) {
+    return null;
+  }
+
+  const typeLabel = formatVideoType(video.tipo);
+  const departmentName = departmentMap.get(video.departamento_id ?? "");
+
+  return {
+    id: youtubeId,
+    title: video.titulo?.trim() || "Vídeo oficial",
+    label: departmentName ? `${typeLabel} · ${departmentName}` : typeLabel,
+  };
+}
+
+function mapCmsPostToPortalNews(post: CmsPost, categoryMap: Map<string, string>, departmentMap: Map<string, string>) {
+  const title = post.titulo?.trim();
+
+  if (!title || !post.slug) {
+    return null;
+  }
+
+  return {
+    title,
+    category: resolveCmsContentLabel(post.categoria_id, post.departamento_id, categoryMap, departmentMap),
+    url: `/noticias/${post.slug}`,
+  };
+}
+
+function mapCmsSettingsToPortalConfig(settings: CmsSetting[]): PortalConfig {
+  const settingMap = new Map(settings.map((setting) => [setting.chave, stringifySettingValue(setting.valor)]));
+
+  return {
+    ministerPortalUrl: settingMap.get("url_area_ministro") || defaultPortalConfig.ministerPortalUrl,
+    eventsPortalUrl: settingMap.get("url_eventos") || defaultPortalConfig.eventsPortalUrl,
+    youtubeChannelUrl: settingMap.get("youtube_channel_url") || defaultPortalConfig.youtubeChannelUrl,
+    facebookUrl: settingMap.get("facebook_url") || defaultPortalConfig.facebookUrl,
+    instagramUrl: settingMap.get("instagram_url") || defaultPortalConfig.instagramUrl,
+    contactAddress: settingMap.get("contato_endereco") || defaultPortalConfig.contactAddress,
+    contactPhone: settingMap.get("contato_telefone") || defaultPortalConfig.contactPhone,
+    contactEmail: settingMap.get("contato_email") || defaultPortalConfig.contactEmail,
+    contactHours: settingMap.get("contato_horario") || defaultPortalConfig.contactHours,
+  };
+}
+
+function mapCmsSettingsToPortalHomeContent(settings: CmsSetting[]): PortalHomeContent {
+  const settingMap = new Map(settings.map((setting) => [setting.chave, stringifySettingValue(setting.valor)]));
+
+  return {
+    heroBadge: settingMap.get("home_hero_selo") || defaultPortalHomeContent.heroBadge,
+    heroTitle: settingMap.get("home_hero_titulo") || defaultPortalHomeContent.heroTitle,
+    heroSubtitle: settingMap.get("home_hero_subtitulo") || defaultPortalHomeContent.heroSubtitle,
+    heroText: settingMap.get("home_hero_texto") || defaultPortalHomeContent.heroText,
+    heroPrimaryLabel: settingMap.get("home_hero_botao_primario") || defaultPortalHomeContent.heroPrimaryLabel,
+    heroPrimaryUrl: settingMap.get("home_hero_link_primario") || defaultPortalHomeContent.heroPrimaryUrl,
+    heroSecondaryLabel: settingMap.get("home_hero_botao_secundario") || defaultPortalHomeContent.heroSecondaryLabel,
+    agoBadge: settingMap.get("home_ago_selo") || defaultPortalHomeContent.agoBadge,
+    agoTitle: settingMap.get("home_ago_titulo") || defaultPortalHomeContent.agoTitle,
+    aboutBadge: settingMap.get("home_sobre_selo") || defaultPortalHomeContent.aboutBadge,
+    aboutTitle: settingMap.get("home_sobre_titulo") || defaultPortalHomeContent.aboutTitle,
+    aboutText: settingMap.get("home_sobre_texto") || defaultPortalHomeContent.aboutText,
+    aboutImageUrl: settingMap.get("home_sobre_imagem_url") || defaultPortalHomeContent.aboutImageUrl,
+    aboutSealUrl: settingMap.get("home_sobre_selo_url") || defaultPortalHomeContent.aboutSealUrl,
+    aboutDate: settingMap.get("home_sobre_data") || defaultPortalHomeContent.aboutDate,
+    aboutCaption: settingMap.get("home_sobre_legenda") || defaultPortalHomeContent.aboutCaption,
+    aboutPillars: [
+      settingMap.get("home_sobre_pilar_1") || defaultPortalHomeContent.aboutPillars[0],
+      settingMap.get("home_sobre_pilar_2") || defaultPortalHomeContent.aboutPillars[1],
+      settingMap.get("home_sobre_pilar_3") || defaultPortalHomeContent.aboutPillars[2],
+    ].filter(Boolean),
+    presidencyImageUrl: settingMap.get("home_presidencia_imagem_url") || defaultPortalHomeContent.presidencyImageUrl,
+    presidencyName: settingMap.get("home_presidencia_nome") || defaultPortalHomeContent.presidencyName,
+    presidencyRole: settingMap.get("home_presidencia_cargo") || defaultPortalHomeContent.presidencyRole,
+    presidencyInitials: settingMap.get("home_presidencia_iniciais") || defaultPortalHomeContent.presidencyInitials,
+    presidencyBadge: settingMap.get("home_presidencia_selo") || defaultPortalHomeContent.presidencyBadge,
+    presidencyTitleLine1: settingMap.get("home_presidencia_titulo_linha_1") || defaultPortalHomeContent.presidencyTitleLine1,
+    presidencyTitleHighlight: settingMap.get("home_presidencia_titulo_destaque") || defaultPortalHomeContent.presidencyTitleHighlight,
+    presidencyTitleLine2: settingMap.get("home_presidencia_titulo_linha_2") || defaultPortalHomeContent.presidencyTitleLine2,
+    presidencyParagraphs: [
+      settingMap.get("home_presidencia_texto_1") || defaultPortalHomeContent.presidencyParagraphs[0],
+      settingMap.get("home_presidencia_texto_2") || defaultPortalHomeContent.presidencyParagraphs[1],
+      settingMap.get("home_presidencia_texto_3") || defaultPortalHomeContent.presidencyParagraphs[2],
+    ].filter(Boolean),
+    eventsBadge: settingMap.get("home_eventos_selo") || defaultPortalHomeContent.eventsBadge,
+    eventsTitle: settingMap.get("home_eventos_titulo") || defaultPortalHomeContent.eventsTitle,
+    eventsText: settingMap.get("home_eventos_texto") || defaultPortalHomeContent.eventsText,
+    newsBadge: settingMap.get("home_noticias_selo") || defaultPortalHomeContent.newsBadge,
+    newsTitle: settingMap.get("home_noticias_titulo") || defaultPortalHomeContent.newsTitle,
+    videosBadge: settingMap.get("home_videos_selo") || defaultPortalHomeContent.videosBadge,
+    videosTitle: settingMap.get("home_videos_titulo") || defaultPortalHomeContent.videosTitle,
+    videosText: settingMap.get("home_videos_texto") || defaultPortalHomeContent.videosText,
+    videosButtonLabel: settingMap.get("home_videos_botao") || defaultPortalHomeContent.videosButtonLabel,
+    departmentsBadge: settingMap.get("home_departamentos_selo") || defaultPortalHomeContent.departmentsBadge,
+    departmentsTitle: settingMap.get("home_departamentos_titulo") || defaultPortalHomeContent.departmentsTitle,
+    departmentsText: settingMap.get("home_departamentos_texto") || defaultPortalHomeContent.departmentsText,
+    eventVideosBadge: settingMap.get("home_eventos_video_selo") || defaultPortalHomeContent.eventVideosBadge,
+    eventVideosTitle: settingMap.get("home_eventos_video_titulo") || defaultPortalHomeContent.eventVideosTitle,
+    eventVideosText: settingMap.get("home_eventos_video_texto") || defaultPortalHomeContent.eventVideosText,
+    eventVideosButtonLabel: settingMap.get("home_eventos_video_botao") || defaultPortalHomeContent.eventVideosButtonLabel,
+    eventVideosSubscribers: settingMap.get("home_eventos_video_inscritos") || defaultPortalHomeContent.eventVideosSubscribers,
+  };
+}
+
+function stringifySettingValue(value: unknown) {
+  if (typeof value === "string") {
+    return value.trim();
+  }
+
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+
+  return "";
+}
+
+function getYoutubeVideoId(url: string) {
+  const patterns = [/youtu\.be\/([^?&/]+)/, /youtube\.com\/watch\?v=([^?&/]+)/, /youtube\.com\/shorts\/([^?&/]+)/, /youtube\.com\/embed\/([^?&/]+)/];
+  const match = patterns.map((pattern) => url.match(pattern)?.[1]).find(Boolean);
+  return match ?? null;
+}
+
+function formatVideoType(value: string | null) {
+  const normalized = value?.toLowerCase();
+
+  if (normalized === "shorts") {
+    return "Shorts";
+  }
+
+  if (normalized === "live") {
+    return "Live";
+  }
+
+  return "Vídeo";
+}
+
+function getDepartmentAccent(slug: string) {
+  const accents: Record<string, string> = {
+    ago: "#d8a534",
+    umadespa: "#f0782b",
+    coadespa: "#9d4b8c",
+    seiadepa: "#2aa8e8",
+    conec: "#c89a2d",
+    aemadepa: "#b46b2b",
+    qgu: "#425f32",
+  };
+
+  return accents[slug] ?? "#8b2f2b";
 }
 
 function mapSupabaseEventToCard(event: SupabaseEvent): EventCard {
@@ -929,10 +1375,11 @@ async function loadEventRegistrationTypes(eventIds: string[]) {
     order: "valor.asc",
   });
 
-  const response = await fetch(`${supabaseUrl}/rest/v1/evento_tipos_inscricao?${params.toString()}`, {
+  const response = await fetch(`${supabaseUrl}/rest/v1/v_evento_tipos_inscricao_publicos?${params.toString()}`, {
     headers: {
       apikey: supabaseAnonKey,
       Authorization: `Bearer ${supabaseAnonKey}`,
+      "Accept-Profile": supabaseSiteSchema,
     },
   });
 
