@@ -39,15 +39,15 @@ export default async function NewsIndexPage() {
   const departmentMap = buildLookupMap(departments);
 
   return (
-    <main className="min-h-screen bg-[#120f0a] px-5 py-16 text-[#fff7e5] sm:px-8">
+    <main className="min-h-screen bg-white px-5 py-16 text-[#1F2937] sm:px-8">
       <section className="mx-auto max-w-6xl">
-        <Link href="/" className="text-sm font-black uppercase tracking-[0.18em] text-[#f4cf6a] transition hover:text-white">
+        <Link href="/" className="text-sm font-black uppercase tracking-[0.18em] text-[#0F3B63] transition hover:text-[#4A86B8]">
           COMIEADEPA
         </Link>
         <div className="mt-10 max-w-3xl">
-          <p className="text-sm font-black uppercase tracking-[0.22em] text-[#f4cf6a]">Notícias</p>
-          <h1 className="mt-5 font-serif text-4xl font-black leading-[1.04] text-white sm:text-6xl">Comunicação oficial da convenção.</h1>
-          <p className="mt-6 text-lg leading-8 text-white/62">Publicações, comunicados e registros institucionais para manter ministros, igrejas e departamentos alinhados.</p>
+          <p className="text-sm font-black uppercase tracking-[0.22em] text-[#B8872D]">Notícias</p>
+          <h1 className="mt-5 font-serif text-4xl font-black leading-[1.04] text-[#0F3B63] sm:text-6xl">Comunicação oficial da convenção.</h1>
+          <p className="mt-6 text-lg leading-8 text-[#6B7280]">Publicações, comunicados e registros institucionais para manter ministros, igrejas e departamentos alinhados.</p>
         </div>
 
         <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -55,20 +55,20 @@ export default async function NewsIndexPage() {
             <Link
               key={post.id}
               href={`/noticias/${post.slug}`}
-              className="group flex min-h-[260px] flex-col justify-between border border-white/12 bg-white/[0.055] p-6 transition hover:-translate-y-1 hover:border-[#f4cf6a]/55 hover:bg-white/[0.075]"
+              className="group flex min-h-[260px] flex-col justify-between rounded-xl border border-[#0F3B63]/10 bg-[#F4F6F8] p-6 shadow-[0_18px_50px_rgba(15,59,99,.10)] transition hover:-translate-y-1 hover:bg-white hover:shadow-[0_24px_60px_rgba(15,59,99,.16)]"
             >
               <div>
-                <span className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-[#f4cf6a]">
+                <span className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-[#B8872D]">
                   <CalendarDays size={15} />
                   {formatDate(post.publicado_em ?? post.created_at)}
                 </span>
-                <span className="mt-5 inline-flex border border-[#f4cf6a]/30 px-3 py-1 text-[0.68rem] font-black uppercase tracking-[0.16em] text-[#f4cf6a]">
+                <span className="mt-5 inline-flex rounded-md border border-[#D4A24C]/40 bg-white px-3 py-1 text-[0.68rem] font-black uppercase tracking-[0.16em] text-[#0F3B63]">
                   {resolvePostLabel(post, categoryMap, departmentMap)}
                 </span>
-                <h2 className="mt-6 font-serif text-2xl font-black leading-tight text-white">{post.titulo}</h2>
-                {post.resumo ? <p className="mt-4 text-base leading-7 text-white/58">{post.resumo}</p> : null}
+                <h2 className="mt-6 font-serif text-2xl font-black leading-tight text-[#0F3B63]">{post.titulo}</h2>
+                {post.resumo ? <p className="mt-4 text-base leading-7 text-[#6B7280]">{post.resumo}</p> : null}
               </div>
-              <span className="mt-8 inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.16em] text-[#f4cf6a]">
+              <span className="mt-8 inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.16em] text-[#0F3B63]">
                 Ler notícia <ArrowRight size={18} className="transition group-hover:translate-x-1" />
               </span>
             </Link>
@@ -76,7 +76,7 @@ export default async function NewsIndexPage() {
         </div>
 
         {posts.length === 0 ? (
-          <div className="mt-12 border border-white/12 bg-white/[0.055] p-8 text-white/62">
+          <div className="mt-12 rounded-xl border border-[#0F3B63]/10 bg-[#F4F6F8] p-8 text-[#6B7280]">
             Nenhuma notícia publicada no momento. Assim que a equipe publicar pelo painel, esta página será atualizada automaticamente.
           </div>
         ) : null}

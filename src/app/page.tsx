@@ -463,22 +463,22 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#120f0a] text-[#fff7e5]">
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#120f0a]/64 backdrop-blur-2xl">
+    <main className="min-h-screen overflow-hidden bg-white text-[#1F2937]">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-[#0F3B63]/10 bg-white/92 shadow-[0_10px_32px_rgba(15,59,99,.08)] backdrop-blur-2xl">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8">
           <a href="#" className="group flex items-center gap-3">
             <span className="relative grid h-12 w-12 place-items-center overflow-visible">
-              <Image src="/assets/logo-comieadepa.png" alt="Brasão COMIEADEPA" width={48} height={48} className="object-contain drop-shadow-[0_0_18px_rgba(244,207,106,.28)]" />
+              <Image src="/assets/logo-comieadepa.png" alt="Brasão COMIEADEPA" width={48} height={48} className="object-contain drop-shadow-[0_0_18px_rgba(15,59,99,.18)]" />
             </span>
             <span className="leading-tight">
-              <span className="block font-serif text-2xl font-bold text-white">COMIEADEPA</span>
-              <span className="block text-xs uppercase tracking-[0.24em] text-[#f4cf6a]">Desde 1921</span>
+              <span className="block font-serif text-2xl font-bold text-[#0F3B63]">COMIEADEPA</span>
+              <span className="block text-xs uppercase tracking-[0.24em] text-[#D4A24C]">Desde 1921</span>
             </span>
           </a>
 
-          <nav className="hidden items-center gap-7 text-sm font-semibold text-white/74 lg:flex">
+          <nav className="hidden items-center gap-7 text-sm font-semibold text-[#1F2937]/74 lg:flex">
             {navItems.map((item) => (
-              <a key={item} href={`#${slugify(item)}`} className="relative py-2 transition hover:text-[#f4cf6a]">
+              <a key={item} href={`#${slugify(item)}`} className="relative py-2 transition hover:text-[#1D5A8C]">
                 {item}
               </a>
             ))}
@@ -486,7 +486,7 @@ export default function Home() {
 
           <a
             href={portalConfig.ministerPortalUrl}
-            className="hidden bg-[#f4cf6a] px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-[#171006] shadow-[0_16px_40px_rgba(244,207,106,.22)] transition hover:-translate-y-0.5 hover:bg-white lg:inline-flex"
+            className="hidden rounded-lg bg-[#0F3B63] px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-white shadow-[0_16px_34px_rgba(15,59,99,.20)] transition hover:-translate-y-0.5 hover:bg-[#4A86B8] lg:inline-flex"
           >
             Área do Ministro
           </a>
@@ -495,21 +495,21 @@ export default function Home() {
             type="button"
             aria-label="Abrir menu"
             onClick={() => setMenuOpen((current) => !current)}
-            className="grid h-11 w-11 place-items-center border border-white/15 bg-white/5 lg:hidden"
+            className="grid h-11 w-11 place-items-center rounded-lg border border-[#0F3B63]/15 bg-[#F4F6F8] text-[#0F3B63] lg:hidden"
           >
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
 
         {menuOpen && (
-          <div className="border-t border-white/10 bg-[#120f0a]/96 px-5 py-5 lg:hidden">
-            <nav className="mx-auto flex max-w-7xl flex-col gap-4 text-sm font-semibold text-white/80">
+          <div className="border-t border-[#0F3B63]/10 bg-white px-5 py-5 shadow-[0_20px_50px_rgba(15,59,99,.10)] lg:hidden">
+            <nav className="mx-auto flex max-w-7xl flex-col gap-4 text-sm font-semibold text-[#1F2937]">
               {navItems.map((item) => (
                 <a key={item} href={`#${slugify(item)}`} onClick={() => setMenuOpen(false)}>
                   {item}
                 </a>
               ))}
-              <a href={portalConfig.ministerPortalUrl} className="mt-2 bg-[#f4cf6a] px-4 py-3 text-center font-black uppercase text-[#171006]">
+              <a href={portalConfig.ministerPortalUrl} className="mt-2 rounded-lg bg-[#0F3B63] px-4 py-3 text-center font-black uppercase text-white">
                 Área do Ministro
               </a>
             </nav>
@@ -521,45 +521,45 @@ export default function Home() {
         <motion.div style={{ y: heroImageY }} className="absolute -inset-x-8 -inset-y-16">
           <Image src="/assets/congresso-comieadepa.jpg" alt="Congresso COMIEADEPA com grande público" fill priority className="object-cover object-center" />
         </motion.div>
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(18,15,10,.96)_0%,rgba(18,15,10,.77)_42%,rgba(18,15,10,.16)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_56%_24%,rgba(244,207,106,.18),transparent_31%),radial-gradient(circle_at_88%_62%,rgba(139,47,43,.26),transparent_28%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-60 bg-[linear-gradient(0deg,#120f0a_0%,rgba(18,15,10,.72)_42%,rgba(18,15,10,0)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(15,59,99,.95)_0%,rgba(15,59,99,.76)_44%,rgba(15,59,99,.18)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_56%_24%,rgba(212,162,76,.24),transparent_31%),radial-gradient(circle_at_88%_62%,rgba(29,90,140,.22),transparent_28%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-60 bg-[linear-gradient(0deg,#ffffff_0%,rgba(255,255,255,.72)_36%,rgba(255,255,255,0)_100%)]" />
         <div className="absolute inset-0 opacity-[0.065] [background-image:linear-gradient(135deg,#fff_1px,transparent_1px)] [background-size:38px_38px]" />
-        <motion.div style={{ y: heroVisualY }} className="absolute -right-24 top-14 hidden h-[92vh] w-[44vw] skew-x-[-16deg] bg-[#f4cf6a]/12 backdrop-blur-[1px] lg:block" />
-        <motion.div style={{ y: heroCopyY }} className="absolute right-[18vw] top-0 hidden h-[62vh] w-24 skew-x-[-16deg] bg-[#8b2f2b]/38 lg:block" />
+        <motion.div style={{ y: heroVisualY }} className="absolute -right-24 top-14 hidden h-[92vh] w-[44vw] skew-x-[-16deg] bg-[#D4A24C]/18 backdrop-blur-[1px] lg:block" />
+        <motion.div style={{ y: heroCopyY }} className="absolute right-[18vw] top-0 hidden h-[62vh] w-24 skew-x-[-16deg] bg-[#1D5A8C]/40 lg:block" />
 
         <div className="relative z-10 mx-auto grid min-h-[calc(100vh-5rem)] max-w-7xl items-center gap-8 px-5 py-14 sm:px-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(360px,0.72fr)] xl:grid-cols-[minmax(0,0.98fr)_minmax(420px,0.76fr)]">
           <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} style={{ y: heroCopyY }} className="relative z-20 max-w-3xl min-w-0">
-            <div className="mb-6 inline-flex items-center gap-3 border border-[#f4cf6a]/45 bg-black/22 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-[#f4cf6a] shadow-[0_16px_40px_rgba(0,0,0,.18)] backdrop-blur-md">
+            <div className="mb-6 inline-flex items-center gap-3 rounded-lg border border-[#D4A24C]/50 bg-white/12 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-[#F8D77B] shadow-[0_16px_40px_rgba(0,0,0,.18)] backdrop-blur-md">
               <Sparkles size={16} />
               {portalHomeContent.heroBadge}
             </div>
             <h1 className="max-w-full font-serif text-[clamp(3.05rem,15.5vw,7.4rem)] font-black leading-[0.86] text-white drop-shadow-[0_14px_38px_rgba(0,0,0,.45)] sm:text-[clamp(4.3rem,8vw,7.4rem)]">
               {portalHomeContent.heroTitle}
             </h1>
-            <p className="mt-6 max-w-3xl text-2xl font-semibold leading-tight text-[#f4cf6a] sm:text-4xl">
+            <p className="mt-6 max-w-3xl text-2xl font-semibold leading-tight text-[#F8D77B] sm:text-4xl">
               {portalHomeContent.heroSubtitle}
             </p>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-white/76">
               {portalHomeContent.heroText}
             </p>
             <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-              <a href={portalHomeContent.heroPrimaryUrl} className="group inline-flex items-center justify-center gap-3 bg-[#f4cf6a] px-7 py-4 text-sm font-black uppercase tracking-[0.14em] text-[#171006] transition hover:-translate-y-1 hover:bg-white">
+              <a href={portalHomeContent.heroPrimaryUrl} className="group inline-flex items-center justify-center gap-3 rounded-lg bg-[#D4A24C] px-7 py-4 text-sm font-black uppercase tracking-[0.14em] text-white shadow-[0_18px_38px_rgba(212,162,76,.28)] transition hover:-translate-y-1 hover:bg-[#B8872D]">
                 {portalHomeContent.heroPrimaryLabel}
                 <ArrowRight size={18} className="transition group-hover:translate-x-1" />
               </a>
-              <a href={portalConfig.eventsPortalUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center border border-white/24 bg-white/8 px-7 py-4 text-sm font-black uppercase tracking-[0.14em] text-white backdrop-blur transition hover:-translate-y-1 hover:border-[#f4cf6a] hover:text-[#f4cf6a]">
+              <a href={portalConfig.eventsPortalUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-lg border border-white/28 bg-white/10 px-7 py-4 text-sm font-black uppercase tracking-[0.14em] text-white backdrop-blur transition hover:-translate-y-1 hover:border-[#D4A24C] hover:text-[#F8D77B]">
                 {portalHomeContent.heroSecondaryLabel}
               </a>
             </div>
             <motion.div
               animate={{ y: [0, -6, 0] }}
               transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
-              className="mt-7 flex max-w-full items-center gap-3 border border-[#f4cf6a]/22 bg-[#120f0a]/42 p-4 shadow-[0_18px_44px_rgba(0,0,0,.22)] backdrop-blur-xl sm:max-w-xl sm:gap-4"
+              className="mt-7 flex max-w-full items-center gap-3 rounded-xl border border-white/20 bg-white/12 p-4 shadow-[0_18px_44px_rgba(0,0,0,.18)] backdrop-blur-xl sm:max-w-xl sm:gap-4"
             >
               <Image src="/assets/selo-125-ago.png" alt="Selo da 125ª AGO" width={82} height={82} className="h-16 w-16 shrink-0 object-contain drop-shadow-[0_0_18px_rgba(244,207,106,.28)] sm:h-20 sm:w-20" />
               <div className="min-w-0">
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-[#f4cf6a]">{portalHomeContent.agoBadge}</p>
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-[#F8D77B]">{portalHomeContent.agoBadge}</p>
                 <p className="mt-1 font-serif text-xl font-black leading-tight text-white sm:text-2xl">{portalHomeContent.agoTitle}</p>
               </div>
             </motion.div>
@@ -569,12 +569,12 @@ export default function Home() {
             <motion.div
               animate={{ x: [0, 16, 0], opacity: [0.26, 0.42, 0.26] }}
               transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute right-2 top-4 h-[600px] w-24 skew-x-[-16deg] bg-[#f4cf6a]/22"
+              className="absolute right-2 top-4 h-[600px] w-24 skew-x-[-16deg] bg-[#D4A24C]/26"
             />
             <motion.div
               animate={{ x: [0, -12, 0], opacity: [0.18, 0.32, 0.18] }}
               transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute right-32 top-24 h-[470px] w-16 skew-x-[-16deg] bg-[#8b2f2b]/32"
+              className="absolute right-32 top-24 h-[470px] w-16 skew-x-[-16deg] bg-[#1D5A8C]/34"
             />
             <motion.div
               animate={{ y: [0, -14, 0], rotate: [-1.5, 1, -1.5] }}
@@ -600,20 +600,20 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="relative bg-[#120f0a] px-5 sm:px-8" aria-label="Números institucionais">
-        <div className="mx-auto -mt-16 grid max-w-7xl border border-[#f4cf6a]/18 bg-[#1b140b]/62 shadow-[0_28px_70px_rgba(0,0,0,.30)] backdrop-blur-xl md:grid-cols-4">
+      <section className="relative bg-white px-5 sm:px-8" aria-label="Números institucionais">
+        <div className="mx-auto -mt-16 grid max-w-7xl overflow-hidden rounded-xl border border-[#0F3B63]/10 bg-white shadow-[0_28px_70px_rgba(15,59,99,.14)] backdrop-blur-xl md:grid-cols-4">
           {stats.map((stat, index) => (
-            <div key={stat.label} className={`relative overflow-hidden border-b border-[#f4cf6a]/12 p-7 md:border-b-0 md:border-r ${index > 1 ? "hidden md:block" : ""}`}>
-              <p className="font-serif text-5xl font-black text-[#f4cf6a]">{stat.value}</p>
-              <p className="mt-2 text-sm font-bold uppercase tracking-[0.16em] text-white/58">{stat.label}</p>
+            <div key={stat.label} className={`relative overflow-hidden border-b border-[#0F3B63]/10 p-7 md:border-b-0 md:border-r ${index > 1 ? "hidden md:block" : ""}`}>
+              <p className="font-serif text-5xl font-black text-[#0F3B63]">{stat.value}</p>
+              <p className="mt-2 text-sm font-bold uppercase tracking-[0.16em] text-[#6B7280]">{stat.label}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section id="a-comieadepa" className="relative bg-[#120f0a] px-5 py-28 sm:px-8">
-        <div className="absolute inset-0 opacity-[0.08] [background-image:linear-gradient(135deg,#f4cf6a_1px,transparent_1px)] [background-size:42px_42px]" />
-        <motion.div style={{ y: sedeParallaxY }} className="absolute -right-24 top-10 hidden h-[520px] w-[520px] border border-[#f4cf6a]/12 bg-[#f4cf6a]/5 backdrop-blur-sm lg:block [clip-path:polygon(14%_0,100%_0,86%_100%,0_100%)]" />
+      <section id="a-comieadepa" className="relative bg-[#F4F6F8] px-5 py-28 sm:px-8">
+        <div className="absolute inset-0 opacity-[0.28] [background-image:linear-gradient(135deg,rgba(15,59,99,.12)_1px,transparent_1px)] [background-size:42px_42px]" />
+        <motion.div style={{ y: sedeParallaxY }} className="absolute -right-24 top-10 hidden h-[520px] w-[520px] border border-[#0F3B63]/10 bg-white/42 backdrop-blur-sm lg:block [clip-path:polygon(14%_0,100%_0,86%_100%,0_100%)]" />
         <div className="relative mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.94fr_1.06fr] lg:items-center">
           <motion.div
             initial={{ opacity: 0, x: -72 }}
@@ -624,19 +624,19 @@ export default function Home() {
           >
             <motion.div
               style={{ y: sedeParallaxY }}
-              className="absolute left-0 top-6 h-[430px] w-[86%] overflow-hidden border border-[#f4cf6a]/22 bg-[#221a0f] shadow-[0_46px_100px_rgba(0,0,0,.42)] [clip-path:polygon(0_0,100%_0,88%_100%,0_92%)]"
+              className="absolute left-0 top-6 h-[430px] w-[86%] overflow-hidden rounded-xl border border-white bg-white shadow-[0_34px_80px_rgba(15,59,99,.20)] [clip-path:polygon(0_0,100%_0,88%_100%,0_92%)]"
             >
               <Image src={portalHomeContent.aboutImageUrl} alt="Sede aérea da COMIEADEPA" fill className="object-cover object-center" />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(244,207,106,.02)_0%,rgba(244,207,106,.23)_56%,rgba(18,15,10,.78)_100%)]" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,.02)_0%,rgba(212,162,76,.18)_56%,rgba(15,59,99,.62)_100%)]" />
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_32%_20%,rgba(255,255,255,.20),transparent_26%)]" />
             </motion.div>
 
             <motion.div
               animate={{ y: [0, -14, 0], rotate: [-2, 2, -2] }}
               transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute right-1 top-20 z-20 grid h-[268px] w-[268px] place-items-center rounded-full bg-[#120f0a]/12"
+              className="absolute right-1 top-20 z-20 grid h-[268px] w-[268px] place-items-center rounded-full bg-white/24"
             >
-              <div className="absolute inset-8 rounded-full bg-[#f4cf6a]/20 blur-2xl" />
+              <div className="absolute inset-8 rounded-full bg-[#D4A24C]/24 blur-2xl" />
               <Image
                 src={portalHomeContent.aboutSealUrl}
                 alt="Selo dourado COMIEADEPA"
@@ -651,11 +651,11 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.4 }}
               transition={{ delay: 0.18, duration: 0.72, ease: "easeOut" }}
-              className="absolute bottom-2 right-6 z-30 w-[58%] min-w-[270px] border border-[#f4cf6a]/35 bg-[linear-gradient(135deg,rgba(255,232,151,.96),rgba(194,146,51,.90))] p-7 text-[#171006] shadow-[0_24px_64px_rgba(0,0,0,.38)] backdrop-blur"
+              className="absolute bottom-2 right-6 z-30 w-[58%] min-w-[270px] rounded-xl border border-[#D4A24C]/35 bg-[linear-gradient(135deg,rgba(255,255,255,.98),rgba(244,246,248,.96))] p-7 text-[#1F2937] shadow-[0_24px_64px_rgba(15,59,99,.18)] backdrop-blur"
             >
               <div className="flex items-center justify-between gap-4">
                 <Landmark size={30} />
-                <span className="h-px flex-1 bg-[#171006]/24" />
+                <span className="h-px flex-1 bg-[#0F3B63]/18" />
                 <span className="text-xs font-black uppercase tracking-[0.18em]">Desde</span>
               </div>
               <p className="mt-6 font-serif text-4xl font-black leading-none">{portalHomeContent.aboutDate}</p>
@@ -669,18 +669,18 @@ export default function Home() {
             viewport={{ once: true, amount: 0.34 }}
             transition={{ duration: 0.82, ease: "easeOut" }}
           >
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-[#f4cf6a]">{portalHomeContent.aboutBadge}</p>
-            <h2 className="mt-5 font-serif text-4xl font-black leading-[1.02] text-white sm:text-5xl">
+            <p className="text-sm font-black uppercase tracking-[0.22em] text-[#B8872D]">{portalHomeContent.aboutBadge}</p>
+            <h2 className="mt-5 font-serif text-4xl font-black leading-[1.02] text-[#0F3B63] sm:text-5xl">
               {portalHomeContent.aboutTitle}
             </h2>
-            <p className="mt-7 max-w-2xl text-lg leading-8 text-white/68">
+            <p className="mt-7 max-w-2xl text-lg leading-8 text-[#6B7280]">
               {portalHomeContent.aboutText}
             </p>
             <div className="mt-9 hidden gap-4 sm:grid sm:grid-cols-3">
               {portalHomeContent.aboutPillars.map((item) => (
-                <div key={item} className="border border-white/10 bg-white/[0.055] p-5 backdrop-blur transition hover:bg-white/[0.085]">
-                  <ShieldCheck className="text-[#f4cf6a]" size={22} />
-                  <p className="mt-5 font-serif text-2xl font-bold text-white">{item}</p>
+                <div key={item} className="rounded-xl border border-[#0F3B63]/10 bg-white p-5 shadow-[0_16px_36px_rgba(15,59,99,.08)] backdrop-blur transition hover:-translate-y-1 hover:shadow-[0_22px_46px_rgba(15,59,99,.13)]">
+                  <ShieldCheck className="text-[#D4A24C]" size={22} />
+                  <p className="mt-5 font-serif text-2xl font-bold text-[#0F3B63]">{item}</p>
                 </div>
               ))}
             </div>
@@ -688,8 +688,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="presidencia" className="relative overflow-hidden bg-[#26231f] px-5 py-20 text-white sm:px-8 lg:py-28">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_18%,rgba(244,207,106,.16),transparent_30%),linear-gradient(90deg,rgba(18,15,10,.24),transparent_45%,rgba(244,207,106,.08))]" />
+      <section id="presidencia" className="relative overflow-hidden bg-[#0F3B63] px-5 py-20 text-white sm:px-8 lg:py-28">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_18%,rgba(212,162,76,.18),transparent_30%),linear-gradient(90deg,rgba(15,59,99,.22),transparent_45%,rgba(74,134,184,.16))]" />
         <div className="absolute inset-0 opacity-[0.08] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:30px_30px]" />
         <div className="absolute inset-0 opacity-[0.10] [background-image:radial-gradient(circle_at_center,#fff_1.2px,transparent_1.2px)] [background-size:30px_30px]" />
 
@@ -701,10 +701,10 @@ export default function Home() {
             transition={{ duration: 0.85, ease: "easeOut" }}
             className="relative"
           >
-            <div className="absolute -left-6 -top-7 z-20 grid h-16 w-16 place-items-center rounded-xl bg-[#f2a000] text-white shadow-[0_16px_36px_rgba(242,160,0,.28)]">
+            <div className="absolute -left-6 -top-7 z-20 grid h-16 w-16 place-items-center rounded-xl bg-[#D4A24C] text-white shadow-[0_16px_36px_rgba(212,162,76,.30)]">
               <Quote size={32} strokeWidth={3} />
             </div>
-            <div className="relative overflow-hidden rounded-xl border border-white/10 bg-[#11100f] shadow-[16px_16px_0_rgba(242,160,0,.22),0_28px_80px_rgba(0,0,0,.34)]">
+            <div className="relative overflow-hidden rounded-xl border border-white/10 bg-[#082A49] shadow-[16px_16px_0_rgba(212,162,76,.22),0_28px_80px_rgba(0,0,0,.22)]">
               <div className="relative min-h-[520px]">
                 <Image
                   src={portalHomeContent.presidencyImageUrl}
@@ -714,7 +714,7 @@ export default function Home() {
                 />
                 <div className="absolute inset-x-0 bottom-0 h-56 bg-[linear-gradient(0deg,rgba(17,16,15,.96),rgba(17,16,15,0))]" />
                 <div className="absolute bottom-8 left-7">
-                  <p className="text-sm font-black uppercase tracking-[0.14em] text-[#f2a000]">Presidente</p>
+                  <p className="text-sm font-black uppercase tracking-[0.14em] text-[#F8D77B]">Presidente</p>
                   <h3 className="mt-2 text-2xl font-black text-white">{portalHomeContent.presidencyName}</h3>
                 </div>
               </div>
@@ -728,12 +728,12 @@ export default function Home() {
             transition={{ duration: 0.85, ease: "easeOut" }}
             className="max-w-2xl"
           >
-            <span className="inline-flex rounded-full bg-[#f2a000]/16 px-5 py-2 text-sm font-black uppercase tracking-[0.08em] text-[#f2a000]">
+            <span className="inline-flex rounded-full bg-[#D4A24C]/18 px-5 py-2 text-sm font-black uppercase tracking-[0.08em] text-[#F8D77B]">
               {portalHomeContent.presidencyBadge}
             </span>
             <h2 className="mt-8 text-5xl font-black leading-[0.98] text-white sm:text-6xl">
               {portalHomeContent.presidencyTitleLine1} <br />
-              <span className="text-[#f2a000]">{portalHomeContent.presidencyTitleHighlight}</span> {portalHomeContent.presidencyTitleLine2}
+              <span className="text-[#F8D77B]">{portalHomeContent.presidencyTitleHighlight}</span> {portalHomeContent.presidencyTitleLine2}
             </h2>
             <div className="mt-8 space-y-6 text-lg leading-8 text-white/84">
               {portalHomeContent.presidencyParagraphs.map((paragraph, index) => (
@@ -744,7 +744,7 @@ export default function Home() {
             </div>
             <div className="my-9 h-px w-full bg-white/12" />
             <div className="flex items-center gap-4">
-              <div className="grid h-16 w-16 place-items-center rounded-full bg-[#f2a000] text-xl font-black text-white">
+              <div className="grid h-16 w-16 place-items-center rounded-full bg-[#D4A24C] text-xl font-black text-white">
                 {portalHomeContent.presidencyInitials}
               </div>
               <div>
@@ -756,18 +756,18 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="eventos" className="relative overflow-hidden bg-[#120f0a] px-5 py-28 sm:px-8">
+      <section id="eventos" className="relative overflow-hidden bg-white px-5 py-28 sm:px-8">
         <motion.div style={{ y: newsParallaxY }} className="absolute -right-40 top-0 h-[560px] w-[560px] opacity-20 [clip-path:polygon(14%_0,100%_0,86%_100%,0_100%)]">
           <Image src="/assets/congresso-comieadepa.jpg" alt="" fill className="object-cover" />
         </motion.div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_18%,rgba(244,207,106,.16),transparent_28%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_18%,rgba(212,162,76,.16),transparent_28%)]" />
         <div className="relative mx-auto max-w-7xl">
           <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.22em] text-[#f4cf6a]">{portalHomeContent.eventsBadge}</p>
-              <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-white sm:text-5xl">{portalHomeContent.eventsTitle}</h2>
+              <p className="text-sm font-black uppercase tracking-[0.22em] text-[#B8872D]">{portalHomeContent.eventsBadge}</p>
+              <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-[#0F3B63] sm:text-5xl">{portalHomeContent.eventsTitle}</h2>
             </div>
-            <p className="max-w-2xl text-lg leading-8 text-white/62">
+            <p className="max-w-2xl text-lg leading-8 text-[#6B7280]">
               {portalHomeContent.eventsText}
             </p>
           </div>
@@ -776,23 +776,23 @@ export default function Home() {
               [0, 1].map((item) => (
                 <article
                   key={item}
-                  className="flex h-full min-h-[560px] flex-col overflow-hidden rounded-xl bg-white/92 text-[#171006] shadow-[0_18px_38px_rgba(0,0,0,.22)]"
+                  className="flex h-full min-h-[560px] flex-col overflow-hidden rounded-xl bg-[#F4F6F8] text-[#1F2937] shadow-[0_18px_38px_rgba(15,59,99,.10)]"
                 >
-                  <div className="relative h-48 overflow-hidden bg-[#211709]">
-                    <div className="absolute inset-0 animate-pulse bg-[linear-gradient(110deg,#24180c_0%,#4b3518_45%,#24180c_90%)] opacity-90" />
+                  <div className="relative h-48 overflow-hidden bg-[#0F3B63]">
+                    <div className="absolute inset-0 animate-pulse bg-[linear-gradient(110deg,#d8e2ec_0%,#f4f6f8_45%,#d8e2ec_90%)] opacity-90" />
                     <span className="absolute right-4 top-4 h-7 w-32 rounded-md bg-[#00b67a]/30" />
                     <div className="absolute bottom-5 left-5 h-[70px] w-20 rounded-lg bg-white/82 shadow-[0_10px_26px_rgba(0,0,0,.18)]" />
                   </div>
                   <div className="flex flex-1 flex-col p-6">
-                    <div className="h-7 w-4/5 rounded bg-[#171006]/12" />
-                    <div className="mt-3 h-7 w-2/3 rounded bg-[#171006]/12" />
-                    <div className="mt-5 h-4 w-28 rounded bg-[#171006]/10" />
+                    <div className="h-7 w-4/5 rounded bg-[#0F3B63]/12" />
+                    <div className="mt-3 h-7 w-2/3 rounded bg-[#0F3B63]/12" />
+                    <div className="mt-5 h-4 w-28 rounded bg-[#0F3B63]/10" />
                     <div className="mt-8 grid gap-4">
-                      <div className="h-4 w-3/5 rounded bg-[#171006]/10" />
-                      <div className="h-4 w-4/5 rounded bg-[#171006]/10" />
-                      <div className="h-4 w-2/3 rounded bg-[#171006]/10" />
+                      <div className="h-4 w-3/5 rounded bg-[#0F3B63]/10" />
+                      <div className="h-4 w-4/5 rounded bg-[#0F3B63]/10" />
+                      <div className="h-4 w-2/3 rounded bg-[#0F3B63]/10" />
                     </div>
-                    <div className="mt-auto h-12 w-full rounded-full bg-[#171006]/18" />
+                    <div className="mt-auto h-12 w-full rounded-full bg-[#0F3B63]/18" />
                   </div>
                 </article>
               ))}
@@ -803,37 +803,37 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
                 transition={{ duration: 0.55, delay: index * 0.08 }}
-                className="group flex h-full min-h-[560px] flex-col overflow-hidden rounded-xl bg-white text-[#171006] shadow-[0_18px_38px_rgba(0,0,0,.22)] transition hover:-translate-y-2 hover:shadow-[0_26px_54px_rgba(0,0,0,.30)]"
+                className="group flex h-full min-h-[560px] flex-col overflow-hidden rounded-xl bg-white text-[#1F2937] shadow-[0_18px_38px_rgba(15,59,99,.12)] ring-1 ring-[#0F3B63]/8 transition hover:-translate-y-2 hover:shadow-[0_26px_54px_rgba(15,59,99,.18)]"
               >
-                <div className="relative h-48 overflow-hidden bg-[#171006]">
+                <div className="relative h-48 overflow-hidden bg-[#0F3B63]">
                   <Image src={event.image} alt={event.title} fill className="object-cover transition duration-700 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(18,15,10,.28),rgba(18,15,10,.02))]" />
-                  <span className={`absolute right-4 top-4 rounded-md px-3 py-1 text-xs font-black text-white ${event.status === "Em Breve" ? "bg-[#f2a000]" : "bg-[#00b67a]"}`}>
+                  <span className={`absolute right-4 top-4 rounded-md px-3 py-1 text-xs font-black text-white ${event.status === "Em Breve" ? "bg-[#D4A24C]" : "bg-[#0F3B63]"}`}>
                     {event.status}
                   </span>
                   <div className="absolute bottom-5 left-5 rounded-lg bg-white px-4 py-3 shadow-[0_10px_26px_rgba(0,0,0,.18)]">
-                    <p className="text-sm font-semibold text-[#d97a00]">{event.day}</p>
+                    <p className="text-sm font-semibold text-[#B8872D]">{event.day}</p>
                     <p className="text-xl font-black">{event.month}</p>
                   </div>
                 </div>
 
                 <div className="flex flex-1 flex-col p-6">
-                  <h3 className={`text-xl font-black uppercase leading-tight ${event.title === "Treinamento EBD" ? "text-[#d97a00]" : "text-[#171006]"}`}>
+                  <h3 className={`text-xl font-black uppercase leading-tight ${event.title === "Treinamento EBD" ? "text-[#B8872D]" : "text-[#1F2937]"}`}>
                     {event.title}
                   </h3>
-                  <p className="mt-3 text-sm text-[#6a5943]">{event.category}</p>
+                  <p className="mt-3 text-sm text-[#6B7280]">{event.category}</p>
 
-                  <div className="mt-5 grid gap-3 text-sm text-[#3e3427]">
+                  <div className="mt-5 grid gap-3 text-sm text-[#374151]">
                     <span className="inline-flex items-center gap-3">
-                      <Clock size={16} className="text-[#f2a000]" />
+                      <Clock size={16} className="text-[#D4A24C]" />
                       {event.time}
                     </span>
                     <span className="inline-flex items-center gap-3">
-                      <MapPin size={16} className="text-[#f2a000]" />
+                      <MapPin size={16} className="text-[#D4A24C]" />
                       {event.location}
                     </span>
                     <span className="inline-flex items-center gap-3">
-                      <Users size={16} className="text-[#f2a000]" />
+                      <Users size={16} className="text-[#D4A24C]" />
                       {event.attendees}
                     </span>
                   </div>
@@ -845,8 +845,8 @@ export default function Home() {
                     aria-label={`${event.actionLabel} - ${event.title}`}
                     className={`mt-auto inline-flex w-full items-center justify-center gap-3 rounded-full px-5 py-3 text-sm font-black transition ${
                       event.status === "Em Breve"
-                        ? "border border-[#d6b761]/45 bg-[#efe1b6] !text-[#171006] hover:bg-[#f4cf6a]"
-                        : "bg-[#171006] !text-white hover:bg-[#f2a000] hover:!text-[#171006]"
+                        ? "border border-[#D4A24C]/45 bg-[#F4F6F8] !text-[#0F3B63] hover:bg-[#D4A24C] hover:!text-white"
+                        : "bg-[#0F3B63] !text-white hover:bg-[#4A86B8]"
                     }`}
                   >
                     {event.actionLabel}
@@ -859,40 +859,40 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="noticias" className="relative overflow-hidden bg-[#211709] px-5 py-24 sm:px-8">
+      <section id="noticias" className="relative overflow-hidden bg-[#0F3B63] px-5 py-24 sm:px-8">
         <motion.div style={{ y: newsParallaxY }} className="absolute -inset-x-8 -inset-y-24">
           <Image src="/assets/congresso-comieadepa.jpg" alt="" fill className="object-cover opacity-22" />
         </motion.div>
-        <div className="absolute inset-0 bg-[#211709]/76 backdrop-blur-[1px]" />
+        <div className="absolute inset-0 bg-[#0F3B63]/88 backdrop-blur-[1px]" />
         <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.72fr_1fr]">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-[#f4cf6a]">{portalHomeContent.newsBadge}</p>
+            <p className="text-sm font-black uppercase tracking-[0.22em] text-[#F8D77B]">{portalHomeContent.newsBadge}</p>
             <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-white sm:text-5xl">{portalHomeContent.newsTitle}</h2>
           </div>
           <div className="grid gap-4">
             {portalNews.map((post) => (
-              <a key={post.title} href={post.url} className="group flex items-center justify-between gap-5 border border-white/12 bg-[#120f0a]/62 p-6 backdrop-blur-xl transition hover:border-[#f4cf6a]/60 hover:bg-[#120f0a]/82">
+              <a key={post.title} href={post.url} className="group flex items-center justify-between gap-5 rounded-xl border border-white/12 bg-white/10 p-6 shadow-[0_16px_34px_rgba(0,0,0,.14)] backdrop-blur-xl transition hover:-translate-y-1 hover:border-[#D4A24C]/70 hover:bg-white/16">
                 <span>
-                  <span className="text-xs font-black uppercase tracking-[0.2em] text-[#f4cf6a]">{post.category}</span>
+                  <span className="text-xs font-black uppercase tracking-[0.2em] text-[#F8D77B]">{post.category}</span>
                   <span className="mt-2 block font-serif text-2xl font-bold text-white">{post.title}</span>
                 </span>
-                <ArrowRight className="text-[#f4cf6a] transition group-hover:translate-x-2" size={24} />
+                <ArrowRight className="text-[#F8D77B] transition group-hover:translate-x-2" size={24} />
               </a>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-[#120f0a] px-5 py-24 sm:px-8">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_20%,rgba(244,207,106,.14),transparent_28%),radial-gradient(circle_at_86%_78%,rgba(139,47,43,.20),transparent_30%)]" />
-        <div className="absolute inset-0 opacity-[0.055] [background-image:linear-gradient(135deg,#fff_1px,transparent_1px)] [background-size:38px_38px]" />
+      <section className="relative overflow-hidden bg-[#F4F6F8] px-5 py-24 sm:px-8">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_20%,rgba(212,162,76,.18),transparent_28%),radial-gradient(circle_at_86%_78%,rgba(29,90,140,.16),transparent_30%)]" />
+        <div className="absolute inset-0 opacity-[0.20] [background-image:linear-gradient(135deg,rgba(15,59,99,.12)_1px,transparent_1px)] [background-size:38px_38px]" />
         <div className="relative mx-auto max-w-7xl">
           <div className="grid gap-8 lg:grid-cols-[0.82fr_1fr] lg:items-end">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.22em] text-[#f4cf6a]">{portalHomeContent.videosBadge}</p>
-              <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-white sm:text-5xl">{portalHomeContent.videosTitle}</h2>
+              <p className="text-sm font-black uppercase tracking-[0.22em] text-[#B8872D]">{portalHomeContent.videosBadge}</p>
+              <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-[#0F3B63] sm:text-5xl">{portalHomeContent.videosTitle}</h2>
             </div>
-            <p className="max-w-2xl text-lg leading-8 text-white/62">
+            <p className="max-w-2xl text-lg leading-8 text-[#6B7280]">
               {portalHomeContent.videosText}
             </p>
           </div>
@@ -901,7 +901,7 @@ export default function Home() {
             {portalVideos.map((video, index) => (
               <article
                 key={video.id}
-                className={`group relative overflow-hidden border border-white/10 bg-white/[0.055] p-3 shadow-[0_22px_60px_rgba(0,0,0,.22)] backdrop-blur-xl transition hover:-translate-y-2 hover:border-[#f4cf6a]/45 hover:bg-white/[0.075] ${index > 0 ? "hidden sm:block" : ""}`}
+                className={`group relative overflow-hidden rounded-xl border border-[#0F3B63]/10 bg-white p-3 shadow-[0_22px_60px_rgba(15,59,99,.12)] backdrop-blur-xl transition hover:-translate-y-2 hover:border-[#D4A24C]/45 hover:shadow-[0_28px_70px_rgba(15,59,99,.18)] ${index > 0 ? "hidden sm:block" : ""}`}
               >
                 <div className="relative aspect-[9/16] overflow-hidden bg-black">
                   <iframe
@@ -914,10 +914,10 @@ export default function Home() {
                 </div>
                 <div className="flex items-center justify-between px-2 pb-2 pt-4">
                   <div>
-                    <p className="text-xs font-black uppercase tracking-[0.2em] text-[#f4cf6a]">{video.label}</p>
-                    <h3 className="mt-1 font-serif text-xl font-bold text-white">{video.title}</h3>
+                    <p className="text-xs font-black uppercase tracking-[0.2em] text-[#B8872D]">{video.label}</p>
+                    <h3 className="mt-1 font-serif text-xl font-bold text-[#0F3B63]">{video.title}</h3>
                   </div>
-                  <span className="font-serif text-3xl font-black text-white/12">0{index + 1}</span>
+                  <span className="font-serif text-3xl font-black text-[#0F3B63]/12">0{index + 1}</span>
                 </div>
               </article>
             ))}
@@ -926,7 +926,7 @@ export default function Home() {
           <div className="mt-10 text-center">
             <a
               href="/videos"
-              className="inline-flex items-center gap-3 border border-[#f4cf6a]/35 px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-[#f4cf6a] transition hover:-translate-y-1 hover:bg-[#f4cf6a] hover:text-[#171006]"
+              className="inline-flex items-center gap-3 rounded-lg border border-[#D4A24C]/45 bg-white px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-[#0F3B63] shadow-[0_14px_34px_rgba(15,59,99,.10)] transition hover:-translate-y-1 hover:bg-[#0F3B63] hover:text-white"
             >
               {portalHomeContent.videosButtonLabel} <ArrowRight size={18} />
             </a>
@@ -934,16 +934,16 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="departamentos" className="relative overflow-hidden bg-[#f7efd6] px-5 py-24 text-[#171006] sm:px-8">
-        <div className="absolute inset-0 opacity-[0.22] [background-image:linear-gradient(135deg,rgba(139,47,43,.20)_1px,transparent_1px)] [background-size:36px_36px]" />
-        <div className="absolute -right-24 top-0 h-full w-72 skew-x-[-16deg] bg-[#f4cf6a]/42" />
+      <section id="departamentos" className="relative overflow-hidden bg-white px-5 py-24 text-[#1F2937] sm:px-8">
+        <div className="absolute inset-0 opacity-[0.18] [background-image:linear-gradient(135deg,rgba(15,59,99,.14)_1px,transparent_1px)] [background-size:36px_36px]" />
+        <div className="absolute -right-24 top-0 h-full w-72 skew-x-[-16deg] bg-[#D4A24C]/24" />
         <div className="relative mx-auto max-w-7xl">
           <div className="grid gap-8 lg:grid-cols-[0.78fr_1fr] lg:items-end">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.2em] text-[#8b2f2b]">{portalHomeContent.departmentsBadge}</p>
-              <h2 className="mt-5 max-w-3xl font-serif text-4xl font-black leading-[1.03] sm:text-5xl">{portalHomeContent.departmentsTitle}</h2>
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-[#B8872D]">{portalHomeContent.departmentsBadge}</p>
+              <h2 className="mt-5 max-w-3xl font-serif text-4xl font-black leading-[1.03] text-[#0F3B63] sm:text-5xl">{portalHomeContent.departmentsTitle}</h2>
             </div>
-            <p className="max-w-2xl text-lg leading-8 text-[#5a472c]">
+            <p className="max-w-2xl text-lg leading-8 text-[#6B7280]">
               {portalHomeContent.departmentsText}
             </p>
           </div>
@@ -956,7 +956,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
                 transition={{ duration: 0.55, delay: index * 0.08 }}
-                className="group relative min-h-[360px] w-[82vw] shrink-0 snap-start overflow-hidden border border-[#d8c38b] bg-white/62 p-6 shadow-[0_18px_50px_rgba(23,16,6,.08)] backdrop-blur transition hover:-translate-y-2 hover:bg-white/90 sm:w-[360px] lg:w-[305px]"
+                className="group relative min-h-[360px] w-[82vw] shrink-0 snap-start overflow-hidden rounded-xl border border-[#0F3B63]/10 bg-[#F4F6F8] p-6 shadow-[0_18px_50px_rgba(15,59,99,.10)] backdrop-blur transition hover:-translate-y-2 hover:bg-white hover:shadow-[0_26px_64px_rgba(15,59,99,.16)] sm:w-[360px] lg:w-[305px]"
               >
                 <div
                   className="absolute -right-10 top-0 h-full w-24 skew-x-[-16deg] opacity-20 transition group-hover:opacity-35"
@@ -975,10 +975,10 @@ export default function Home() {
                     className="max-h-40 w-auto max-w-full object-contain drop-shadow-[0_18px_22px_rgba(23,16,6,.18)] transition duration-500 group-hover:scale-105"
                   />
                 </div>
-                <div className="relative mt-6 border-t border-[#d8c38b]/70 pt-5">
-                  <p className="text-xs font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Departamento</p>
-                  <h3 className="mt-2 font-serif text-3xl font-black">{department.title}</h3>
-                  <p className="mt-4 leading-7 text-[#5a472c]">{department.text}</p>
+                <div className="relative mt-6 border-t border-[#0F3B63]/10 pt-5">
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-[#B8872D]">Departamento</p>
+                  <h3 className="mt-2 font-serif text-3xl font-black text-[#0F3B63]">{department.title}</h3>
+                  <p className="mt-4 leading-7 text-[#6B7280]">{department.text}</p>
                 </div>
               </motion.a>
             ))}
@@ -986,8 +986,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-[#17130f] px-5 py-24 text-white sm:px-8">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_12%,rgba(139,47,43,.18),transparent_28%),linear-gradient(180deg,#17130f_0%,#211c18_54%,#17130f_100%)]" />
+      <section className="relative overflow-hidden bg-[#0F3B63] px-5 py-24 text-white sm:px-8">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_12%,rgba(212,162,76,.18),transparent_28%),linear-gradient(180deg,#0F3B63_0%,#1D5A8C_54%,#0F3B63_100%)]" />
         <div className="absolute inset-0 opacity-[0.06] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:34px_34px]" />
 
         <div className="relative mx-auto max-w-7xl">
@@ -998,7 +998,7 @@ export default function Home() {
             transition={{ duration: 0.65 }}
             className="mx-auto max-w-3xl text-center"
           >
-            <span className="inline-flex items-center gap-2 rounded-full bg-[#e62b2b]/18 px-5 py-2 text-sm font-black text-[#ff6b6b]">
+            <span className="inline-flex items-center gap-2 rounded-full bg-[#D4A24C]/18 px-5 py-2 text-sm font-black text-[#F8D77B]">
               <Youtube size={16} />
               {portalHomeContent.eventVideosBadge}
             </span>
@@ -1016,19 +1016,19 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
                 transition={{ duration: 0.6, delay: index * 0.12 }}
-                className="group overflow-hidden rounded-xl bg-[#2a2522] shadow-[0_24px_60px_rgba(0,0,0,.28)] transition hover:-translate-y-2"
+                className="group overflow-hidden rounded-xl bg-white/10 shadow-[0_24px_60px_rgba(0,0,0,.20)] ring-1 ring-white/12 transition hover:-translate-y-2"
               >
                 <a href={video.url} target="_blank" rel="noreferrer" className="block">
                   <div className="relative h-72 overflow-hidden bg-black">
                     <Image src={video.image} alt={video.title} fill className="object-cover opacity-72 transition duration-700 group-hover:scale-105 group-hover:opacity-88" />
                     <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(0,0,0,.42),rgba(0,0,0,.08))]" />
                     <span className="absolute bottom-5 right-5 rounded bg-black/80 px-3 py-1 text-xs font-black uppercase text-white">Live</span>
-                    <span className="absolute left-1/2 top-1/2 grid h-20 w-20 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-[#e62b2b] text-white shadow-[0_18px_44px_rgba(230,43,43,.30)] transition group-hover:scale-110">
+                    <span className="absolute left-1/2 top-1/2 grid h-20 w-20 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-[#D4A24C] text-white shadow-[0_18px_44px_rgba(212,162,76,.32)] transition group-hover:scale-110">
                       <Play size={34} fill="currentColor" />
                     </span>
                   </div>
                   <div className="grid grid-cols-[48px_1fr] gap-5 p-7">
-                    <div className="grid h-12 w-12 place-items-center rounded-full bg-[#e62b2b]/22 text-[#ff4c4c]">
+                    <div className="grid h-12 w-12 place-items-center rounded-full bg-[#D4A24C]/22 text-[#F8D77B]">
                       <Youtube size={22} />
                     </div>
                     <div>
@@ -1056,7 +1056,7 @@ export default function Home() {
               href={portalConfig.youtubeChannelUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-3 rounded-full bg-[#e62b2b] px-8 py-4 text-sm font-black !text-white transition hover:-translate-y-1 hover:bg-[#ff3838]"
+              className="inline-flex items-center gap-3 rounded-full bg-[#D4A24C] px-8 py-4 text-sm font-black !text-white transition hover:-translate-y-1 hover:bg-[#B8872D]"
             >
               <Youtube size={18} />
               {portalHomeContent.eventVideosButtonLabel}
@@ -1069,46 +1069,46 @@ export default function Home() {
         </div>
       </section>
 
-      <footer id="contato" className="relative overflow-hidden border-t border-[#f4cf6a]/18 bg-[#120f0a] px-5 py-12 text-white sm:px-8">
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(244,207,106,.10),transparent_34%,rgba(139,47,43,.16))]" />
-        <div className="absolute inset-0 opacity-[0.07] [background-image:linear-gradient(135deg,#f4cf6a_1px,transparent_1px)] [background-size:34px_34px]" />
-        <div className="absolute -right-16 top-0 h-full w-72 skew-x-[-16deg] bg-[#8b2f2b]/20" />
+      <footer id="contato" className="relative overflow-hidden border-t border-[#D4A24C]/24 bg-[#0F3B63] px-5 py-12 text-white sm:px-8">
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(212,162,76,.12),transparent_34%,rgba(74,134,184,.20))]" />
+        <div className="absolute inset-0 opacity-[0.08] [background-image:linear-gradient(135deg,#D4A24C_1px,transparent_1px)] [background-size:34px_34px]" />
+        <div className="absolute -right-16 top-0 h-full w-72 skew-x-[-16deg] bg-[#1D5A8C]/28" />
         <div className="relative mx-auto grid max-w-7xl gap-10 md:grid-cols-[1.1fr_0.7fr_1fr_0.95fr]">
           <div className="flex items-center justify-center md:justify-start">
             <Image src="/assets/logo-comieadepa.png" alt="Brasão COMIEADEPA" width={150} height={150} className="h-36 w-36 object-contain drop-shadow-[0_18px_24px_rgba(0,0,0,.22)]" />
           </div>
 
           <nav className="grid gap-3 text-sm font-semibold text-white/92">
-            <a href="#" className="w-fit border-b-2 border-[#f4cf6a] pb-1 text-[#f4cf6a]">Home</a>
-            <a href="#a-comieadepa" className="transition hover:text-[#ffe28a]">Sobre Nós</a>
-            <a href="#presidencia" className="transition hover:text-[#ffe28a]">Institucional</a>
-            <a href="#eventos" className="transition hover:text-[#ffe28a]">Mídias</a>
-            <a href="#noticias" className="transition hover:text-[#ffe28a]">Notícias</a>
-            <a href="#contato" className="transition hover:text-[#ffe28a]">Contatos</a>
-            <a href="/privacidade" className="transition hover:text-[#ffe28a]">Privacidade</a>
-            <a href="/termos" className="transition hover:text-[#ffe28a]">Termos de Uso</a>
+            <a href="#" className="w-fit border-b-2 border-[#D4A24C] pb-1 text-[#F8D77B]">Home</a>
+            <a href="#a-comieadepa" className="transition hover:text-[#F8D77B]">Sobre Nós</a>
+            <a href="#presidencia" className="transition hover:text-[#F8D77B]">Institucional</a>
+            <a href="#eventos" className="transition hover:text-[#F8D77B]">Mídias</a>
+            <a href="#noticias" className="transition hover:text-[#F8D77B]">Notícias</a>
+            <a href="#contato" className="transition hover:text-[#F8D77B]">Contatos</a>
+            <a href="/privacidade" className="transition hover:text-[#F8D77B]">Privacidade</a>
+            <a href="/termos" className="transition hover:text-[#F8D77B]">Termos de Uso</a>
           </nav>
 
           <div>
             <h3 className="text-sm font-black">Contato</h3>
             <div className="mt-4 grid gap-4 text-sm text-white/92">
               <span className="inline-flex items-start gap-3">
-                <MapPin size={18} className="mt-0.5 shrink-0 text-[#f4cf6a]" />
+                <MapPin size={18} className="mt-0.5 shrink-0 text-[#F8D77B]" />
                 {portalConfig.contactAddress}
               </span>
               <span className="inline-flex items-center gap-3">
-                <Phone size={18} className="shrink-0 text-[#f4cf6a]" />
+                <Phone size={18} className="shrink-0 text-[#F8D77B]" />
                 {portalConfig.contactPhone}
               </span>
               <span className="inline-flex items-center gap-3">
-                <Clock size={18} className="shrink-0 text-[#f4cf6a]" />
+                <Clock size={18} className="shrink-0 text-[#F8D77B]" />
                 {portalConfig.contactHours}
               </span>
               <span className="inline-flex items-center gap-3">
-                <Mail size={18} className="shrink-0 text-[#f4cf6a]" />
+                <Mail size={18} className="shrink-0 text-[#F8D77B]" />
                 {portalConfig.contactEmail}
               </span>
-              <a href={`mailto:${portalConfig.contactEmail}`} className="w-fit border border-[#f4cf6a]/70 px-7 py-2 text-sm font-semibold text-[#f4cf6a] transition hover:bg-[#f4cf6a] hover:text-[#171006]">
+              <a href={`mailto:${portalConfig.contactEmail}`} className="w-fit rounded-lg border border-[#D4A24C]/70 px-7 py-2 text-sm font-semibold text-[#F8D77B] transition hover:bg-[#D4A24C] hover:text-white">
                 Fale conosco
               </a>
             </div>
@@ -1116,16 +1116,16 @@ export default function Home() {
 
           <div>
             <h3 className="text-sm font-black">
-              Siga-nos nas <span className="text-[#f4cf6a]">redes sociais</span>
+              Siga-nos nas <span className="text-[#F8D77B]">redes sociais</span>
             </h3>
             <div className="mt-5 flex gap-7">
-              <a href={portalConfig.facebookUrl || "#"} target={portalConfig.facebookUrl ? "_blank" : undefined} rel={portalConfig.facebookUrl ? "noreferrer" : undefined} aria-label="Facebook" className="grid h-9 w-9 place-items-center bg-[#f4cf6a] text-[#171006] transition hover:-translate-y-1 hover:bg-white">
+              <a href={portalConfig.facebookUrl || "#"} target={portalConfig.facebookUrl ? "_blank" : undefined} rel={portalConfig.facebookUrl ? "noreferrer" : undefined} aria-label="Facebook" className="grid h-9 w-9 place-items-center rounded-lg bg-[#D4A24C] text-white transition hover:-translate-y-1 hover:bg-white hover:text-[#0F3B63]">
                 <Facebook size={20} />
               </a>
-              <a href={portalConfig.instagramUrl || "#"} target={portalConfig.instagramUrl ? "_blank" : undefined} rel={portalConfig.instagramUrl ? "noreferrer" : undefined} aria-label="Instagram" className="grid h-9 w-9 place-items-center bg-[#f4cf6a] text-[#171006] transition hover:-translate-y-1 hover:bg-white">
+              <a href={portalConfig.instagramUrl || "#"} target={portalConfig.instagramUrl ? "_blank" : undefined} rel={portalConfig.instagramUrl ? "noreferrer" : undefined} aria-label="Instagram" className="grid h-9 w-9 place-items-center rounded-lg bg-[#D4A24C] text-white transition hover:-translate-y-1 hover:bg-white hover:text-[#0F3B63]">
                 <Instagram size={20} />
               </a>
-              <a href={portalConfig.youtubeChannelUrl} target="_blank" rel="noreferrer" aria-label="YouTube" className="grid h-9 w-9 place-items-center bg-[#f4cf6a] text-[#171006] transition hover:-translate-y-1 hover:bg-white">
+              <a href={portalConfig.youtubeChannelUrl} target="_blank" rel="noreferrer" aria-label="YouTube" className="grid h-9 w-9 place-items-center rounded-lg bg-[#D4A24C] text-white transition hover:-translate-y-1 hover:bg-white hover:text-[#0F3B63]">
                 <Youtube size={20} />
               </a>
             </div>
@@ -1340,7 +1340,7 @@ function getDepartmentAccent(slug: string) {
     qgu: "#425f32",
   };
 
-  return accents[slug] ?? "#8b2f2b";
+  return accents[slug] ?? "#0F3B63";
 }
 
 function mapSupabaseEventToCard(event: SupabaseEvent): EventCard {

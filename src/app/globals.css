@@ -1,15 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #08111f;
-  --foreground: #f7f1e7;
-  --navy: #08111f;
-  --navy-soft: #10213a;
-  --gold: #c8a45d;
-  --gold-soft: #e4c67b;
-  --pearl: #f7f1e7;
-  --stone: #b9b0a4;
-  --charcoal: #05070b;
+  --background: #ffffff;
+  --foreground: #1f2937;
+  --blue: #0f3b63;
+  --blue-soft: #1d5a8c;
+  --blue-hover: #4a86b8;
+  --gold: #d4a24c;
+  --gold-dark: #b8872d;
+  --surface: #f4f6f8;
+  --muted: #6b7280;
+  --charcoal: #1f2937;
 }
 
 * {
@@ -40,5 +41,5 @@ select {
 }
 
 ::selection {
-  background: rgba(200, 164, 93, 0.35);
+  background: rgba(212, 162, 76, 0.32);
 }

@@ -51,23 +51,23 @@ export default async function VideosPage() {
   const otherVideos = portalVideos.slice(1);
 
   return (
-    <main className="min-h-screen bg-[#120f0a] text-[#fff7e5]">
+    <main className="min-h-screen bg-white text-[#1F2937]">
       <section className="relative overflow-hidden px-5 py-16 sm:px-8">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(244,207,106,.16),transparent_28%),radial-gradient(circle_at_88%_70%,rgba(139,47,43,.24),transparent_30%)]" />
-        <div className="absolute inset-0 opacity-[0.055] [background-image:linear-gradient(135deg,#fff_1px,transparent_1px)] [background-size:38px_38px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(212,162,76,.18),transparent_28%),radial-gradient(circle_at_88%_70%,rgba(29,90,140,.16),transparent_30%)]" />
+        <div className="absolute inset-0 opacity-[0.18] [background-image:linear-gradient(135deg,rgba(15,59,99,.12)_1px,transparent_1px)] [background-size:38px_38px]" />
         <div className="relative mx-auto max-w-6xl">
-          <Link href="/" className="text-sm font-black uppercase tracking-[0.18em] text-[#f4cf6a] transition hover:text-white">
+          <Link href="/" className="text-sm font-black uppercase tracking-[0.18em] text-[#0F3B63] transition hover:text-[#4A86B8]">
             COMIEADEPA
           </Link>
           <div className="mt-10 grid gap-8 lg:grid-cols-[0.75fr_1fr] lg:items-end">
             <div>
-              <p className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.22em] text-[#f4cf6a]">
+              <p className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.22em] text-[#B8872D]">
                 <Youtube size={18} />
                 Vídeos
               </p>
-              <h1 className="mt-5 font-serif text-4xl font-black leading-[1.04] text-white sm:text-6xl">A convenção em movimento.</h1>
+              <h1 className="mt-5 font-serif text-4xl font-black leading-[1.04] text-[#0F3B63] sm:text-6xl">A convenção em movimento.</h1>
             </div>
-            <p className="text-lg leading-8 text-white/62">
+            <p className="text-lg leading-8 text-[#6B7280]">
               Registros oficiais, shorts, transmissões e coberturas publicados pela equipe de mídia da COMIEADEPA.
             </p>
           </div>
@@ -81,22 +81,22 @@ export default async function VideosPage() {
               href={`https://www.youtube.com/watch?v=${featuredVideo.youtubeId}`}
               target="_blank"
               rel="noreferrer"
-              className="group grid overflow-hidden border border-[#d8b85f]/35 bg-white/[0.055] shadow-[0_26px_80px_rgba(0,0,0,.28)] transition hover:-translate-y-1 hover:border-[#f4cf6a]/70 lg:grid-cols-[1.1fr_0.9fr]"
+              className="group grid overflow-hidden rounded-xl border border-[#0F3B63]/10 bg-[#F4F6F8] shadow-[0_26px_80px_rgba(15,59,99,.12)] transition hover:-translate-y-1 hover:border-[#D4A24C]/70 hover:bg-white lg:grid-cols-[1.1fr_0.9fr]"
             >
               <VideoThumbnail video={featuredVideo} featured />
               <div className="flex flex-col justify-center p-7 sm:p-10">
-                <span className="text-xs font-black uppercase tracking-[0.18em] text-[#f4cf6a]">{featuredVideo.department}</span>
-                <h2 className="mt-4 font-serif text-3xl font-black leading-tight text-white sm:text-5xl">{featuredVideo.titulo}</h2>
-                <p className="mt-6 max-w-xl text-base leading-7 text-white/58">
+                <span className="text-xs font-black uppercase tracking-[0.18em] text-[#B8872D]">{featuredVideo.department}</span>
+                <h2 className="mt-4 font-serif text-3xl font-black leading-tight text-[#0F3B63] sm:text-5xl">{featuredVideo.titulo}</h2>
+                <p className="mt-6 max-w-xl text-base leading-7 text-[#6B7280]">
                   Conteúdo em destaque no canal oficial. Acompanhe a cobertura completa e compartilhe com sua igreja.
                 </p>
-                <span className="mt-8 inline-flex w-fit items-center gap-3 bg-[#f4cf6a] px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-[#171006]">
+                <span className="mt-8 inline-flex w-fit items-center gap-3 rounded-lg bg-[#0F3B63] px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-white">
                   Assistir agora <ArrowRight size={18} />
                 </span>
               </div>
             </a>
           ) : (
-            <div className="border border-white/12 bg-white/[0.055] p-8 text-white/62">
+            <div className="rounded-xl border border-[#0F3B63]/10 bg-[#F4F6F8] p-8 text-[#6B7280]">
               Nenhum vídeo publicado no momento. Assim que a equipe cadastrar vídeos ativos no painel, esta página será atualizada automaticamente.
             </div>
           )}
@@ -109,16 +109,16 @@ export default async function VideosPage() {
                   href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="group overflow-hidden border border-white/12 bg-white/[0.055] transition hover:-translate-y-1 hover:border-[#f4cf6a]/55"
+                  className="group overflow-hidden rounded-xl border border-[#0F3B63]/10 bg-[#F4F6F8] shadow-[0_18px_50px_rgba(15,59,99,.10)] transition hover:-translate-y-1 hover:bg-white hover:shadow-[0_24px_60px_rgba(15,59,99,.16)]"
                 >
                   <VideoThumbnail video={video} />
                   <div className="p-5">
                     <div className="flex items-center justify-between gap-3">
-                      <span className="text-[0.68rem] font-black uppercase tracking-[0.16em] text-[#f4cf6a]">{video.tipo}</span>
-                      {video.destaqueHome ? <span className="bg-[#f4cf6a] px-2 py-1 text-[0.62rem] font-black uppercase tracking-[0.12em] text-[#171006]">Home</span> : null}
+                      <span className="text-[0.68rem] font-black uppercase tracking-[0.16em] text-[#B8872D]">{video.tipo}</span>
+                      {video.destaqueHome ? <span className="rounded bg-[#D4A24C] px-2 py-1 text-[0.62rem] font-black uppercase tracking-[0.12em] text-white">Home</span> : null}
                     </div>
-                    <h3 className="mt-3 font-serif text-2xl font-black leading-tight text-white">{video.titulo}</h3>
-                    <p className="mt-3 text-sm font-semibold uppercase tracking-[0.12em] text-white/42">{video.department}</p>
+                    <h3 className="mt-3 font-serif text-2xl font-black leading-tight text-[#0F3B63]">{video.titulo}</h3>
+                    <p className="mt-3 text-sm font-semibold uppercase tracking-[0.12em] text-[#6B7280]">{video.department}</p>
                   </div>
                 </a>
               ))}
@@ -132,18 +132,18 @@ export default async function VideosPage() {
 
 function VideoThumbnail({ video, featured = false }: { video: PortalVideo; featured?: boolean }) {
   return (
-    <div className={`relative bg-[#171006] ${featured ? "aspect-video lg:min-h-[420px]" : "aspect-video"}`}>
+    <div className={`relative bg-[#0F3B63] ${featured ? "aspect-video lg:min-h-[420px]" : "aspect-video"}`}>
       <div
         className="absolute inset-0 bg-cover bg-center opacity-72 transition duration-500 group-hover:scale-105 group-hover:opacity-90"
         style={{ backgroundImage: `url(${video.thumbnailUrl})` }}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#120f0a]/72 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0F3B63]/72 via-transparent to-transparent" />
       <span className="absolute inset-0 grid place-items-center">
         <span className="grid h-16 w-16 place-items-center rounded-full bg-[#ed1d24] text-white shadow-[0_18px_42px_rgba(0,0,0,.38)]">
           <Play size={24} fill="currentColor" />
         </span>
       </span>
-      <span className="absolute left-4 top-4 bg-[#120f0a]/80 px-3 py-1 text-[0.68rem] font-black uppercase tracking-[0.14em] text-[#f4cf6a] backdrop-blur">
+      <span className="absolute left-4 top-4 rounded-md bg-[#0F3B63]/85 px-3 py-1 text-[0.68rem] font-black uppercase tracking-[0.14em] text-[#F8D77B] backdrop-blur">
         {video.tipo}
       </span>
     </div>

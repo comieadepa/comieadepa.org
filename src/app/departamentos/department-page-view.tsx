@@ -43,9 +43,9 @@ type DepartmentPageViewProps = {
 
 export function DepartmentPageView({ department, backHref = "/departamentos", preview = false }: DepartmentPageViewProps) {
   return (
-    <main className="min-h-screen bg-[#120f0a] text-[#fff7e5]">
+    <main className="min-h-screen bg-white text-[#1F2937]">
       {preview ? (
-        <div className="bg-[#f4cf6a] px-5 py-3 text-center text-xs font-black uppercase tracking-[0.16em] text-[#171006]">
+        <div className="bg-[#0F3B63] px-5 py-3 text-center text-xs font-black uppercase tracking-[0.16em] text-white">
           Prévia administrativa
         </div>
       ) : null}
@@ -53,36 +53,36 @@ export function DepartmentPageView({ department, backHref = "/departamentos", pr
         {department.bannerUrl ? <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: `url(${department.bannerUrl})` }} /> : null}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_18%,rgba(244,207,106,.18),transparent_28%)]" />
         <div className="relative mx-auto max-w-6xl">
-          <Link href={backHref} className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.16em] text-[#f4cf6a] transition hover:text-white">
+          <Link href={backHref} className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.16em] text-[#0F3B63] transition hover:text-[#4A86B8]">
             <ArrowLeft size={18} />
             Departamentos
           </Link>
 
           <div className="mt-12 grid gap-10 lg:grid-cols-[0.7fr_1fr] lg:items-end">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.22em] text-[#f4cf6a]">{department.nome}</p>
-              <h1 className="mt-5 font-serif text-4xl font-black leading-[1.04] text-white sm:text-6xl">{department.titulo}</h1>
+              <p className="text-sm font-black uppercase tracking-[0.22em] text-[#B8872D]">{department.nome}</p>
+              <h1 className="mt-5 font-serif text-4xl font-black leading-[1.04] text-[#0F3B63] sm:text-6xl">{department.titulo}</h1>
             </div>
-            <p className="text-lg leading-8 text-white/66">{department.resumo}</p>
+            <p className="text-lg leading-8 text-[#6B7280]">{department.resumo}</p>
           </div>
         </div>
       </section>
 
       <section className="px-5 pb-20 sm:px-8">
         <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1fr_360px]">
-          <article className="border border-white/12 bg-white/[0.055] p-7 sm:p-10">
-            <div className="space-y-6 text-lg leading-8 text-white/72">
+          <article className="rounded-xl border border-[#0F3B63]/10 bg-[#F4F6F8] p-7 shadow-[0_18px_50px_rgba(15,59,99,.10)] sm:p-10">
+            <div className="space-y-6 text-lg leading-8 text-[#6B7280]">
               {renderContent(department.conteudo || department.resumo)}
             </div>
           </article>
 
-          <aside className="h-fit border border-[#d8b85f]/40 bg-[#f4cf6a] p-7 text-[#171006]">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Canal oficial</p>
+          <aside className="h-fit rounded-xl border border-[#0F3B63]/10 bg-[#F4F6F8] p-7 text-[#1F2937] shadow-[0_18px_50px_rgba(15,59,99,.10)]">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-[#B8872D]">Canal oficial</p>
             <h2 className="mt-4 font-serif text-3xl font-black">{department.nome}</h2>
             <p className="mt-4 leading-7 text-[#4c391e]">Conteúdo editável pelo painel administrativo para manter a comunicação do departamento sempre atualizada.</p>
-            {department.contactName ? <p className="mt-5 text-sm font-black uppercase tracking-[0.12em] text-[#8b2f2b]">{department.contactName}</p> : null}
+            {department.contactName ? <p className="mt-5 text-sm font-black uppercase tracking-[0.12em] text-[#0F3B63]">{department.contactName}</p> : null}
             {department.contactWhatsapp ? (
-              <a href={`https://wa.me/${onlyDigits(department.contactWhatsapp)}`} target="_blank" rel="noreferrer" className="mt-7 inline-flex items-center gap-3 bg-[#171006] px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-white">
+              <a href={`https://wa.me/${onlyDigits(department.contactWhatsapp)}`} target="_blank" rel="noreferrer" className="mt-7 inline-flex items-center gap-3 rounded-lg bg-[#0F3B63] px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-white">
                 Falar com equipe <ArrowRight size={18} />
               </a>
             ) : null}
@@ -93,22 +93,22 @@ export function DepartmentPageView({ department, backHref = "/departamentos", pr
       </section>
 
       {department.relatedPosts?.length || department.relatedVideos?.length ? (
-        <section className="border-t border-white/10 px-5 pb-20 sm:px-8">
+        <section className="border-t border-[#0F3B63]/10 px-5 pb-20 sm:px-8">
           <div className="mx-auto max-w-6xl">
             <div className="grid gap-10 lg:grid-cols-[0.8fr_1fr]">
               {department.relatedPosts?.length ? (
                 <div>
-                  <p className="text-xs font-black uppercase tracking-[0.2em] text-[#f4cf6a]">Notícias</p>
-                  <h2 className="mt-4 font-serif text-3xl font-black text-white">Atualizações do departamento.</h2>
+                  <p className="text-xs font-black uppercase tracking-[0.2em] text-[#B8872D]">Notícias</p>
+                  <h2 className="mt-4 font-serif text-3xl font-black text-[#0F3B63]">Atualizações do departamento.</h2>
                   <div className="mt-7 grid gap-4">
                     {department.relatedPosts.map((post) => (
-                      <Link key={post.id} href={`/noticias/${post.slug}`} className="group border border-white/12 bg-white/[0.055] p-5 transition hover:-translate-y-1 hover:border-[#f4cf6a]/50">
-                        <span className="inline-flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.16em] text-[#f4cf6a]">
+                      <Link key={post.id} href={`/noticias/${post.slug}`} className="group rounded-xl border border-[#0F3B63]/10 bg-[#F4F6F8] p-5 transition hover:-translate-y-1 hover:bg-white">
+                        <span className="inline-flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.16em] text-[#B8872D]">
                           <CalendarDays size={14} />
                           {formatDate(post.publicadoEm)}
                         </span>
-                        <h3 className="mt-3 font-serif text-2xl font-black leading-tight text-white">{post.titulo}</h3>
-                        {post.resumo ? <p className="mt-3 line-clamp-2 text-sm leading-6 text-white/58">{post.resumo}</p> : null}
+                        <h3 className="mt-3 font-serif text-2xl font-black leading-tight text-[#0F3B63]">{post.titulo}</h3>
+                        {post.resumo ? <p className="mt-3 line-clamp-2 text-sm leading-6 text-[#6B7280]">{post.resumo}</p> : null}
                       </Link>
                     ))}
                   </div>
@@ -117,8 +117,8 @@ export function DepartmentPageView({ department, backHref = "/departamentos", pr
 
               {department.relatedVideos?.length ? (
                 <div>
-                  <p className="text-xs font-black uppercase tracking-[0.2em] text-[#f4cf6a]">Vídeos</p>
-                  <h2 className="mt-4 font-serif text-3xl font-black text-white">Registros em movimento.</h2>
+                  <p className="text-xs font-black uppercase tracking-[0.2em] text-[#B8872D]">Vídeos</p>
+                  <h2 className="mt-4 font-serif text-3xl font-black text-[#0F3B63]">Registros em movimento.</h2>
                   <div className="mt-7 grid gap-4 sm:grid-cols-2">
                     {department.relatedVideos.map((video) => (
                       <a
@@ -126,22 +126,22 @@ export function DepartmentPageView({ department, backHref = "/departamentos", pr
                         href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="group overflow-hidden border border-white/12 bg-white/[0.055] transition hover:-translate-y-1 hover:border-[#f4cf6a]/50"
+                        className="group overflow-hidden rounded-xl border border-[#0F3B63]/10 bg-[#F4F6F8] transition hover:-translate-y-1 hover:bg-white"
                       >
-                        <div className="relative aspect-video bg-[#171006]">
+                        <div className="relative aspect-video bg-[#0F3B63]">
                           <div
                             className="h-full w-full bg-cover bg-center opacity-70 transition group-hover:scale-105 group-hover:opacity-90"
                             style={{ backgroundImage: `url(https://i.ytimg.com/vi/${video.youtubeId}/hqdefault.jpg)` }}
                           />
                           <span className="absolute inset-0 grid place-items-center">
-                            <span className="grid h-14 w-14 place-items-center rounded-full bg-[#f4cf6a] text-[#171006] shadow-[0_16px_36px_rgba(0,0,0,.35)]">
+                            <span className="grid h-14 w-14 place-items-center rounded-full bg-[#D4A24C] text-white shadow-[0_16px_36px_rgba(0,0,0,.25)]">
                               <Play size={22} fill="currentColor" />
                             </span>
                           </span>
                         </div>
                         <div className="p-5">
-                          <span className="text-[0.68rem] font-black uppercase tracking-[0.16em] text-[#f4cf6a]">{video.tipo}</span>
-                          <h3 className="mt-2 font-serif text-xl font-black leading-tight text-white">{video.titulo}</h3>
+                          <span className="text-[0.68rem] font-black uppercase tracking-[0.16em] text-[#B8872D]">{video.tipo}</span>
+                          <h3 className="mt-2 font-serif text-xl font-black leading-tight text-[#0F3B63]">{video.titulo}</h3>
                         </div>
                       </a>
                     ))}
@@ -174,8 +174,8 @@ function DepartmentLinks({ title, icon, links }: { title: string; icon: "link" |
   const Icon = icon === "file" ? FileText : LinkIcon;
 
   return (
-    <div className="mt-7 border-t border-[#171006]/15 pt-6">
-      <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-[#8b2f2b]">
+    <div className="mt-7 border-t border-[#0F3B63]/15 pt-6">
+      <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-[#B8872D]">
         <Icon size={15} />
         {title}
       </p>
@@ -186,7 +186,7 @@ function DepartmentLinks({ title, icon, links }: { title: string; icon: "link" |
             href={link.url}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center justify-between gap-3 border border-[#171006]/15 bg-white/32 px-4 py-3 text-sm font-black text-[#171006] transition hover:border-[#171006]/35 hover:bg-white/55"
+            className="flex items-center justify-between gap-3 rounded-lg border border-[#0F3B63]/15 bg-white px-4 py-3 text-sm font-black text-[#0F3B63] transition hover:border-[#0F3B63]/35 hover:bg-[#F4F6F8]"
           >
             <span>{link.label}</span>
             <ExternalLink size={15} />

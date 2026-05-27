@@ -27,17 +27,17 @@ export default async function DepartmentsIndexPage() {
   const departments = mergeDepartments(cmsDepartments);
 
   return (
-    <main className="min-h-screen bg-[#f7efd6] px-5 py-16 text-[#171006] sm:px-8">
+    <main className="min-h-screen bg-white px-5 py-16 text-[#1F2937] sm:px-8">
       <section className="mx-auto max-w-6xl">
-        <Link href="/" className="text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b] transition hover:text-[#171006]">
+        <Link href="/" className="text-sm font-black uppercase tracking-[0.18em] text-[#0F3B63] transition hover:text-[#4A86B8]">
           COMIEADEPA
         </Link>
         <div className="mt-10 grid gap-8 lg:grid-cols-[0.75fr_1fr] lg:items-end">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-[#8b2f2b]">Departamentos</p>
-            <h1 className="mt-5 font-serif text-4xl font-black leading-[1.04] sm:text-6xl">Conselhos, comissões e departamentos.</h1>
+            <p className="text-sm font-black uppercase tracking-[0.22em] text-[#B8872D]">Departamentos</p>
+            <h1 className="mt-5 font-serif text-4xl font-black leading-[1.04] text-[#0F3B63] sm:text-6xl">Conselhos, comissões e departamentos.</h1>
           </div>
-          <p className="text-lg leading-8 text-[#5a472c]">
+          <p className="text-lg leading-8 text-[#6B7280]">
             Uma estrutura viva de serviço, formação e cuidado para apoiar igrejas, ministros, famílias e juventude em todo o território paraense.
           </p>
         </div>
@@ -47,15 +47,15 @@ export default async function DepartmentsIndexPage() {
             <Link
               key={department.slug}
               href={`/departamentos/${department.slug}`}
-              className="group flex min-h-[280px] flex-col justify-between border border-[#d8c38b] bg-white/62 p-7 shadow-[0_18px_50px_rgba(23,16,6,.08)] transition hover:-translate-y-1 hover:bg-white"
+              className="group flex min-h-[280px] flex-col justify-between rounded-xl border border-[#0F3B63]/10 bg-[#F4F6F8] p-7 shadow-[0_18px_50px_rgba(15,59,99,.10)] transition hover:-translate-y-1 hover:bg-white hover:shadow-[0_24px_60px_rgba(15,59,99,.16)]"
             >
               <div>
-                <span className="text-xs font-black uppercase tracking-[0.2em] text-[#8b2f2b]">Departamento</span>
-                <h2 className="mt-5 font-serif text-3xl font-black leading-tight">{department.nome}</h2>
-                <p className="mt-4 text-lg font-semibold leading-7 text-[#312411]">{department.titulo}</p>
-                <p className="mt-4 text-base leading-7 text-[#5a472c]">{department.resumo}</p>
+                <span className="text-xs font-black uppercase tracking-[0.2em] text-[#B8872D]">Departamento</span>
+                <h2 className="mt-5 font-serif text-3xl font-black leading-tight text-[#0F3B63]">{department.nome}</h2>
+                <p className="mt-4 text-lg font-semibold leading-7 text-[#1F2937]">{department.titulo}</p>
+                <p className="mt-4 text-base leading-7 text-[#6B7280]">{department.resumo}</p>
               </div>
-              <span className="mt-8 inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.16em] text-[#8b2f2b]">
+              <span className="mt-8 inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.16em] text-[#0F3B63]">
                 Acessar página <ArrowRight size={18} className="transition group-hover:translate-x-1" />
               </span>
             </Link>
