@@ -24,6 +24,6 @@ export async function selectPublicRows<TResult>(table: string, query: string) {
   return (await response.json()) as TResult[];
 }
 
-function getReadSchemaHeaders(table: string) {
+function getReadSchemaHeaders(table: string): Record<string, string> {
   return table.startsWith("cms_") || table.startsWith("v_") ? { "Accept-Profile": siteSchema } : {};
 }

@@ -334,11 +334,11 @@ function getAdminActor(request: Request) {
   }
 }
 
-function getReadSchemaHeaders(table: string) {
+function getReadSchemaHeaders(table: string): Record<string, string> {
   return isSiteRelation(table) ? { "Accept-Profile": siteSchema } : {};
 }
 
-function getWriteSchemaHeaders(table: string) {
+function getWriteSchemaHeaders(table: string): Record<string, string> {
   return isSiteRelation(table) ? { "Content-Profile": siteSchema, "Accept-Profile": siteSchema } : {};
 }
 
