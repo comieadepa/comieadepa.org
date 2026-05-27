@@ -486,7 +486,7 @@ export default function Home() {
 
           <a
             href={portalConfig.ministerPortalUrl}
-            className="hidden rounded-lg bg-[#0F3B63] px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-white shadow-[0_16px_34px_rgba(15,59,99,.20)] transition hover:-translate-y-0.5 hover:bg-[#4A86B8] lg:inline-flex"
+            className="hidden rounded-lg bg-[#0F3B63] px-5 py-3 text-sm font-black uppercase tracking-[0.14em] !text-white shadow-[0_16px_34px_rgba(15,59,99,.20)] transition hover:-translate-y-0.5 hover:bg-[#4A86B8] hover:!text-white lg:inline-flex"
           >
             Área do Ministro
           </a>
@@ -509,7 +509,7 @@ export default function Home() {
                   {item}
                 </a>
               ))}
-              <a href={portalConfig.ministerPortalUrl} className="mt-2 rounded-lg bg-[#0F3B63] px-4 py-3 text-center font-black uppercase text-white">
+              <a href={portalConfig.ministerPortalUrl} className="mt-2 rounded-lg bg-[#0F3B63] px-4 py-3 text-center font-black uppercase !text-white hover:!text-white">
                 Área do Ministro
               </a>
             </nav>
@@ -548,7 +548,7 @@ export default function Home() {
                 {portalHomeContent.heroPrimaryLabel}
                 <ArrowRight size={18} className="transition group-hover:translate-x-1" />
               </a>
-              <a href={portalConfig.eventsPortalUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-lg border border-white/28 bg-white/10 px-7 py-4 text-sm font-black uppercase tracking-[0.14em] text-white backdrop-blur transition hover:-translate-y-1 hover:border-[#D4A24C] hover:text-[#F8D77B]">
+              <a href={portalConfig.eventsPortalUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-lg border border-white/28 bg-[#0F3B63]/72 px-7 py-4 text-sm font-black uppercase tracking-[0.14em] !text-white backdrop-blur transition hover:-translate-y-1 hover:border-[#D4A24C] hover:bg-[#4A86B8] hover:!text-white">
                 {portalHomeContent.heroSecondaryLabel}
               </a>
             </div>
