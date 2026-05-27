@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { findFallbackDepartment } from "@/lib/department-content";
 import { buildSeoMetadata } from "@/lib/seo";
 import { selectPublicRows } from "@/lib/supabase-public";
-import type { DepartmentLink } from "../department-page-view";
+import type { DepartmentLink, DepartmentRelatedVideo } from "../department-page-view";
 import { DepartmentPageView } from "../department-page-view";
 
 type CmsDepartment = {
@@ -145,7 +145,7 @@ async function loadRelatedDepartmentContent(departmentId: string) {
           tipo: formatVideoType(video.tipo),
         };
       })
-      .filter(Boolean),
+      .filter((video): video is DepartmentRelatedVideo => Boolean(video)),
   };
 }
 
