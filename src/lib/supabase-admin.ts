@@ -45,7 +45,7 @@ export async function insertSupabaseRow<TPayload extends Record<string, unknown>
 
 export async function updateSupabaseRows<TPayload extends Record<string, unknown>>(table: string, filter: string, payload: TPayload) {
   if (!serviceRoleKey) {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY nÃ£o configurada.");
+    throw new Error("SUPABASE_SERVICE_ROLE_KEY não configurada.");
   }
 
   const response = await fetch(`${supabaseUrl}/rest/v1/${table}?${filter}`, {

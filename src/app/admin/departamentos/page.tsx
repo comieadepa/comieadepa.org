@@ -118,7 +118,7 @@ export default async function AdminDepartmentsPage({
                   className="min-h-28 border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]"
                   placeholder={"Instagram | https://instagram.com/...\nYouTube | https://youtube.com/..."}
                 />
-                <span className="text-xs font-semibold text-[#8b2f2b]/80">Um link por linha no formato: TÃ­tulo | URL</span>
+                <span className="text-xs font-semibold text-[#8b2f2b]/80">Um link por linha no formato: Título | URL</span>
               </label>
               <label className="grid gap-2">
                 <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Documentos e materiais</span>
@@ -126,9 +126,9 @@ export default async function AdminDepartmentsPage({
                   name="documentos"
                   defaultValue={formatLinksForTextarea(editingDepartment?.documentos)}
                   className="min-h-28 border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]"
-                  placeholder={"Regimento | https://...\nFormulÃ¡rio | https://..."}
+                  placeholder={"Regimento | https://...\nFormulário | https://..."}
                 />
-                <span className="text-xs font-semibold text-[#8b2f2b]/80">Use para PDFs, formulÃ¡rios, editais e materiais oficiais.</span>
+                <span className="text-xs font-semibold text-[#8b2f2b]/80">Use para PDFs, formulários, editais e materiais oficiais.</span>
               </label>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">

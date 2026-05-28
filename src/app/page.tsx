@@ -388,7 +388,11 @@ export default function Home() {
           ...event,
           registrationTypes: registrationTypes.filter((type) => type.evento_id === event.id),
         }));
-        const mappedEvents = eventsWithTypes.map(mapSupabaseEventToCard);
+        const mappedEvents = eventsWithTypes
+          .filter((event) => isEventVisibleOnHome(event))
+          .sort((a, b) => getEventSortTimestamp(a) - getEventSortTimestamp(b))
+          .map(mapSupabaseEventToCard)
+          .slice(0, 4);
 
         if (isMounted && mappedEvents.length > 0) {
           setEventCards(mappedEvents);
@@ -1344,10 +1348,15 @@ function getDepartmentAccent(slug: string) {
 }
 
 function mapSupabaseEventToCard(event: SupabaseEvent): EventCard {
+  const normalizedName = normalizeUtf8Text(event.nome);
+  const normalizedDepartment = normalizeUtf8Text(event.departamento);
+  const normalizedLocal = normalizeUtf8Text(event.local);
+  const normalizedCity = normalizeUtf8Text(event.cidade);
+  const normalizedStatus = normalizeUtf8Text(event.status);
   const date = parseSupabaseDate(event.data_inicio);
-  const department = event.departamento?.trim() || "COMIEADEPA";
-  const title = titleCase(event.nome);
-  const status = getEventStatus(event);
+  const department = normalizedDepartment?.trim() || "COMIEADEPA";
+  const title = titleCase(normalizedName);
+  const status = getEventStatus({ ...event, status: normalizedStatus });
 
   return {
     title,
@@ -1355,7 +1364,7 @@ function mapSupabaseEventToCard(event: SupabaseEvent): EventCard {
     day: date.day,
     month: date.month,
     time: "Consultar no portal",
-    location: inferEventLocation(event),
+    location: inferEventLocation({ ...event, local: normalizedLocal, cidade: normalizedCity, departamento: normalizedDepartment }),
     attendees: formatEventRegistration(event),
     status,
     actionLabel: status === "Inscrições Abertas" ? "Inscrever-se" : status === "Encerrado" ? "Ver detalhes" : "Acompanhar abertura",
@@ -1388,7 +1397,11 @@ async function loadEventRegistrationTypes(eventIds: string[]) {
     return [];
   }
 
-  return (await response.json()) as EventRegistrationType[];
+  const data = (await response.json()) as EventRegistrationType[];
+  return data.map((type) => ({
+    ...type,
+    nome: normalizeUtf8Text(type.nome),
+  }));
 }
 
 function parseSupabaseDate(value: string | null) {
@@ -1416,6 +1429,36 @@ function titleCase(value: string) {
     .replace(/\bComieadepa\b/g, "COMIEADEPA");
 }
 
+function normalizeUtf8Text(value: string | null | undefined) {
+  if (!value) {
+    return "";
+  }
+
+  const text = String(value);
+  const hasMojibake = /Ã.|Â|â€|â€™|â€œ|â€�/u.test(text);
+
+  if (!hasMojibake) {
+    return text;
+  }
+
+  try {
+    const bytes = Uint8Array.from(text, (char) => char.charCodeAt(0));
+    const decoded = new TextDecoder("utf-8", { fatal: false }).decode(bytes);
+
+    if (decoded && decoded !== text) {
+      const secondPass = /Ã.|Â|â€|â€™|â€œ|â€�/u.test(decoded)
+        ? new TextDecoder("utf-8", { fatal: false }).decode(Uint8Array.from(decoded, (char) => char.charCodeAt(0)))
+        : decoded;
+
+      return secondPass || decoded;
+    }
+  } catch {
+    return text;
+  }
+
+  return text;
+}
+
 function inferEventLocation(event: SupabaseEvent) {
   const local = event.local?.trim();
   const city = event.cidade?.trim();
@@ -1433,6 +1476,53 @@ function inferEventLocation(event: SupabaseEvent) {
   }
 
   return event.departamento || "COMIEADEPA";
+}
+
+function isEventVisibleOnHome(event: SupabaseEvent) {
+  const normalizedStatus = normalizeUtf8Text(event.status).toLocaleLowerCase("pt-BR");
+
+  if (["encerrado", "finalizado", "cancelado", "rascunho"].includes(normalizedStatus)) {
+    return false;
+  }
+
+  const endDate = getEventEndDate(event);
+
+  if (!endDate) {
+    return true;
+  }
+
+  const today = new Date();
+  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  return endDate >= startOfToday;
+}
+
+function getEventSortTimestamp(event: SupabaseEvent) {
+  return getEventStartDate(event)?.getTime() ?? Number.MAX_SAFE_INTEGER;
+}
+
+function getEventStartDate(event: SupabaseEvent) {
+  return parseEventDate(event.data_inicio, false);
+}
+
+function getEventEndDate(event: SupabaseEvent) {
+  return parseEventDate(event.data_fim ?? event.data_inicio, true);
+}
+
+function parseEventDate(value: string | null, isEndDate: boolean) {
+  if (!value) {
+    return null;
+  }
+
+  const [year, month, day] = value.split("-").map(Number);
+
+  if (!year || !month || !day) {
+    return null;
+  }
+
+  return isEndDate
+    ? new Date(year, month - 1, day, 23, 59, 59, 999)
+    : new Date(year, month - 1, day, 0, 0, 0, 0);
 }
 
 function getEventImage(event: SupabaseEvent) {
