@@ -85,7 +85,7 @@ export default async function AdminDashboardPage() {
           <div className="mt-6 grid gap-4">
             {[
               "Executar o SQL inicial no Supabase",
-              "Configurar autenticação e perfis editoriais",
+              "Autenticação via Supabase e perfis editoriais",
               "Conectar formulários para gravar notícias, vídeos e departamentos",
               "Atualizar o portal para ler posts e vídeos publicados",
             ].map((item, index) => (

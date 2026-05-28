@@ -51,7 +51,7 @@ export default async function AdminUsersPage({
         <p className="text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Usuários e perfis</p>
         <h2 className="mt-3 font-serif text-4xl font-black leading-tight">{editingUser ? "Editar usuário" : "Novo usuário"}</h2>
         <p className="mt-4 leading-7 text-[#5a472c]">
-          Cadastro preparatório da equipe editorial. Nesta fase, o acesso ainda usa o login geral; os perfis já organizam responsabilidades para a próxima troca de autenticação.
+          Cadastro da equipe editorial. O acesso usa Supabase Auth e o perfil cadastrado aqui define o nível de permissão dentro do painel.
         </p>
 
         <form action="/api/admin/usuarios" method="post" className="mt-8 grid gap-5">

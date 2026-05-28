@@ -1,15 +1,23 @@
 import { adminNavItems, adminSecondaryNavItems } from "@/lib/cms";
-import { filterAdminNavByRole, getConfiguredAdminRole } from "@/lib/admin-permissions";
+import { filterAdminNavByRole, normalizeAdminRole } from "@/lib/admin-permissions";
 import { ArrowLeft, Bell, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { headers } from "next/headers";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const role = getConfiguredAdminRole();
+  const headerList = await headers();
+  const role = normalizeAdminRole(headerList.get("x-admin-role"));
+  const adminEmail = headerList.get("x-admin-email");
+  const currentPath = headerList.get("x-admin-path") ?? "";
+
+  if (currentPath.startsWith("/admin/login")) {
+    return <main className="min-h-screen bg-[#f4efe1] text-[#171006]">{children}</main>;
+  }
   const visibleNavItems = filterAdminNavByRole(adminNavItems, role);
 
   return (
@@ -66,6 +74,7 @@ export default function AdminLayout({
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-[#8b2f2b]">Central editorial</p>
                 <h1 className="mt-1 font-serif text-3xl font-black">Painel de controle</h1>
                 <p className="mt-1 text-xs font-bold uppercase tracking-[0.14em] text-[#5a472c]/70">Perfil atual: {formatRole(role)}</p>
+                {adminEmail ? <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-[#5a472c]/55">{adminEmail}</p> : null}
               </div>
               <div className="flex items-center gap-3">
                 <label className="hidden min-w-[280px] items-center gap-2 border border-[#d8c38b] bg-white/64 px-4 py-3 text-sm text-[#5a472c] md:flex">
@@ -75,6 +84,14 @@ export default function AdminLayout({
                 <button className="grid h-11 w-11 place-items-center border border-[#d8c38b] bg-white/64 text-[#5a472c]">
                   <Bell size={18} />
                 </button>
+                <form action="/api/admin/auth/logout" method="post">
+                  <button
+                    type="submit"
+                    className="hidden items-center justify-center border border-[#8b2f2b]/30 px-4 py-3 text-xs font-black uppercase tracking-[0.12em] text-[#8b2f2b] sm:inline-flex"
+                  >
+                    Sair
+                  </button>
+                </form>
               </div>
             </div>
           </header>

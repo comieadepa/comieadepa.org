@@ -5,10 +5,11 @@ type AdminPermission = {
   roles: AdminRole[];
 };
 
-const fallbackRole: AdminRole = "admin";
+const fallbackRole: AdminRole = "viewer";
 
 export const adminPermissions: AdminPermission[] = [
   { href: "/admin", roles: ["admin", "editor", "midia", "viewer"] },
+  { href: "/admin/home", roles: ["admin", "editor", "midia"] },
   { href: "/admin/noticias", roles: ["admin", "editor"] },
   { href: "/admin/categorias", roles: ["admin", "editor"] },
   { href: "/admin/videos", roles: ["admin", "editor", "midia"] },
@@ -18,10 +19,6 @@ export const adminPermissions: AdminPermission[] = [
   { href: "/admin/usuarios", roles: ["admin"] },
   { href: "/admin/configuracoes", roles: ["admin"] },
 ];
-
-export function getConfiguredAdminRole(): AdminRole {
-  return normalizeAdminRole(process.env.ADMIN_ROLE);
-}
 
 export function normalizeAdminRole(value: string | undefined | null): AdminRole {
   if (value === "admin" || value === "editor" || value === "midia" || value === "viewer") {
@@ -61,12 +58,20 @@ function normalizeAdminPath(pathname: string) {
     return "/admin/videos";
   }
 
+  if (pathname.startsWith("/api/admin/youtube")) {
+    return "/admin/videos";
+  }
+
   if (pathname.startsWith("/api/admin/departamentos")) {
     return "/admin/departamentos";
   }
 
   if (pathname.startsWith("/api/admin/media")) {
     return "/admin/midia";
+  }
+
+  if (pathname.startsWith("/api/admin/home")) {
+    return "/admin/home";
   }
 
   if (pathname.startsWith("/api/admin/usuarios")) {

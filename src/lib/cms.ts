@@ -16,6 +16,7 @@ import {
 
 export const adminNavItems = [
   { href: "/admin", label: "Visão Geral", icon: Home },
+  { href: "/admin/home", label: "Home", icon: Settings },
   { href: "/admin/noticias", label: "Notícias", icon: Newspaper },
   { href: "/admin/categorias", label: "Categorias", icon: Tags },
   { href: "/admin/videos", label: "Vídeos", icon: Youtube },
@@ -30,7 +31,7 @@ export const adminSecondaryNavItems = [
   { label: "Eventos", icon: CalendarDays, status: "Integrado ao Supabase" },
   { label: "Páginas", icon: FileText, status: "Próxima fase" },
   { label: "Permissões", icon: ShieldCheck, status: "Base iniciada" },
-  { label: "Home editável", icon: Settings, status: "Próxima fase" },
+  { label: "Home editável", icon: Settings, status: "Em organização" },
 ];
 
 export const editorialWorkflow = [
