@@ -8,6 +8,7 @@ type RichTextFieldProps = {
   label: string;
   defaultValue?: string | null;
   placeholder?: string;
+  disabled?: boolean;
 };
 
 const toolbarActions = [
@@ -20,11 +21,15 @@ const toolbarActions = [
   { label: "Imagem", icon: ImageIcon, before: "\n![Descrição da imagem](", after: ")\n" },
 ];
 
-export function RichTextField({ name, label, defaultValue, placeholder }: RichTextFieldProps) {
+export function RichTextField({ name, label, defaultValue, placeholder, disabled }: RichTextFieldProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [value, setValue] = useState(defaultValue ?? "");
 
   function insertMarkup(before: string, after: string) {
+    if (disabled) {
+      return;
+    }
+
     const textarea = textareaRef.current;
 
     if (!textarea) {
@@ -59,7 +64,8 @@ export function RichTextField({ name, label, defaultValue, placeholder }: RichTe
                 type="button"
                 onClick={() => insertMarkup(action.before, action.after)}
                 title={action.label}
-                className="grid h-9 w-9 place-items-center border border-[#d8c38b] bg-white/70 text-[#5a472c] transition hover:border-[#8b2f2b] hover:text-[#8b2f2b]"
+                disabled={disabled}
+                className="grid h-9 w-9 place-items-center border border-[#d8c38b] bg-white/70 text-[#5a472c] transition hover:border-[#8b2f2b] hover:text-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Icon size={17} />
               </button>
@@ -71,8 +77,9 @@ export function RichTextField({ name, label, defaultValue, placeholder }: RichTe
           name={name}
           value={value}
           onChange={(event) => setValue(event.target.value)}
-          className="min-h-72 w-full bg-transparent px-4 py-3 leading-7 outline-none focus:bg-white/45"
+          className="min-h-72 w-full bg-transparent px-4 py-3 leading-7 outline-none focus:bg-white/45 disabled:cursor-not-allowed disabled:opacity-60"
           placeholder={placeholder}
+          disabled={disabled}
         />
       </div>
       <span className="text-xs leading-5 text-[#7a6543]">

@@ -19,9 +19,10 @@ type MediaUrlFieldProps = {
   placeholder?: string;
   helper?: string;
   assets: MediaPickerAsset[];
+  disabled?: boolean;
 };
 
-export function MediaUrlField({ name, label, defaultValue, placeholder = "https://...", helper, assets }: MediaUrlFieldProps) {
+export function MediaUrlField({ name, label, defaultValue, placeholder = "https://...", helper, assets, disabled }: MediaUrlFieldProps) {
   const [value, setValue] = useState(defaultValue ?? "");
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -51,15 +52,25 @@ export function MediaUrlField({ name, label, defaultValue, placeholder = "https:
             name={name}
             value={value}
             onChange={(event) => setValue(event.target.value)}
-            className="w-full bg-transparent outline-none placeholder:text-[#8b2f2b]/52"
+            className="w-full bg-transparent outline-none placeholder:text-[#8b2f2b]/52 disabled:cursor-not-allowed disabled:opacity-60"
             placeholder={placeholder}
+            disabled={disabled}
           />
         </span>
         <div className="flex flex-wrap gap-3">
-          <button type="button" onClick={() => setOpen(true)} className="text-xs font-black uppercase tracking-[0.12em] underline underline-offset-4">
+          <button
+            type="button"
+            onClick={() => (!disabled ? setOpen(true) : undefined)}
+            className="text-xs font-black uppercase tracking-[0.12em] underline underline-offset-4 disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={disabled}
+          >
             Selecionar da biblioteca
           </button>
-          <a href="/admin/midia" className="text-xs font-black uppercase tracking-[0.12em] underline underline-offset-4">
+          <a
+            href={disabled ? undefined : "/admin/midia"}
+            aria-disabled={disabled ? "true" : undefined}
+            className={`text-xs font-black uppercase tracking-[0.12em] underline underline-offset-4 ${disabled ? "pointer-events-none opacity-50" : ""}`}
+          >
             Enviar novo arquivo
           </a>
         </div>

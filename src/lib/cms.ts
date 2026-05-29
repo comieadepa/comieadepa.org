@@ -17,18 +17,20 @@ import {
 export const adminNavItems = [
   { href: "/admin", label: "Visão Geral", icon: Home },
   { href: "/admin/home", label: "Home", icon: Settings },
+  { href: "/admin/eventos", label: "Eventos", icon: CalendarDays },
   { href: "/admin/noticias", label: "Notícias", icon: Newspaper },
   { href: "/admin/categorias", label: "Categorias", icon: Tags },
   { href: "/admin/videos", label: "Vídeos", icon: Youtube },
   { href: "/admin/departamentos", label: "Departamentos", icon: Building2 },
   { href: "/admin/midia", label: "Mídia", icon: Images },
+  { href: "/admin/paginas", label: "Páginas", icon: FileText },
   { href: "/admin/auditoria", label: "Auditoria", icon: ListChecks },
   { href: "/admin/usuarios", label: "Usuários", icon: UserCog },
+  { href: "/admin/permissoes", label: "Permissões", icon: ShieldCheck },
   { href: "/admin/configuracoes", label: "Configurações", icon: Settings },
 ];
 
 export const adminSecondaryNavItems = [
-  { label: "Eventos", icon: CalendarDays, status: "Integrado ao Supabase" },
   { label: "Páginas", icon: FileText, status: "Próxima fase" },
   { label: "Permissões", icon: ShieldCheck, status: "Base iniciada" },
   { label: "Home editável", icon: Settings, status: "Em organização" },
