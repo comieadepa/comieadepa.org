@@ -885,21 +885,21 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="noticias" className="relative overflow-hidden bg-[#F8FAFC] px-5 py-24 sm:px-8">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(212,162,76,.16),transparent_35%),radial-gradient(circle_at_88%_12%,rgba(15,59,99,.14),transparent_30%)]" />
-        <div className="absolute inset-0 opacity-[0.18] [background-image:linear-gradient(135deg,rgba(15,59,99,.12)_1px,transparent_1px)] [background-size:44px_44px]" />
-        <motion.div style={{ y: newsParallaxY }} className="absolute right-0 top-0 h-[420px] w-[520px] opacity-10">
+      <section id="noticias" className="relative overflow-hidden bg-[#0F3B63] px-5 py-24 sm:px-8">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_18%,rgba(212,162,76,.18),transparent_35%),radial-gradient(circle_at_86%_12%,rgba(74,134,184,.16),transparent_30%)]" />
+        <div className="absolute inset-0 opacity-[0.15] [background-image:linear-gradient(135deg,rgba(248,215,123,.18)_1px,transparent_1px)] [background-size:44px_44px]" />
+        <motion.div style={{ y: newsParallaxY }} className="absolute right-0 top-0 h-[420px] w-[520px] opacity-12">
           <Image src="/assets/congresso-comieadepa.jpg" alt="" fill className="object-cover" />
         </motion.div>
         <div className="relative mx-auto max-w-7xl">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.22em] text-[#B8872D]">{portalHomeContent.newsBadge}</p>
-              <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-[#0F3B63] sm:text-5xl">{portalHomeContent.newsTitle}</h2>
+              <p className="text-sm font-black uppercase tracking-[0.22em] text-[#F8D77B]">{portalHomeContent.newsBadge}</p>
+              <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-white sm:text-5xl">{portalHomeContent.newsTitle}</h2>
             </div>
             <Link
               href="/noticias"
-              className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.18em] text-[#0F3B63] transition hover:text-[#B8872D]"
+              className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.18em] text-white transition hover:text-[#F8D77B]"
             >
               Todas as Notícias
               <ArrowRight size={18} />
@@ -944,7 +944,7 @@ export default function Home() {
           <div className="mt-12 text-center">
             <Link
               href="/noticias"
-              className="inline-flex items-center gap-3 rounded-lg border border-[#D4A24C]/45 bg-white px-7 py-3 text-sm font-black uppercase tracking-[0.16em] text-[#0F3B63] shadow-[0_14px_34px_rgba(15,59,99,.12)] transition hover:-translate-y-1 hover:bg-[#0F3B63] hover:text-white"
+              className="inline-flex items-center gap-3 rounded-lg border border-[#F8D77B]/45 bg-[#F8D77B] px-7 py-3 text-sm font-black uppercase tracking-[0.16em] text-[#0F3B63] shadow-[0_16px_34px_rgba(3,12,23,.28)] transition hover:-translate-y-1 hover:border-white/60 hover:bg-white"
             >
               Todas as Notícias
               <ArrowRight size={18} />
