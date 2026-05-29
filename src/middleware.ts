@@ -165,6 +165,7 @@ async function fetchAdminUser(email: string) {
         apikey: serviceRoleKey ?? "",
         Authorization: `Bearer ${serviceRoleKey ?? ""}`,
         "Accept-Profile": siteSchema,
+        "Content-Profile": siteSchema,
       },
       cache: "no-store",
     },
