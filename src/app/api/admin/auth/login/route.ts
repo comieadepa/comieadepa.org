@@ -104,7 +104,8 @@ async function fetchAdminUser(email: string) {
   );
 
   if (!response.ok) {
-    return null;
+    const message = await response.text();
+    throw new Error(`Falha ao consultar admins (${response.status}): ${message}`);
   }
 
   const data = (await response.json()) as AdminUser[];
