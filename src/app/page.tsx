@@ -22,6 +22,7 @@ import {
   Youtube,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const ministerPortalUrl = "https://www.siscomieadepa.org/login";
@@ -105,6 +106,8 @@ type PortalNews = {
   title: string;
   category: string;
   url: string;
+  date: string;
+  image: string;
 };
 
 type CmsPost = {
@@ -112,6 +115,7 @@ type CmsPost = {
   titulo: string | null;
   slug: string | null;
   resumo: string | null;
+  capa_url: string | null;
   categoria_id: string | null;
   departamento_id: string | null;
   publicado_em: string | null;
@@ -327,9 +331,27 @@ const fallbackVideos: PortalVideo[] = [
 ];
 
 const fallbackNews: PortalNews[] = [
-  { title: "Comunicados Oficiais da Convenção", category: "Notícia", url: "#" },
-  { title: "Cobertura da 125ª Assembleia Geral Ordinária", category: "Notícia", url: "#" },
-  { title: "Notas e Deliberações Convencionais", category: "Notícia", url: "#" },
+  {
+    title: "Comunicados Oficiais da Convenção",
+    category: "Notícia",
+    url: "#",
+    date: "06 de julho de 2025",
+    image: "/assets/sede-aerea-comieadepa.jpg",
+  },
+  {
+    title: "Cobertura da 125ª Assembleia Geral Ordinária",
+    category: "Notícia",
+    url: "#",
+    date: "13 de março de 2024",
+    image: "/assets/congresso-comieadepa.jpg",
+  },
+  {
+    title: "Notas e Deliberações Convencionais",
+    category: "Notícia",
+    url: "#",
+    date: "28 de junho de 2023",
+    image: "/assets/sede-comieadepa.png",
+  },
 ];
 
 const eventVideos = [
@@ -422,7 +444,7 @@ export default function Home() {
           ),
           fetchSupabasePublic<CmsPost>(
             "cms_posts",
-            `select=id,titulo,slug,resumo,categoria_id,departamento_id,publicado_em,created_at&status=eq.publicado&destaque_home=eq.true${getPublishedPostsPublicFilter()}&order=publicado_em.desc.nullslast,created_at.desc&limit=3`,
+            `select=id,titulo,slug,resumo,capa_url,categoria_id,departamento_id,publicado_em,created_at&status=eq.publicado&destaque_home=eq.true${getPublishedPostsPublicFilter()}&order=publicado_em.desc.nullslast,created_at.desc&limit=3`,
           ),
           fetchSupabasePublic<CmsLookup>("cms_categorias", "select=id,nome&order=nome.asc"),
           fetchSupabasePublic<CmsDepartmentCard>("cms_departamentos", "select=id,slug,nome,titulo,resumo,logo_url&ativo=eq.true&order=ordem.asc,nome.asc"),
@@ -863,26 +885,70 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="noticias" className="relative overflow-hidden bg-[#0F3B63] px-5 py-24 sm:px-8">
-        <motion.div style={{ y: newsParallaxY }} className="absolute -inset-x-8 -inset-y-24">
-          <Image src="/assets/congresso-comieadepa.jpg" alt="" fill className="object-cover opacity-22" />
+      <section id="noticias" className="relative overflow-hidden bg-[#F8FAFC] px-5 py-24 sm:px-8">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(212,162,76,.16),transparent_35%),radial-gradient(circle_at_88%_12%,rgba(15,59,99,.14),transparent_30%)]" />
+        <div className="absolute inset-0 opacity-[0.18] [background-image:linear-gradient(135deg,rgba(15,59,99,.12)_1px,transparent_1px)] [background-size:44px_44px]" />
+        <motion.div style={{ y: newsParallaxY }} className="absolute right-0 top-0 h-[420px] w-[520px] opacity-10">
+          <Image src="/assets/congresso-comieadepa.jpg" alt="" fill className="object-cover" />
         </motion.div>
-        <div className="absolute inset-0 bg-[#0F3B63]/88 backdrop-blur-[1px]" />
-        <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.72fr_1fr]">
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-[#F8D77B]">{portalHomeContent.newsBadge}</p>
-            <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-white sm:text-5xl">{portalHomeContent.newsTitle}</h2>
+        <div className="relative mx-auto max-w-7xl">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.22em] text-[#B8872D]">{portalHomeContent.newsBadge}</p>
+              <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-[#0F3B63] sm:text-5xl">{portalHomeContent.newsTitle}</h2>
+            </div>
+            <Link
+              href="/noticias"
+              className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.18em] text-[#0F3B63] transition hover:text-[#B8872D]"
+            >
+              Todas as Notícias
+              <ArrowRight size={18} />
+            </Link>
           </div>
-          <div className="grid gap-4">
-            {portalNews.map((post) => (
-              <a key={post.title} href={post.url} className="group flex items-center justify-between gap-5 rounded-xl border border-white/12 bg-white/10 p-6 shadow-[0_16px_34px_rgba(0,0,0,.14)] backdrop-blur-xl transition hover:-translate-y-1 hover:border-[#D4A24C]/70 hover:bg-white/16">
-                <span>
-                  <span className="text-xs font-black uppercase tracking-[0.2em] text-[#F8D77B]">{post.category}</span>
-                  <span className="mt-2 block font-serif text-2xl font-bold text-white">{post.title}</span>
-                </span>
-                <ArrowRight className="text-[#F8D77B] transition group-hover:translate-x-2" size={24} />
-              </a>
+
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+            {portalNews.map((post, index) => (
+              <motion.div
+                key={`${post.title}-${post.url}`}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.5, delay: index * 0.06 }}
+                className="group flex h-full flex-col overflow-hidden rounded-xl border border-[#0F3B63]/10 bg-white shadow-[0_18px_40px_rgba(15,59,99,.10)] transition hover:-translate-y-2 hover:border-[#D4A24C]/50 hover:shadow-[0_26px_60px_rgba(15,59,99,.18)]"
+              >
+                <Link href={post.url} className="flex h-full flex-col">
+                  <div className="relative aspect-[4/3] overflow-hidden bg-[#0F3B63]/10">
+                    <Image
+                      src={post.image}
+                      alt={post.title}
+                      fill
+                      className="object-cover transition duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,59,99,.05),rgba(15,59,99,.45))] opacity-0 transition group-hover:opacity-100" />
+                  </div>
+                  <div className="flex flex-1 flex-col px-5 pb-6 pt-5">
+                    <h3 className="font-serif text-2xl font-bold leading-tight text-[#0F3B63] transition group-hover:text-[#1D5A8C]">
+                      {post.title}
+                    </h3>
+                    <div className="mt-4 text-sm font-semibold text-[#6B7280]">
+                      <span>{post.date}</span>
+                      <span className="mx-2">•</span>
+                      <span className="uppercase tracking-[0.12em] text-[#B8872D]">{post.category}</span>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
             ))}
+          </div>
+
+          <div className="mt-12 text-center">
+            <Link
+              href="/noticias"
+              className="inline-flex items-center gap-3 rounded-lg border border-[#D4A24C]/45 bg-white px-7 py-3 text-sm font-black uppercase tracking-[0.16em] text-[#0F3B63] shadow-[0_14px_34px_rgba(15,59,99,.12)] transition hover:-translate-y-1 hover:bg-[#0F3B63] hover:text-white"
+            >
+              Todas as Notícias
+              <ArrowRight size={18} />
+            </Link>
           </div>
         </div>
       </section>
@@ -1223,8 +1289,27 @@ function mapCmsPostToPortalNews(post: CmsPost, categoryMap: Map<string, string>,
   return {
     title,
     category: resolveCmsContentLabel(post.categoria_id, post.departamento_id, categoryMap, departmentMap),
+    date: formatNewsDate(post.publicado_em ?? post.created_at),
+    image: post.capa_url?.trim() || "/assets/sede-aerea-comieadepa.jpg",
     url: `/noticias/${post.slug}`,
   };
+}
+
+function formatNewsDate(dateValue: string | null) {
+  if (!dateValue) {
+    return "Sem data";
+  }
+
+  const parsed = new Date(dateValue);
+  if (Number.isNaN(parsed.getTime())) {
+    return "Sem data";
+  }
+
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }).format(parsed);
 }
 
 function mapCmsSettingsToPortalConfig(settings: CmsSetting[]): PortalConfig {
