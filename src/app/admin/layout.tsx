@@ -19,6 +19,7 @@ export default async function AdminLayout({
     return <main className="min-h-screen bg-[#f4efe1] text-[#171006]">{children}</main>;
   }
   const visibleNavItems = filterAdminNavByRole(adminNavItems, role);
+  const visibleSecondaryNavItems = filterAdminNavByRole(adminSecondaryNavItems, role);
 
   return (
     <main className="min-h-screen bg-[#f4efe1] text-[#171006]">
@@ -28,7 +29,7 @@ export default async function AdminLayout({
             <Image src="/assets/logo-comieadepa.png" alt="COMIEADEPA" width={54} height={54} className="h-14 w-14 object-contain" />
             <div>
               <p className="font-serif text-2xl font-black leading-none">COMIEADEPA</p>
-              <p className="mt-1 text-xs font-black uppercase tracking-[0.2em] text-[#f4cf6a]">Painel CMS</p>
+              <p className="mt-1 text-xs font-black uppercase tracking-[0.2em] text-[#f4cf6a]">Painel editorial</p>
             </div>
           </div>
 
@@ -54,14 +55,18 @@ export default async function AdminLayout({
           </nav>
 
           <div className="mt-9 border-t border-white/10 pt-6">
-            <p className="px-4 text-xs font-black uppercase tracking-[0.18em] text-white/38">Próximos módulos</p>
+            <p className="px-4 text-xs font-black uppercase tracking-[0.18em] text-white/38">Módulos ativos</p>
             <div className="mt-4 grid gap-2">
-              {adminSecondaryNavItems.map((item) => (
-                <div key={item.label} className="flex items-center gap-3 px-4 py-2 text-sm text-white/52">
-                  <item.icon size={17} className="text-white/36" />
+              {visibleSecondaryNavItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center gap-3 rounded-sm px-4 py-2 text-sm text-white/60 transition hover:bg-white/[0.055] hover:text-white"
+                >
+                  <item.icon size={17} className="text-white/42" />
                   <span className="flex-1">{item.label}</span>
                   <span className="text-[10px] uppercase tracking-[0.12em] text-[#f4cf6a]/70">{item.status}</span>
-                </div>
+                </Link>
               ))}
             </div>
           </div>

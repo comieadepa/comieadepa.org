@@ -508,6 +508,9 @@ export default function Home() {
                 {item}
               </a>
             ))}
+            <Link href="/paginas" className="relative py-2 transition hover:text-[#1D5A8C]">
+              Institucional
+            </Link>
           </nav>
 
           <a
@@ -535,6 +538,9 @@ export default function Home() {
                   {item}
                 </a>
               ))}
+              <Link href="/paginas" onClick={() => setMenuOpen(false)}>
+                Institucional
+              </Link>
               <a href={portalConfig.ministerPortalUrl} className="mt-2 rounded-lg bg-[#0F3B63] px-4 py-3 text-center font-black uppercase !text-white hover:!text-white">
                 Área do Ministro
               </a>

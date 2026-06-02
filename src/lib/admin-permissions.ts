@@ -88,6 +88,7 @@ const rolePermissions: Record<AdminRole, Partial<Record<AdminModule, AdminAction
   },
   midia: {
     dashboard: ["view"],
+    home: ["view", "update"],
     midia: ["view", "upload"],
     videos: ["view", "create", "update"],
   },
@@ -187,7 +188,7 @@ function getAdminModuleFromPath(pathname: string): AdminModule | null {
     return "configuracoes";
   }
 
-  if (pathname.startsWith("/admin/permissoes")) {
+  if (pathname.startsWith("/admin/permissoes") || pathname.startsWith("/api/admin/permissoes")) {
     return "permissoes";
   }
 

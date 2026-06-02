@@ -15,13 +15,24 @@ type CmsDepartmentSitemapRow = {
   created_at: string;
 };
 
+type CmsPageSitemapRow = {
+  slug: string;
+  publicado_em: string | null;
+  updated_at: string | null;
+  created_at: string;
+};
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [posts, departments] = await Promise.all([
+  const [posts, departments, pages] = await Promise.all([
     selectPublicRows<CmsPostSitemapRow>(
       "cms_posts",
       `select=slug,publicado_em,created_at&status=eq.publicado${getPublishedPostsPublicFilter()}&order=publicado_em.desc.nullslast,created_at.desc&limit=100`,
     ),
     selectPublicRows<CmsDepartmentSitemapRow>("cms_departamentos", "select=slug,updated_at,created_at&ativo=eq.true&order=ordem.asc,nome.asc&limit=100"),
+    selectPublicRows<CmsPageSitemapRow>(
+      "cms_paginas",
+      `select=slug,publicado_em,updated_at,created_at&status=eq.publicado${getPublishedPagesPublicFilter()}&order=ordem.asc,updated_at.desc&limit=100`,
+    ),
   ]);
   const departmentSlugs = new Set(departments.map((department) => department.slug));
   const fallbackDepartmentEntries = fallbackDepartments
@@ -59,6 +70,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     },
     {
+      url: absoluteUrl("/paginas"),
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.6,
+    },
+    {
       url: absoluteUrl("/privacidade"),
       lastModified: new Date(),
       changeFrequency: "yearly",
@@ -82,10 +99,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly" as const,
       priority: 0.6,
     })),
+    ...pages.map((page) => ({
+      url: absoluteUrl(`/paginas/${page.slug}`),
+      lastModified: new Date(page.updated_at ?? page.publicado_em ?? page.created_at),
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    })),
     ...fallbackDepartmentEntries,
   ];
 }
 
 function getPublishedPostsPublicFilter() {
+  return `&or=(publicado_em.is.null,publicado_em.lte.${encodeURIComponent(new Date().toISOString())})`;
+}
+
+function getPublishedPagesPublicFilter() {
   return `&or=(publicado_em.is.null,publicado_em.lte.${encodeURIComponent(new Date().toISOString())})`;
 }

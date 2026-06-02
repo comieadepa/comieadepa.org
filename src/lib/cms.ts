@@ -31,9 +31,9 @@ export const adminNavItems = [
 ];
 
 export const adminSecondaryNavItems = [
-  { label: "Páginas", icon: FileText, status: "Próxima fase" },
-  { label: "Permissões", icon: ShieldCheck, status: "Base iniciada" },
-  { label: "Home editável", icon: Settings, status: "Em organização" },
+  { href: "/admin/paginas", label: "Páginas", icon: FileText, status: "Ativo" },
+  { href: "/admin/permissoes", label: "Permissões", icon: ShieldCheck, status: "Ativo" },
+  { href: "/admin/home", label: "Home editável", icon: Settings, status: "Ativo" },
 ];
 
 export const editorialWorkflow = [
