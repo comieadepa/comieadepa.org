@@ -9,6 +9,7 @@ import {
   slugify,
   updateSupabaseRows,
 } from "@/lib/supabase-admin";
+import { canPerformAdminAction, resolveAdminRoleFromHeaders } from "@/lib/admin-permissions";
 
 export async function POST(request: Request) {
   if (!hasSupabaseAdminConfig()) {
@@ -18,6 +19,12 @@ export async function POST(request: Request) {
   const formData = await request.formData();
   const id = requiredString(formData, "id");
   const name = requiredString(formData, "nome");
+
+  const role = resolveAdminRoleFromHeaders(request.headers);
+  const writeAction = id ? "update" : "create";
+  if (!canPerformAdminAction(role, "noticias", writeAction)) {
+    return redirectWithStatus(request.url, "/admin/categorias", "error", "Sem permissao para salvar categorias.");
+  }
 
   if (!name) {
     return redirectWithStatus(request.url, "/admin/categorias", "error", "Informe o nome da categoria.");

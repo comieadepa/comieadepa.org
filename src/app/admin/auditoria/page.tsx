@@ -85,7 +85,7 @@ export default async function AdminAuditPage() {
 
           {logs.length === 0 ? (
             <div className="mt-6 border border-[#ead9a6] bg-[#fffaf0] p-6 text-[#5a472c]">
-              Nenhum registro encontrado. Depois de aplicar a migração da auditoria no Supabase, as próximas ações administrativas aparecerão aqui.
+              Nenhum registro encontrado. As próximas ações administrativas aparecerão aqui automaticamente.
             </div>
           ) : null}
         </div>

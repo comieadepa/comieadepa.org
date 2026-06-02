@@ -420,7 +420,7 @@ export default function Home() {
           setEventCards(mappedEvents);
         }
       } catch (error) {
-        console.warn("Não foi possível carregar eventos do Supabase.", error);
+        console.warn("Não foi possível carregar eventos.", error);
         if (isMounted) {
           setEventCards(fallbackEvents);
         }
@@ -1228,7 +1228,7 @@ async function fetchSupabasePublic<TResult>(table: string, query: string) {
   });
 
   if (!response.ok) {
-    throw new Error(`Supabase retornou ${response.status} ao ler ${table}.`);
+    throw new Error(`Não foi possível carregar ${table}. Status: ${response.status}.`);
   }
 
   return (await response.json()) as TResult[];
@@ -1478,7 +1478,7 @@ async function loadEventRegistrationTypes(eventIds: string[]) {
   });
 
   if (!response.ok) {
-    console.warn(`Supabase retornou ${response.status} ao buscar tipos de inscrição.`);
+    console.warn(`Não foi possível buscar tipos de inscrição. Status: ${response.status}.`);
     return [];
   }
 

@@ -8,9 +8,10 @@ import { MediaPickerAsset, MediaUrlField } from "../media-url-field";
 type HomeSettingsFormProps = {
   values: Record<string, string>;
   assets: MediaPickerAsset[];
+  canEdit?: boolean;
 };
 
-export function HomeSettingsForm({ values, assets }: HomeSettingsFormProps) {
+export function HomeSettingsForm({ values, assets, canEdit = true }: HomeSettingsFormProps) {
   const [activeSectionId, setActiveSectionId] = useState<string>(homeSettingSections[0]?.id ?? "");
   const activeSection = useMemo(
     () => homeSettingSections.find((section) => section.id === activeSectionId) ?? homeSettingSections[0],
@@ -71,8 +72,9 @@ export function HomeSettingsForm({ values, assets }: HomeSettingsFormProps) {
                     <textarea
                       name={field.name}
                       defaultValue={values[field.name] ?? ""}
-                      className="min-h-32 border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 leading-7 outline-none focus:border-[#8b2f2b]"
+                      className="min-h-32 border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 leading-7 outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
                       placeholder={field.placeholder}
+                      disabled={!canEdit}
                     />
                   </label>
                 );
@@ -88,6 +90,7 @@ export function HomeSettingsForm({ values, assets }: HomeSettingsFormProps) {
                     placeholder={field.placeholder}
                     helper={field.helper}
                     assets={assets}
+                    disabled={!canEdit}
                   />
                 );
               }
@@ -98,8 +101,9 @@ export function HomeSettingsForm({ values, assets }: HomeSettingsFormProps) {
                   <input
                     name={field.name}
                     defaultValue={values[field.name] ?? ""}
-                    className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]"
+                    className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
                     placeholder={field.placeholder}
+                    disabled={!canEdit}
                   />
                 </label>
               );
@@ -108,7 +112,11 @@ export function HomeSettingsForm({ values, assets }: HomeSettingsFormProps) {
         ))}
 
         <div className="mt-7 flex flex-col gap-3 border-t border-[#ead9a6] pt-6 sm:flex-row">
-          <button type="submit" className="inline-flex items-center justify-center gap-3 bg-[#171006] px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-white">
+          <button
+            type="submit"
+            disabled={!canEdit}
+            className="inline-flex items-center justify-center gap-3 bg-[#171006] px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-white disabled:cursor-not-allowed disabled:opacity-60"
+          >
             <Save size={18} />
             Salvar home
           </button>

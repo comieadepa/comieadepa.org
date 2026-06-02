@@ -12,6 +12,7 @@ import {
   slugify,
   updateSupabaseRows,
 } from "@/lib/supabase-admin";
+import { canPerformAdminAction, resolveAdminRoleFromHeaders } from "@/lib/admin-permissions";
 
 export async function POST(request: Request) {
   if (!hasSupabaseAdminConfig()) {
@@ -22,6 +23,15 @@ export async function POST(request: Request) {
   const id = requiredString(formData, "id");
   const action = requiredString(formData, "action");
   const title = requiredString(formData, "titulo");
+
+  const role = resolveAdminRoleFromHeaders(request.headers);
+
+  if (action && id) {
+    const actionPermission = action === "publish" ? "publish" : action === "archive" ? "archive" : "update";
+    if (!canPerformAdminAction(role, "noticias", actionPermission)) {
+      return redirectWithStatus(request.url, "/admin/noticias", "error", "Sem permissao para alterar o status da noticia.");
+    }
+  }
 
   if (action && id) {
     try {
@@ -47,6 +57,11 @@ export async function POST(request: Request) {
 
   if (!title) {
     return redirectWithStatus(request.url, "/admin/noticias", "error", "Informe o título da notícia.");
+  }
+
+  const writeAction = id ? "update" : "create";
+  if (!canPerformAdminAction(role, "noticias", writeAction)) {
+    return redirectWithStatus(request.url, "/admin/noticias", "error", "Sem permissao para salvar noticias.");
   }
 
   try {
@@ -98,6 +113,11 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   if (!hasSupabaseAdminConfig()) {
     return missingSupabaseAdminResponse();
+  }
+
+  const role = resolveAdminRoleFromHeaders(request.headers);
+  if (!canPerformAdminAction(role, "noticias", "delete")) {
+    return Response.json({ error: "Sem permissao para remover noticias." }, { status: 403 });
   }
 
   const slug = new URL(request.url).searchParams.get("slug");

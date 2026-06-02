@@ -12,7 +12,7 @@ export function hasSupabaseAdminConfig() {
 export function missingSupabaseAdminResponse() {
   return NextResponse.json(
     {
-      error: "SUPABASE_SERVICE_ROLE_KEY não configurada no ambiente do servidor.",
+      error: "Painel temporariamente indisponível. Tente novamente em instantes.",
     },
     { status: 500 },
   );
@@ -20,7 +20,7 @@ export function missingSupabaseAdminResponse() {
 
 export async function insertSupabaseRow<TPayload extends Record<string, unknown>>(table: string, payload: TPayload) {
   if (!serviceRoleKey) {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY não configurada.");
+    throw new Error("Painel temporariamente indisponível. Tente novamente em instantes.");
   }
 
   const response = await fetch(`${supabaseUrl}/rest/v1/${table}`, {
@@ -37,7 +37,7 @@ export async function insertSupabaseRow<TPayload extends Record<string, unknown>
 
   if (!response.ok) {
     const message = await response.text();
-    throw new Error(message || `Supabase retornou ${response.status}.`);
+    throw new Error(message || "Não foi possível salvar o registro.");
   }
 
   return response.json();
@@ -45,7 +45,7 @@ export async function insertSupabaseRow<TPayload extends Record<string, unknown>
 
 export async function updateSupabaseRows<TPayload extends Record<string, unknown>>(table: string, filter: string, payload: TPayload) {
   if (!serviceRoleKey) {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY não configurada.");
+    throw new Error("Painel temporariamente indisponível. Tente novamente em instantes.");
   }
 
   const response = await fetch(`${supabaseUrl}/rest/v1/${table}?${filter}`, {
@@ -62,7 +62,7 @@ export async function updateSupabaseRows<TPayload extends Record<string, unknown
 
   if (!response.ok) {
     const message = await response.text();
-    throw new Error(message || `Supabase retornou ${response.status}.`);
+    throw new Error(message || "Não foi possível atualizar o registro.");
   }
 
   return response.json();
@@ -83,7 +83,7 @@ export async function selectSupabaseRows<TResult>(table: string, query: string) 
   });
 
   if (!response.ok) {
-    console.warn(`Supabase retornou ${response.status} ao ler ${table}.`);
+    console.warn(`Não foi possível ler ${table}. Status: ${response.status}.`);
     return [] as TResult[];
   }
 
@@ -107,7 +107,7 @@ export async function countSupabaseRows(table: string, query = "select=id") {
   });
 
   if (!response.ok) {
-    console.warn(`Supabase retornou ${response.status} ao contar ${table}.`);
+    console.warn(`Não foi possível contar ${table}. Status: ${response.status}.`);
     return 0;
   }
 
@@ -119,7 +119,7 @@ export async function countSupabaseRows(table: string, query = "select=id") {
 
 export async function deleteSupabaseRows(table: string, filter: string) {
   if (!serviceRoleKey) {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY não configurada.");
+    throw new Error("Painel temporariamente indisponível. Tente novamente em instantes.");
   }
 
   const response = await fetch(`${supabaseUrl}/rest/v1/${table}?${filter}`, {
@@ -134,7 +134,7 @@ export async function deleteSupabaseRows(table: string, filter: string) {
 
   if (!response.ok) {
     const message = await response.text();
-    throw new Error(message || `Supabase retornou ${response.status}.`);
+    throw new Error(message || "Não foi possível remover o registro.");
   }
 }
 
@@ -168,7 +168,7 @@ export async function createAuditLog({ request, action, entity, entityId, entity
 
 export async function uploadPublicStorageObject(file: File, folder: string) {
   if (!serviceRoleKey) {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY não configurada.");
+    throw new Error("Painel temporariamente indisponível. Tente novamente em instantes.");
   }
 
   await ensurePublicStorageBucket(mediaBucket);
@@ -190,7 +190,7 @@ export async function uploadPublicStorageObject(file: File, folder: string) {
 
   if (!response.ok) {
     const message = await response.text();
-    throw new Error(message || `Supabase Storage retornou ${response.status}.`);
+    throw new Error(message || "Não foi possível enviar o arquivo.");
   }
 
   return {
@@ -202,7 +202,7 @@ export async function uploadPublicStorageObject(file: File, folder: string) {
 
 async function ensurePublicStorageBucket(bucket: string) {
   if (!serviceRoleKey) {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY não configurada.");
+    throw new Error("Painel temporariamente indisponível. Tente novamente em instantes.");
   }
 
   const existingBucket = await fetch(`${supabaseUrl}/storage/v1/bucket/${bucket}`, {

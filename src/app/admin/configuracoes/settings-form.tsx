@@ -18,9 +18,10 @@ type SettingGroup = {
 type SettingsFormProps = {
   groups: SettingGroup[];
   values: Record<string, string>;
+  canEdit?: boolean;
 };
 
-export function SettingsForm({ groups, values }: SettingsFormProps) {
+export function SettingsForm({ groups, values, canEdit = true }: SettingsFormProps) {
   const [activeGroup, setActiveGroup] = useState(groups[0]?.group ?? "");
   const currentGroup = useMemo(() => groups.find((group) => group.group === activeGroup) ?? groups[0], [activeGroup, groups]);
 
@@ -57,8 +58,9 @@ export function SettingsForm({ groups, values }: SettingsFormProps) {
                   <input
                     name={field.name}
                     defaultValue={values[field.name] ?? ""}
-                    className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]"
+                    className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
                     placeholder={field.placeholder}
+                    disabled={!canEdit}
                   />
                 </label>
               ))}
@@ -68,7 +70,11 @@ export function SettingsForm({ groups, values }: SettingsFormProps) {
       ))}
 
       <div className="flex flex-col gap-3 sm:flex-row">
-        <button type="submit" className="inline-flex items-center justify-center gap-3 bg-[#171006] px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-white">
+        <button
+          type="submit"
+          disabled={!canEdit}
+          className="inline-flex items-center justify-center gap-3 bg-[#171006] px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-white disabled:cursor-not-allowed disabled:opacity-60"
+        >
           <Save size={18} />
           Salvar configurações
         </button>

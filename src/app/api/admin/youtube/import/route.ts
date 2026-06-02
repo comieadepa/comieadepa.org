@@ -6,6 +6,7 @@ import {
   redirectWithStatus,
   selectSupabaseRows,
 } from "@/lib/supabase-admin";
+import { canPerformAdminAction, resolveAdminRoleFromHeaders } from "@/lib/admin-permissions";
 
 const youtubeApiKey = process.env.YOUTUBE_API_KEY;
 const youtubePlaylistId = process.env.YOUTUBE_PLAYLIST_ID;
@@ -39,8 +40,13 @@ export async function POST(request: Request) {
     return missingSupabaseAdminResponse();
   }
 
+  const role = resolveAdminRoleFromHeaders(request.headers);
+  if (!canPerformAdminAction(role, "videos", "create")) {
+    return redirectWithStatus(request.url, "/admin/videos", "error", "Sem permissao para importar videos.");
+  }
+
   if (!youtubeApiKey || !youtubePlaylistId) {
-    return redirectWithStatus(request.url, "/admin/videos", "error", "Configure YOUTUBE_API_KEY e YOUTUBE_PLAYLIST_ID para importar vídeos.");
+    return redirectWithStatus(request.url, "/admin/videos", "error", "A importação automática ainda não foi configurada.");
   }
 
   try {

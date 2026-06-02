@@ -7,6 +7,7 @@ import {
   requiredString,
   updateSupabaseRows,
 } from "@/lib/supabase-admin";
+import { canPerformAdminAction, resolveAdminRoleFromHeaders } from "@/lib/admin-permissions";
 
 const editableSettings = [
   "url_area_ministro",
@@ -133,6 +134,11 @@ const settingGroups: Record<(typeof editableSettings)[number], string> = {
 export async function POST(request: Request) {
   if (!hasSupabaseAdminConfig()) {
     return missingSupabaseAdminResponse();
+  }
+
+  const role = resolveAdminRoleFromHeaders(request.headers);
+  if (!canPerformAdminAction(role, "configuracoes", "manage_settings")) {
+    return redirectWithStatus(request.url, "/admin/configuracoes", "error", "Sem permissao para alterar configuracoes.");
   }
 
   const formData = await request.formData();

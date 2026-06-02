@@ -9,6 +9,7 @@ import {
   slugify,
   updateSupabaseRows,
 } from "@/lib/supabase-admin";
+import { canPerformAdminAction, resolveAdminRoleFromHeaders } from "@/lib/admin-permissions";
 
 export async function POST(request: Request) {
   if (!hasSupabaseAdminConfig()) {
@@ -19,6 +20,14 @@ export async function POST(request: Request) {
   const id = requiredString(formData, "id");
   const action = requiredString(formData, "action");
   const name = requiredString(formData, "nome");
+
+  const role = resolveAdminRoleFromHeaders(request.headers);
+
+  if (action && id) {
+    if (!canPerformAdminAction(role, "departamentos", "update")) {
+      return redirectWithStatus(request.url, "/admin/departamentos", "error", "Sem permissao para atualizar departamentos.");
+    }
+  }
 
   if (action && id) {
     try {
@@ -42,6 +51,11 @@ export async function POST(request: Request) {
 
   if (!name) {
     return redirectWithStatus(request.url, "/admin/departamentos", "error", "Informe o nome do departamento.");
+  }
+
+  const writeAction = id ? "update" : "create";
+  if (!canPerformAdminAction(role, "departamentos", writeAction)) {
+    return redirectWithStatus(request.url, "/admin/departamentos", "error", "Sem permissao para salvar departamentos.");
   }
 
   try {

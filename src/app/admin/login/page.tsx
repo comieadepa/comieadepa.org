@@ -17,7 +17,7 @@ export default async function AdminLoginPage({
           <p className="text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Acesso restrito</p>
           <h1 className="mt-3 font-serif text-4xl font-black leading-tight">Login do painel editorial</h1>
           <p className="mt-4 max-w-xl leading-7 text-[#5a472c]">
-            Use o e-mail cadastrado e sua senha do Supabase Auth para entrar no painel da COMIEADEPA.
+            Use o e-mail cadastrado e sua senha para entrar no painel da COMIEADEPA.
           </p>
 
           <form action="/api/admin/auth/login" method="post" className="mt-8 grid gap-5">
@@ -58,7 +58,7 @@ export default async function AdminLoginPage({
           <p className="mt-6 text-sm font-black uppercase tracking-[0.18em] text-[#f4cf6a]">Seguranca</p>
           <h2 className="mt-3 font-serif text-3xl font-black leading-tight">Apenas perfis ativos entram.</h2>
           <p className="mt-4 leading-7 text-white/62">
-            Os acessos sao validados no Supabase Auth e vinculados ao cadastro interno de usuarios. Se precisar de permissao, fale com a administracao.
+            Acesso restrito a membros autorizados. Se precisar de permissao, fale com a administracao.
           </p>
         </aside>
       </div>

@@ -8,10 +8,16 @@ import {
   requiredString,
   uploadPublicStorageObject,
 } from "@/lib/supabase-admin";
+import { canPerformAdminAction, resolveAdminRoleFromHeaders } from "@/lib/admin-permissions";
 
 export async function POST(request: Request) {
   if (!hasSupabaseAdminConfig()) {
     return missingSupabaseAdminResponse();
+  }
+
+  const role = resolveAdminRoleFromHeaders(request.headers);
+  if (!canPerformAdminAction(role, "midia", "upload")) {
+    return redirectWithStatus(request.url, "/admin/midia", "error", "Sem permissao para enviar arquivos.");
   }
 
   const formData = await request.formData();

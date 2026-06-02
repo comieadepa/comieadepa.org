@@ -84,10 +84,10 @@ export default async function AdminDashboardPage() {
           <p className="text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Próximas conexões</p>
           <div className="mt-6 grid gap-4">
             {[
-              "Executar o SQL inicial no Supabase",
-              "Autenticação via Supabase e perfis editoriais",
-              "Conectar formulários para gravar notícias, vídeos e departamentos",
-              "Atualizar o portal para ler posts e vídeos publicados",
+              "Finalizar a base inicial do painel",
+              "Organizar acesso e perfis editoriais",
+              "Conectar formulários às publicações do portal",
+              "Atualizar o portal com conteúdos publicados",
             ].map((item, index) => (
               <div key={item} className="flex items-center gap-3 border-b border-[#ead9a6] pb-4 last:border-b-0">
                 {index === 0 ? <Clock3 size={20} className="text-[#d97a00]" /> : <CheckCircle2 size={20} className="text-[#8b2f2b]" />}

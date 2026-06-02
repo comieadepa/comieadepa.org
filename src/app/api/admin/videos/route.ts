@@ -9,6 +9,7 @@ import {
   requiredString,
   updateSupabaseRows,
 } from "@/lib/supabase-admin";
+import { canPerformAdminAction, resolveAdminRoleFromHeaders } from "@/lib/admin-permissions";
 
 export async function POST(request: Request) {
   if (!hasSupabaseAdminConfig()) {
@@ -20,6 +21,14 @@ export async function POST(request: Request) {
   const action = requiredString(formData, "action");
   const title = requiredString(formData, "titulo");
   const youtubeUrl = requiredString(formData, "youtube_url");
+
+  const role = resolveAdminRoleFromHeaders(request.headers);
+
+  if (action && id) {
+    if (!canPerformAdminAction(role, "videos", "update")) {
+      return redirectWithStatus(request.url, "/admin/videos", "error", "Sem permissao para atualizar videos.");
+    }
+  }
 
   if (action && id) {
     try {
@@ -43,6 +52,11 @@ export async function POST(request: Request) {
 
   if (!title || !youtubeUrl) {
     return redirectWithStatus(request.url, "/admin/videos", "error", "Informe título e URL do YouTube.");
+  }
+
+  const writeAction = id ? "update" : "create";
+  if (!canPerformAdminAction(role, "videos", writeAction)) {
+    return redirectWithStatus(request.url, "/admin/videos", "error", "Sem permissao para salvar videos.");
   }
 
   try {

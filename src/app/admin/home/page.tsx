@@ -1,9 +1,11 @@
 import { Home } from "lucide-react";
 import { homeFallbackSettings, homeSettingKeys } from "@/lib/home-settings";
 import { selectSupabaseRows } from "@/lib/supabase-admin";
+import { canPerformAdminAction, normalizeAdminRole } from "@/lib/admin-permissions";
 import { MediaPickerAsset } from "../media-url-field";
 import { StatusMessage } from "../status-message";
 import { HomeSettingsForm } from "./home-settings-form";
+import { headers } from "next/headers";
 
 type CmsSetting = {
   chave: string;
@@ -22,6 +24,9 @@ export default async function AdminHomePage({
   ]);
   const settingMap = new Map(settings.map((setting) => [setting.chave, stringifySettingValue(setting.valor)]));
   const values = Object.fromEntries(homeSettingKeys.map((key) => [key, settingMap.get(key) ?? homeFallbackSettings[key] ?? ""]));
+  const headerList = await headers();
+  const role = normalizeAdminRole(headerList.get("x-admin-role"));
+  const canEdit = canPerformAdminAction(role, "home", "update");
 
   return (
     <div className="mx-auto max-w-7xl">
@@ -42,7 +47,7 @@ export default async function AdminHomePage({
         </div>
       </section>
 
-      <HomeSettingsForm values={values} assets={mediaAssets} />
+      <HomeSettingsForm values={values} assets={mediaAssets} canEdit={canEdit} />
     </div>
   );
 }

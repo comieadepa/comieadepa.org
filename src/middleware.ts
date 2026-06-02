@@ -210,7 +210,7 @@ function redirectToLogin(request: NextRequest, message?: string) {
 }
 
 function configurationMissingResponse() {
-  return new NextResponse("Configuracao do Supabase ausente para autenticar o painel.", { status: 500 });
+  return new NextResponse("Painel temporariamente indisponível. Tente novamente em instantes.", { status: 500 });
 }
 
 function forbiddenResponse() {

@@ -8,10 +8,16 @@ import {
   requiredString,
   updateSupabaseRows,
 } from "@/lib/supabase-admin";
+import { canPerformAdminAction, resolveAdminRoleFromHeaders } from "@/lib/admin-permissions";
 
 export async function POST(request: Request) {
   if (!hasSupabaseAdminConfig()) {
     return missingSupabaseAdminResponse();
+  }
+
+  const role = resolveAdminRoleFromHeaders(request.headers);
+  if (!canPerformAdminAction(role, "usuarios", "manage_users")) {
+    return redirectWithStatus(request.url, "/admin/usuarios", "error", "Sem permissao para gerenciar usuarios.");
   }
 
   const formData = await request.formData();

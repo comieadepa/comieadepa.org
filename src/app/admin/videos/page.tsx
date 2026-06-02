@@ -52,7 +52,7 @@ export default async function AdminVideosPage({
             Cadastre shorts, lives, entrevistas e coberturas. A equipe escolhe o que aparece na home, no bloco de vídeos e nas páginas dos departamentos.
           </p>
           <div className="mt-8 grid gap-3">
-            {["Cadastro manual de URL", "Destaque na home", "Vinculação a evento ou departamento", "Preparado para YouTube API"].map((item) => (
+            {["Cadastro manual de URL", "Destaque na home", "Vinculação a evento ou departamento", "Importação automática de vídeos"].map((item) => (
               <div key={item} className="flex items-center gap-3 border border-white/10 bg-white/[0.055] p-3">
                 <Star size={17} className="text-[#f4cf6a]" />
                 <span className="font-semibold">{item}</span>
@@ -64,7 +64,7 @@ export default async function AdminVideosPage({
               <DownloadCloud size={18} />
               Importar do YouTube
             </button>
-            <p className="mt-3 text-xs leading-5 text-white/48">Usa a playlist configurada em YOUTUBE_PLAYLIST_ID e ignora vídeos já cadastrados.</p>
+            <p className="mt-3 text-xs leading-5 text-white/48">Busca os vídeos do canal oficial e ignora itens já cadastrados.</p>
           </form>
         </div>
 

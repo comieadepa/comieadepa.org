@@ -26,7 +26,7 @@ type AdminUser = {
 
 export async function POST(request: Request) {
   if (!supabaseAnonKey || !serviceRoleKey) {
-    return redirectWithError(request.url, "Configuracao do Supabase ausente.");
+    return redirectWithError(request.url, "Painel temporariamente indisponível. Tente novamente em instantes.");
   }
 
   const formData = await request.formData();
@@ -50,8 +50,7 @@ export async function POST(request: Request) {
     });
 
     if (!authResponse.ok) {
-      const message = await authResponse.text();
-      return redirectWithError(request.url, message || "Credenciais invalidas.");
+      return redirectWithError(request.url, "E-mail ou senha inválidos.");
     }
 
     const authData = (await authResponse.json()) as AuthTokenResponse;
@@ -105,8 +104,7 @@ async function fetchAdminUser(email: string) {
   );
 
   if (!response.ok) {
-    const message = await response.text();
-    throw new Error(`Falha ao consultar admins (${response.status}): ${message}`);
+    throw new Error("Não foi possível validar o acesso ao painel.");
   }
 
   const data = (await response.json()) as AdminUser[];

@@ -1,7 +1,9 @@
 import { selectSupabaseRows } from "@/lib/supabase-admin";
+import { canPerformAdminAction, normalizeAdminRole } from "@/lib/admin-permissions";
 import { Settings } from "lucide-react";
 import { SettingsForm } from "./settings-form";
 import { StatusMessage } from "../status-message";
+import { headers } from "next/headers";
 
 type CmsSetting = {
   chave: string;
@@ -86,7 +88,7 @@ const settingFields = [
   },
   {
     group: "Home - Eventos",
-    description: "Narrativa da área de eventos. Os cards continuam vindo automaticamente do sistema de eventos via Supabase.",
+    description: "Narrativa da área de eventos. Os cards continuam vindo automaticamente do sistema oficial de eventos.",
     fields: [
       { name: "home_eventos_selo", label: "Selo da seção", placeholder: "Eventos oficiais" },
       { name: "home_eventos_titulo", label: "Título", placeholder: "Eventos que edificam a história pentecostal do Pará." },
@@ -195,6 +197,9 @@ export default async function AdminSettingsPage({
   searchParams?: Promise<{ success?: string; error?: string; message?: string }>;
 }) {
   const params = await searchParams;
+  const headerList = await headers();
+  const role = normalizeAdminRole(headerList.get("x-admin-role"));
+  const canEdit = canPerformAdminAction(role, "configuracoes", "manage_settings");
   const settings = await selectSupabaseRows<CmsSetting>("cms_configuracoes", "select=chave,valor&order=grupo.asc,chave.asc");
   const settingMap = new Map(settings.map((setting) => [setting.chave, stringifySettingValue(setting.valor)]));
   const settingValues = Object.fromEntries(Object.keys(fallbackSettings).map((key) => [key, settingMap.get(key) ?? fallbackSettings[key] ?? ""]));
@@ -212,11 +217,11 @@ export default async function AdminSettingsPage({
             <p className="mt-6 text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Configurações</p>
             <h2 className="mt-3 font-serif text-4xl font-black leading-tight">Dados globais do portal.</h2>
             <p className="mt-4 leading-8 text-[#5a472c]">
-              Esta área mantém o portal alinhado ao sistema de gestão sem duplicar módulos. Eventos vêm do Supabase; Área do Ministro será apenas um link externo quando estiver pronto.
+              Esta área mantém o portal alinhado aos sistemas oficiais sem duplicar módulos. Eventos e Área do Ministro usam links institucionais externos quando necessário.
             </p>
           </div>
 
-          <SettingsForm groups={settingFields} values={settingValues} />
+          <SettingsForm groups={settingFields} values={settingValues} canEdit={canEdit} />
         </div>
       </section>
     </div>

@@ -8,10 +8,16 @@ import {
   requiredString,
   updateSupabaseRows,
 } from "@/lib/supabase-admin";
+import { canPerformAdminAction, resolveAdminRoleFromHeaders } from "@/lib/admin-permissions";
 
 export async function POST(request: Request) {
   if (!hasSupabaseAdminConfig()) {
     return missingSupabaseAdminResponse();
+  }
+
+  const role = resolveAdminRoleFromHeaders(request.headers);
+  if (!canPerformAdminAction(role, "home", "update")) {
+    return redirectWithStatus(request.url, "/admin/home", "error", "Sem permissao para editar a home.");
   }
 
   const formData = await request.formData();

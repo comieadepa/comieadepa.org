@@ -1,8 +1,10 @@
 import { selectSupabaseRows } from "@/lib/supabase-admin";
+import { canPerformAdminAction, normalizeAdminRole } from "@/lib/admin-permissions";
 import { Copy, ExternalLink, FileImage, ImagePlus, UploadCloud } from "lucide-react";
 import Image from "next/image";
 import { StatusMessage } from "../status-message";
 import { CopyUrlButton } from "./copy-url-button";
+import { headers } from "next/headers";
 
 type MediaAsset = {
   id: string;
@@ -19,6 +21,9 @@ export default async function AdminMediaPage({
   searchParams?: Promise<{ success?: string; error?: string; message?: string; pasta?: string }>;
 }) {
   const params = await searchParams;
+  const headerList = await headers();
+  const role = normalizeAdminRole(headerList.get("x-admin-role"));
+  const canUpload = canPerformAdminAction(role, "midia", "upload");
   const selectedFolder = params?.pasta && params.pasta !== "todos" ? params.pasta : null;
   const mediaQuery = selectedFolder
     ? `select=id,titulo,arquivo_url,tipo,pasta,created_at&pasta=eq.${encodeURIComponent(selectedFolder)}&order=created_at.desc&limit=24`
@@ -45,18 +50,34 @@ export default async function AdminMediaPage({
             <span className="flex min-h-36 cursor-pointer flex-col items-center justify-center gap-3 border border-dashed border-[#b98e3b] bg-[#f7efd6] px-4 py-6 text-center text-sm font-semibold text-[#8b2f2b]">
               <UploadCloud size={30} />
               PNG, JPG, WEBP, GIF ou PDF até 10 MB
-              <input name="arquivo" type="file" required accept="image/png,image/jpeg,image/webp,image/gif,application/pdf" className="w-full max-w-[260px] text-xs" />
+              <input
+                name="arquivo"
+                type="file"
+                required
+                disabled={!canUpload}
+                accept="image/png,image/jpeg,image/webp,image/gif,application/pdf"
+                className="w-full max-w-[260px] text-xs disabled:cursor-not-allowed disabled:opacity-60"
+              />
             </span>
           </label>
 
           <label className="grid gap-2">
             <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Título</span>
-            <input name="titulo" className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]" placeholder="Ex.: Banner da AGO 2026" />
+            <input
+              name="titulo"
+              disabled={!canUpload}
+              className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
+              placeholder="Ex.: Banner da AGO 2026"
+            />
           </label>
 
           <label className="grid gap-2">
             <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Pasta</span>
-            <select name="pasta" className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]">
+            <select
+              name="pasta"
+              disabled={!canUpload}
+              className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
+            >
               {["geral", "noticias", "departamentos", "banners", "videos", "documentos"].map((folder) => (
                 <option key={folder} value={folder}>
                   {folder}
@@ -65,7 +86,11 @@ export default async function AdminMediaPage({
             </select>
           </label>
 
-          <button type="submit" className="inline-flex items-center justify-center gap-3 bg-[#171006] px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-white">
+          <button
+            type="submit"
+            disabled={!canUpload}
+            className="inline-flex items-center justify-center gap-3 bg-[#171006] px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-white disabled:cursor-not-allowed disabled:opacity-60"
+          >
             <ImagePlus size={18} />
             Enviar arquivo
           </button>

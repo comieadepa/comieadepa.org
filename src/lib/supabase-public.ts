@@ -17,7 +17,7 @@ export async function selectPublicRows<TResult>(table: string, query: string) {
   });
 
   if (!response.ok) {
-    console.warn(`Supabase retornou ${response.status} ao ler ${table}.`);
+    console.warn(`Não foi possível carregar ${table}. Status: ${response.status}.`);
     return [] as TResult[];
   }
 
