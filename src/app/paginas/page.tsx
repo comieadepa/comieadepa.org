@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { buildSeoMetadata } from "@/lib/seo";
 import { selectPublicRows } from "@/lib/supabase-public";
+import { PublicLayout } from "@/components/site/PublicLayout";
 
 type CmsPageListItem = {
   titulo: string;
@@ -27,7 +28,8 @@ export default async function PublicPagesIndex() {
   );
 
   return (
-    <main className="min-h-screen bg-white text-[#1F2937]">
+    <PublicLayout>
+      <main className="min-h-screen bg-white text-[#1F2937]">
       <header className="relative overflow-hidden border-b border-[#0F3B63]/10 px-5 py-16 sm:px-8">
         <div className="absolute inset-0 bg-[url('/assets/sede-aerea-comieadepa.jpg')] bg-cover bg-center opacity-10" />
         <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/96 to-white" />
@@ -75,7 +77,8 @@ export default async function PublicPagesIndex() {
           </div>
         )}
       </section>
-    </main>
+      </main>
+    </PublicLayout>
   );
 }
 

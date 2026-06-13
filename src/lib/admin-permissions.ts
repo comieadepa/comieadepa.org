@@ -6,6 +6,8 @@ export type AdminModule =
   | "noticias"
   | "videos"
   | "departamentos"
+  | "documentos"
+  | "galerias"
   | "midia"
   | "auditoria"
   | "usuarios"
@@ -38,6 +40,8 @@ const adminModules: AdminModule[] = [
   "noticias",
   "videos",
   "departamentos",
+  "documentos",
+  "galerias",
   "midia",
   "auditoria",
   "usuarios",
@@ -66,6 +70,8 @@ const adminModulePaths: Record<AdminModule, string> = {
   noticias: "/admin/noticias",
   videos: "/admin/videos",
   departamentos: "/admin/departamentos",
+  documentos: "/admin/documentos",
+  galerias: "/admin/galerias",
   midia: "/admin/midia",
   auditoria: "/admin/auditoria",
   usuarios: "/admin/usuarios",
@@ -78,17 +84,19 @@ const rolePermissions: Record<AdminRole, Partial<Record<AdminModule, AdminAction
   admin: Object.fromEntries(adminModules.map((moduleKey) => [moduleKey, adminActions])) as Record<AdminModule, AdminAction[]>,
   editor: {
     dashboard: ["view"],
-    home: ["view", "update"],
+    home: ["view", "create", "update", "delete", "publish", "archive"],
     eventos: ["view", "create", "update"],
     noticias: ["view", "create", "update", "publish", "archive"],
     videos: ["view", "create", "update"],
     departamentos: ["view", "create", "update"],
+    documentos: ["view", "create", "update", "publish", "archive"],
+    galerias: ["view", "create", "update", "publish", "archive"],
     midia: ["view", "upload"],
     paginas: ["view", "create", "update", "publish", "archive"],
   },
   midia: {
     dashboard: ["view"],
-    home: ["view", "update"],
+    home: ["view", "create", "update", "delete", "publish", "archive"],
     midia: ["view", "upload"],
     videos: ["view", "create", "update"],
   },
@@ -99,6 +107,8 @@ const rolePermissions: Record<AdminRole, Partial<Record<AdminModule, AdminAction
     noticias: ["view"],
     videos: ["view"],
     departamentos: ["view"],
+    documentos: ["view"],
+    galerias: ["view"],
     midia: ["view"],
     paginas: ["view"],
   },
@@ -170,6 +180,14 @@ function getAdminModuleFromPath(pathname: string): AdminModule | null {
 
   if (pathname.startsWith("/admin/departamentos") || pathname.startsWith("/api/admin/departamentos")) {
     return "departamentos";
+  }
+
+  if (pathname.startsWith("/admin/documentos") || pathname.startsWith("/api/admin/documentos")) {
+    return "documentos";
+  }
+
+  if (pathname.startsWith("/admin/galerias") || pathname.startsWith("/api/admin/galerias")) {
+    return "galerias";
   }
 
   if (pathname.startsWith("/admin/midia") || pathname.startsWith("/api/admin/media")) {

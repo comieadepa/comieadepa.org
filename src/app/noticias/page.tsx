@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { buildSeoMetadata } from "@/lib/seo";
 import { selectPublicRows } from "@/lib/supabase-public";
+import { PublicLayout } from "@/components/site/PublicLayout";
 
 type CmsPost = {
   id: string;
@@ -39,7 +40,8 @@ export default async function NewsIndexPage() {
   const departmentMap = buildLookupMap(departments);
 
   return (
-    <main className="min-h-screen bg-white px-5 py-16 text-[#1F2937] sm:px-8">
+    <PublicLayout>
+      <main className="min-h-screen bg-white px-5 py-16 text-[#1F2937] sm:px-8">
       <section className="mx-auto max-w-6xl">
         <Link href="/" className="text-sm font-black uppercase tracking-[0.18em] text-[#0F3B63] transition hover:text-[#4A86B8]">
           COMIEADEPA
@@ -81,7 +83,8 @@ export default async function NewsIndexPage() {
           </div>
         ) : null}
       </section>
-    </main>
+      </main>
+    </PublicLayout>
   );
 }
 

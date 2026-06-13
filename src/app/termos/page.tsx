@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PublicLayout } from "@/components/site/PublicLayout";
 
 export const metadata = {
   title: "Termos de Uso | COMIEADEPA",
@@ -6,7 +7,8 @@ export const metadata = {
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen bg-white px-5 py-16 text-[#1F2937] sm:px-8">
+    <PublicLayout>
+      <main className="min-h-screen bg-white px-5 py-16 text-[#1F2937] sm:px-8">
       <article className="mx-auto max-w-4xl">
         <Link href="/" className="text-sm font-black uppercase tracking-[0.18em] text-[#0F3B63] transition hover:text-[#4A86B8]">
           COMIEADEPA
@@ -56,6 +58,7 @@ export default function TermsPage() {
           </section>
         </div>
       </article>
-    </main>
+      </main>
+    </PublicLayout>
   );
 }

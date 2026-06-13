@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { buildSeoMetadata } from "@/lib/seo";
 import { selectPublicRows } from "@/lib/supabase-public";
 import { PageView } from "../page-view";
+import { PublicLayout } from "@/components/site/PublicLayout";
 
 type CmsPage = {
   id: string;
@@ -58,7 +59,11 @@ export default async function PublicPage({ params }: PageProps) {
     notFound();
   }
 
-  return <PageView page={page} backHref="/" backLabel="Voltar ao portal" />;
+  return (
+    <PublicLayout>
+      <PageView page={page} backHref="/" backLabel="Voltar ao portal" />
+    </PublicLayout>
+  );
 }
 
 function getPublishedPagesFilter() {

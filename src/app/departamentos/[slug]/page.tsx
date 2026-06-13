@@ -5,6 +5,7 @@ import { buildSeoMetadata } from "@/lib/seo";
 import { selectPublicRows } from "@/lib/supabase-public";
 import type { DepartmentLink, DepartmentRelatedVideo } from "../department-page-view";
 import { DepartmentPageView } from "../department-page-view";
+import { PublicLayout } from "@/components/site/PublicLayout";
 
 type CmsDepartment = {
   id: string;
@@ -107,7 +108,11 @@ export default async function DepartmentPage({ params }: PageProps) {
     notFound();
   }
 
-  return <DepartmentPageView department={department} />;
+  return (
+    <PublicLayout>
+      <DepartmentPageView department={department} />
+    </PublicLayout>
+  );
 }
 
 async function loadRelatedDepartmentContent(departmentId: string) {

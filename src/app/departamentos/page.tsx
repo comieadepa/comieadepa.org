@@ -4,6 +4,7 @@ import Link from "next/link";
 import { fallbackDepartments, type DepartmentPageContent } from "@/lib/department-content";
 import { buildSeoMetadata } from "@/lib/seo";
 import { selectPublicRows } from "@/lib/supabase-public";
+import { PublicLayout } from "@/components/site/PublicLayout";
 
 type CmsDepartment = {
   slug: string;
@@ -27,7 +28,8 @@ export default async function DepartmentsIndexPage() {
   const departments = mergeDepartments(cmsDepartments);
 
   return (
-    <main className="min-h-screen bg-white px-5 py-16 text-[#1F2937] sm:px-8">
+    <PublicLayout>
+      <main className="min-h-screen bg-white px-5 py-16 text-[#1F2937] sm:px-8">
       <section className="mx-auto max-w-6xl">
         <Link href="/" className="text-sm font-black uppercase tracking-[0.18em] text-[#0F3B63] transition hover:text-[#4A86B8]">
           COMIEADEPA
@@ -62,7 +64,8 @@ export default async function DepartmentsIndexPage() {
           ))}
         </div>
       </section>
-    </main>
+      </main>
+    </PublicLayout>
   );
 }
 

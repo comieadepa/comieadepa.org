@@ -4,6 +4,22 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://wtifljxpoin
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const mediaBucket = process.env.SUPABASE_MEDIA_BUCKET ?? "cms-media";
 const siteSchema = process.env.SUPABASE_SITE_SCHEMA ?? "site";
+const publicStorageAllowedMimeTypes = [
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "image/gif",
+  "application/pdf",
+  "application/msword",
+  "application/vnd.ms-excel",
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "application/zip",
+  "application/x-zip-compressed",
+  "text/plain",
+];
 
 export function hasSupabaseAdminConfig() {
   return Boolean(supabaseUrl && serviceRoleKey);
@@ -213,6 +229,7 @@ async function ensurePublicStorageBucket(bucket: string) {
   });
 
   if (existingBucket.ok) {
+    await syncPublicStorageBucket(bucket);
     return;
   }
 
@@ -233,7 +250,7 @@ async function ensurePublicStorageBucket(bucket: string) {
       name: bucket,
       public: true,
       file_size_limit: 10485760,
-      allowed_mime_types: ["image/png", "image/jpeg", "image/webp", "image/gif", "application/pdf"],
+      allowed_mime_types: publicStorageAllowedMimeTypes,
     }),
   });
 
@@ -241,6 +258,7 @@ async function ensurePublicStorageBucket(bucket: string) {
     const message = await createBucket.text();
     throw new Error(message || `Não foi possível criar o bucket ${bucket}.`);
   }
+  await syncPublicStorageBucket(bucket);
 }
 
 export function redirectWithStatus(requestUrl: string, path: string, status: "success" | "error", message?: string) {
@@ -340,6 +358,28 @@ function getReadSchemaHeaders(table: string): Record<string, string> {
 
 function getWriteSchemaHeaders(table: string): Record<string, string> {
   return isSiteRelation(table) ? { "Content-Profile": siteSchema, "Accept-Profile": siteSchema } : {};
+}
+
+async function syncPublicStorageBucket(bucket: string) {
+  if (!serviceRoleKey) {
+    return;
+  }
+
+  await fetch(`${supabaseUrl}/storage/v1/bucket/${bucket}`, {
+    method: "PUT",
+    headers: {
+      apikey: serviceRoleKey,
+      Authorization: `Bearer ${serviceRoleKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id: bucket,
+      name: bucket,
+      public: true,
+      file_size_limit: 10485760,
+      allowed_mime_types: publicStorageAllowedMimeTypes,
+    }),
+  }).catch(() => undefined);
 }
 
 function isSiteRelation(table: string) {

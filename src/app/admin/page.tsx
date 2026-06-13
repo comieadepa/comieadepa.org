@@ -81,18 +81,20 @@ export default async function AdminDashboardPage() {
         </div>
 
         <div className="border border-[#d8c38b] bg-white/70 p-6">
-          <p className="text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Próximas conexões</p>
+          <p className="text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Status dos módulos</p>
           <div className="mt-6 grid gap-4">
             {[
-              "Finalizar a base inicial do painel",
-              "Organizar acesso e perfis editoriais",
-              "Conectar formulários às publicações do portal",
-              "Atualizar o portal com conteúdos publicados",
-            ].map((item, index) => (
-              <div key={item} className="flex items-center gap-3 border-b border-[#ead9a6] pb-4 last:border-b-0">
-                {index === 0 ? <Clock3 size={20} className="text-[#d97a00]" /> : <CheckCircle2 size={20} className="text-[#8b2f2b]" />}
-                <span className="font-semibold text-[#342411]">{item}</span>
-              </div>
+              { label: "Base inicial do painel concluída", href: "/admin", done: true },
+              { label: "Acesso e perfis editoriais ativos", href: "/admin/permissoes", done: true },
+              { label: "Páginas institucionais publicáveis", href: "/admin/paginas", done: true },
+              { label: "Home editável para a equipe de mídia", href: "/admin/home", done: true },
+              { label: "Revisar conteúdos finais antes da publicação", href: "/admin/noticias", done: false },
+            ].map((item) => (
+              <Link key={item.label} href={item.href} className="group flex items-center gap-3 border-b border-[#ead9a6] pb-4 last:border-b-0">
+                {item.done ? <CheckCircle2 size={20} className="text-[#0b6b3a]" /> : <Clock3 size={20} className="text-[#d97a00]" />}
+                <span className="flex-1 font-semibold text-[#342411] transition group-hover:text-[#8b2f2b]">{item.label}</span>
+                <ArrowRight size={16} className="text-[#8b2f2b] opacity-0 transition group-hover:opacity-100" />
+              </Link>
             ))}
           </div>
         </div>

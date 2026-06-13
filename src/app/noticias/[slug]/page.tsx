@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { buildSeoMetadata } from "@/lib/seo";
 import { selectPublicRows } from "@/lib/supabase-public";
 import { NewsArticleView } from "../news-article-view";
+import { PublicLayout } from "@/components/site/PublicLayout";
 
 type CmsPost = {
   id: string;
@@ -71,7 +72,11 @@ export default async function NewsArticlePage({ params }: PageProps) {
   const categoryMap = buildLookupMap(categories);
   const departmentMap = buildLookupMap(departments);
 
-  return <NewsArticleView post={{ ...post, label: resolvePostLabel(post, categoryMap, departmentMap) }} />;
+  return (
+    <PublicLayout>
+      <NewsArticleView post={{ ...post, label: resolvePostLabel(post, categoryMap, departmentMap) }} />
+    </PublicLayout>
+  );
 }
 
 function buildLookupMap(rows: CmsLookup[]) {

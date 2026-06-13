@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { buildSeoMetadata } from "@/lib/seo";
 import { selectPublicRows } from "@/lib/supabase-public";
+import { PublicLayout } from "@/components/site/PublicLayout";
 
 type CmsVideo = {
   id: string;
@@ -51,7 +52,8 @@ export default async function VideosPage() {
   const otherVideos = portalVideos.slice(1);
 
   return (
-    <main className="min-h-screen bg-white text-[#1F2937]">
+    <PublicLayout>
+      <main className="min-h-screen bg-white text-[#1F2937]">
       <section className="relative overflow-hidden px-5 py-16 sm:px-8">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(212,162,76,.18),transparent_28%),radial-gradient(circle_at_88%_70%,rgba(29,90,140,.16),transparent_30%)]" />
         <div className="absolute inset-0 opacity-[0.18] [background-image:linear-gradient(135deg,rgba(15,59,99,.12)_1px,transparent_1px)] [background-size:38px_38px]" />
@@ -126,7 +128,8 @@ export default async function VideosPage() {
           ) : null}
         </div>
       </section>
-    </main>
+      </main>
+    </PublicLayout>
   );
 }
 

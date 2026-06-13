@@ -22,8 +22,20 @@ type CmsPageSitemapRow = {
   created_at: string;
 };
 
+type CmsDocumentSitemapRow = {
+  slug: string;
+  updated_at: string | null;
+  created_at: string;
+};
+
+type CmsGallerySitemapRow = {
+  slug: string;
+  updated_at: string | null;
+  created_at: string;
+};
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [posts, departments, pages] = await Promise.all([
+  const [posts, departments, pages, documents, galleries] = await Promise.all([
     selectPublicRows<CmsPostSitemapRow>(
       "cms_posts",
       `select=slug,publicado_em,created_at&status=eq.publicado${getPublishedPostsPublicFilter()}&order=publicado_em.desc.nullslast,created_at.desc&limit=100`,
@@ -32,6 +44,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     selectPublicRows<CmsPageSitemapRow>(
       "cms_paginas",
       `select=slug,publicado_em,updated_at,created_at&status=eq.publicado${getPublishedPagesPublicFilter()}&order=ordem.asc,updated_at.desc&limit=100`,
+    ),
+    selectPublicRows<CmsDocumentSitemapRow>(
+      "cms_documentos",
+      "select=slug,updated_at,created_at&status=eq.publicado&order=destaque.desc,ordem.asc,updated_at.desc&limit=100",
+    ),
+    selectPublicRows<CmsGallerySitemapRow>(
+      "cms_galerias",
+      "select=slug,updated_at,created_at&status=eq.publicado&order=destaque.desc,data_evento.desc.nullslast,updated_at.desc&limit=100",
     ),
   ]);
   const departmentSlugs = new Set(departments.map((department) => department.slug));
@@ -76,6 +96,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     },
     {
+      url: absoluteUrl("/documentos"),
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
+      url: absoluteUrl("/galeria"),
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
       url: absoluteUrl("/privacidade"),
       lastModified: new Date(),
       changeFrequency: "yearly",
@@ -104,6 +136,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(page.updated_at ?? page.publicado_em ?? page.created_at),
       changeFrequency: "monthly" as const,
       priority: 0.5,
+    })),
+    ...documents.map((document) => ({
+      url: absoluteUrl(`/documentos/${document.slug}`),
+      lastModified: new Date(document.updated_at ?? document.created_at),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    })),
+    ...galleries.map((gallery) => ({
+      url: absoluteUrl(`/galeria/${gallery.slug}`),
+      lastModified: new Date(gallery.updated_at ?? gallery.created_at),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
     })),
     ...fallbackDepartmentEntries,
   ];
