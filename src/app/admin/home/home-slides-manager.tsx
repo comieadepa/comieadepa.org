@@ -13,6 +13,7 @@ type HomeSlidesManagerProps = {
   canPublish: boolean;
   canArchive: boolean;
   canDelete: boolean;
+  basePath?: string;
 };
 
 const statusLabels: Record<HomeSlideStatus, string> = {
@@ -29,6 +30,7 @@ export function HomeSlidesManager({
   canPublish,
   canArchive,
   canDelete,
+  basePath = "/admin/home/hero",
 }: HomeSlidesManagerProps) {
   const [editingId, setEditingId] = useState("");
   const [statusFilter, setStatusFilter] = useState<"todos" | HomeSlideStatus>("todos");
@@ -66,14 +68,14 @@ export function HomeSlidesManager({
       if (!response.ok) {
         const payload = await response.json().catch(() => ({}));
         const message = typeof payload?.error === "string" ? payload.error : "Erro ao salvar slide.";
-        window.location.href = `/admin/home?error=1&message=${encodeURIComponent(message)}`;
+        window.location.href = `${basePath}?error=1&message=${encodeURIComponent(message)}`;
         return;
       }
 
-      window.location.href = "/admin/home?success=1";
+      window.location.href = `${basePath}?success=1`;
     } catch (error) {
       const message = error instanceof Error ? error.message : "Erro ao salvar slide.";
-      window.location.href = `/admin/home?error=1&message=${encodeURIComponent(message)}`;
+      window.location.href = `${basePath}?error=1&message=${encodeURIComponent(message)}`;
     }
   }
 
@@ -113,14 +115,14 @@ export function HomeSlidesManager({
       if (!response.ok) {
         const payload = await response.json().catch(() => ({}));
         const message = typeof payload?.error === "string" ? payload.error : "Erro ao atualizar slide.";
-        window.location.href = `/admin/home?error=1&message=${encodeURIComponent(message)}`;
+        window.location.href = `${basePath}?error=1&message=${encodeURIComponent(message)}`;
         return;
       }
 
-      window.location.href = "/admin/home?success=1";
+      window.location.href = `${basePath}?success=1`;
     } catch (error) {
       const message = error instanceof Error ? error.message : "Erro ao atualizar slide.";
-      window.location.href = `/admin/home?error=1&message=${encodeURIComponent(message)}`;
+      window.location.href = `${basePath}?error=1&message=${encodeURIComponent(message)}`;
     }
   }
 
@@ -130,14 +132,14 @@ export function HomeSlidesManager({
       if (!response.ok) {
         const payload = await response.json().catch(() => ({}));
         const message = typeof payload?.error === "string" ? payload.error : fallbackMessage;
-        window.location.href = `/admin/home?error=1&message=${encodeURIComponent(message)}`;
+        window.location.href = `${basePath}?error=1&message=${encodeURIComponent(message)}`;
         return;
       }
 
-      window.location.href = "/admin/home?success=1";
+      window.location.href = `${basePath}?success=1`;
     } catch (error) {
       const message = error instanceof Error ? error.message : fallbackMessage;
-      window.location.href = `/admin/home?error=1&message=${encodeURIComponent(message)}`;
+      window.location.href = `${basePath}?error=1&message=${encodeURIComponent(message)}`;
     }
   }
 
