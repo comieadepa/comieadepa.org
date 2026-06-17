@@ -21,10 +21,15 @@ export async function POST(request: Request) {
   }
 
   const formData = await request.formData();
+  const submittedKeys = homeSettingKeys.filter((key) => formData.has(key));
+
+  if (submittedKeys.length === 0) {
+    return redirectWithStatus(request.url, "/admin/home", "error", "Nenhum campo enviado para salvar.");
+  }
 
   try {
     await Promise.all(
-      homeSettingKeys.map(async (key) => {
+      submittedKeys.map(async (key) => {
         const payload = {
           chave: key,
           valor: requiredString(formData, key),
@@ -45,7 +50,7 @@ export async function POST(request: Request) {
       action: "update",
       entity: "home",
       entityTitle: "Home do portal",
-      metadata: { keys: homeSettingKeys },
+      metadata: { keys: submittedKeys },
     });
 
     return redirectWithStatus(request.url, "/admin/home", "success");

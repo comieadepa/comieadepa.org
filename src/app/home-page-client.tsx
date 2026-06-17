@@ -146,6 +146,7 @@ type PortalHomeContent = {
   heroPrimaryUrl: string;
   heroSecondaryLabel: string;
   heroSideImageUrl: string;
+  heroRotationSeconds: number;
   agoBadge: string;
   agoTitle: string;
   aboutBadge: string;
@@ -210,6 +211,7 @@ const defaultPortalHomeContent: PortalHomeContent = {
   heroPrimaryUrl: "#a-comieadepa",
   heroSecondaryLabel: "Eventos oficiais",
   heroSideImageUrl: "/img/presidente.png",
+  heroRotationSeconds: 7,
   agoBadge: "Próxima AGO",
   agoTitle: "125ª Assembleia Geral Ordinária",
   aboutBadge: "A COMIEADEPA",
@@ -508,6 +510,7 @@ export function HomePageClient({ initialSlides }: HomePageClientProps) {
         ];
 
   const currentHeroSlide = heroSlides[currentHeroIndex] ?? heroSlides[0];
+  const heroRotationMs = Math.max(3, Math.min(30, portalHomeContent.heroRotationSeconds || 7)) * 1000;
 
   useEffect(() => {
     setCurrentHeroIndex(0);
@@ -520,10 +523,10 @@ export function HomePageClient({ initialSlides }: HomePageClientProps) {
 
     const interval = window.setInterval(() => {
       setCurrentHeroIndex((current) => (current + 1) % heroSlides.length);
-    }, 6500);
+    }, heroRotationMs);
 
     return () => window.clearInterval(interval);
-  }, [heroSlides.length]);
+  }, [heroRotationMs, heroSlides.length]);
 
   return (
     <PublicLayout>
@@ -1255,6 +1258,7 @@ function mapCmsSettingsToPortalHomeContent(settings: CmsSetting[]): PortalHomeCo
     heroPrimaryUrl: settingMap.get("home_hero_link_primario") || defaultPortalHomeContent.heroPrimaryUrl,
     heroSecondaryLabel: settingMap.get("home_hero_botao_secundario") || defaultPortalHomeContent.heroSecondaryLabel,
     heroSideImageUrl: settingMap.get("home_hero_imagem_direita_url") || defaultPortalHomeContent.heroSideImageUrl,
+    heroRotationSeconds: normalizeHeroRotationSeconds(settingMap.get("home_hero_intervalo_segundos")),
     agoBadge: settingMap.get("home_ago_selo") || defaultPortalHomeContent.agoBadge,
     agoTitle: settingMap.get("home_ago_titulo") || defaultPortalHomeContent.agoTitle,
     aboutBadge: settingMap.get("home_sobre_selo") || defaultPortalHomeContent.aboutBadge,
@@ -1312,6 +1316,16 @@ function stringifySettingValue(value: unknown) {
   }
 
   return "";
+}
+
+function normalizeHeroRotationSeconds(value: string | undefined) {
+  const parsed = Number(value);
+
+  if (!Number.isFinite(parsed)) {
+    return defaultPortalHomeContent.heroRotationSeconds;
+  }
+
+  return Math.max(3, Math.min(30, parsed));
 }
 
 function getYoutubeVideoId(url: string) {

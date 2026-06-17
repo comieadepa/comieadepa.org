@@ -43,16 +43,16 @@ export function MediaUrlField({ name, label, defaultValue, placeholder = "https:
   );
 
   return (
-    <div className="grid gap-2">
+    <div className="grid min-w-0 gap-2">
       <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">{label}</span>
       <div className="grid gap-3 border border-dashed border-[#b98e3b] bg-[#f7efd6] p-4 text-sm font-semibold text-[#8b2f2b]">
-        <span className="flex w-full items-center gap-3">
+        <span className="flex w-full min-w-0 items-center gap-3">
           <ImagePlus size={20} className="shrink-0" />
           <input
             name={name}
             value={value}
             onChange={(event) => setValue(event.target.value)}
-            className="w-full bg-transparent outline-none placeholder:text-[#8b2f2b]/52 disabled:cursor-not-allowed disabled:opacity-60"
+            className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-[#8b2f2b]/52 disabled:cursor-not-allowed disabled:opacity-60"
             placeholder={placeholder}
             disabled={disabled}
           />
@@ -93,7 +93,12 @@ export function MediaUrlField({ name, label, defaultValue, placeholder = "https:
             <div className="border-b border-[#d8c38b] p-5">
               <label className="flex items-center gap-3 border border-[#d8c38b] bg-white/72 px-4 py-3 text-sm text-[#5a472c]">
                 <Search size={17} />
-                <input value={query} onChange={(event) => setQuery(event.target.value)} className="w-full bg-transparent outline-none" placeholder="Buscar por título ou pasta" />
+                <input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  className="w-full bg-transparent outline-none"
+                  placeholder="Buscar por título ou pasta"
+                />
               </label>
             </div>
 
