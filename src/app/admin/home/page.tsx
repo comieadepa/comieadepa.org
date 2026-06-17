@@ -6,7 +6,6 @@ import { CmsHomeSlide } from "@/lib/home-slides";
 import { selectSupabaseRows } from "@/lib/supabase-admin";
 import { MediaPickerAsset } from "../media-url-field";
 import { StatusMessage } from "../status-message";
-import { HomeSlidesManager } from "./home-slides-manager";
 import { HomeSettingsForm } from "./home-settings-form";
 
 type CmsSetting = {
@@ -57,20 +56,16 @@ export default async function AdminHomePage({
         </div>
       </section>
 
-      <HomeSettingsForm values={values} assets={mediaAssets} canEdit={canEdit} />
-
-      <div className="mt-6">
-        <HomeSlidesManager
-          slides={slides}
-          assets={mediaAssets}
-          canCreate={canCreate}
-          canUpdate={canEdit}
-          canPublish={canPublish}
-          canArchive={canArchive}
-          canDelete={canDelete}
-          basePath="/admin/home"
-        />
-      </div>
+      <HomeSettingsForm
+        values={values}
+        assets={mediaAssets}
+        canEdit={canEdit}
+        slides={slides}
+        canCreateSlide={canCreate}
+        canPublishSlide={canPublish}
+        canArchiveSlide={canArchive}
+        canDeleteSlide={canDelete}
+      />
     </div>
   );
 }

@@ -14,6 +14,7 @@ type HomeSlidesManagerProps = {
   canArchive: boolean;
   canDelete: boolean;
   basePath?: string;
+  embedded?: boolean;
 };
 
 const statusLabels: Record<HomeSlideStatus, string> = {
@@ -31,6 +32,7 @@ export function HomeSlidesManager({
   canArchive,
   canDelete,
   basePath = "/admin/home/hero",
+  embedded = false,
 }: HomeSlidesManagerProps) {
   const [editingId, setEditingId] = useState("");
   const [statusFilter, setStatusFilter] = useState<"todos" | HomeSlideStatus>("todos");
@@ -144,8 +146,8 @@ export function HomeSlidesManager({
   }
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[1fr_380px]">
-      <section className="border border-[#d8c38b] bg-white/76 p-6 shadow-[0_18px_50px_rgba(23,16,6,.08)]">
+    <div className={`grid gap-6 ${embedded ? "xl:grid-cols-[1fr_340px]" : "xl:grid-cols-[1fr_380px]"}`}>
+      <section className={`border border-[#d8c38b] bg-white/76 p-6 ${embedded ? "" : "shadow-[0_18px_50px_rgba(23,16,6,.08)]"}`}>
         <div className="flex flex-col gap-5 border-b border-[#ead9a6] pb-6 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <p className="text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Slider principal</p>
