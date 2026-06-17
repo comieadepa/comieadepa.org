@@ -8,6 +8,7 @@ export type HomeSettingKey =
   | "home_hero_botao_primario"
   | "home_hero_link_primario"
   | "home_hero_botao_secundario"
+  | "home_hero_imagem_direita_url"
   | "home_ago_selo"
   | "home_ago_titulo"
   | "home_sobre_selo"
@@ -73,6 +74,7 @@ export const homeSettingSections: HomeSettingSection[] = [
     description: "Ajustes complementares do hero: botao secundario e destaque institucional da AGO. As imagens e slides principais sao editados no bloco especifico logo abaixo.",
     fields: [
       { name: "home_hero_botao_secundario", label: "Botao secundario", placeholder: "Eventos oficiais" },
+      { name: "home_hero_imagem_direita_url", label: "Imagem lateral do hero", placeholder: "/img/presidente.png", type: "image", helper: "Imagem exibida no lado direito da abertura em telas maiores." },
       { name: "home_ago_selo", label: "Selo da AGO", placeholder: "Proxima AGO" },
       { name: "home_ago_titulo", label: "Titulo da chamada da AGO", placeholder: "125a Assembleia Geral Ordinaria" },
     ],
@@ -160,6 +162,7 @@ export const homeFallbackSettings: Record<HomeSettingKey, string> = {
   home_hero_botao_primario: "Conheca a historia",
   home_hero_link_primario: "#a-comieadepa",
   home_hero_botao_secundario: "Eventos oficiais",
+  home_hero_imagem_direita_url: "/img/presidente.png",
   home_ago_selo: "Proxima AGO",
   home_ago_titulo: "125a Assembleia Geral Ordinaria",
   home_sobre_selo: "A COMIEADEPA",

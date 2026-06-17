@@ -145,6 +145,7 @@ type PortalHomeContent = {
   heroPrimaryLabel: string;
   heroPrimaryUrl: string;
   heroSecondaryLabel: string;
+  heroSideImageUrl: string;
   agoBadge: string;
   agoTitle: string;
   aboutBadge: string;
@@ -208,6 +209,7 @@ const defaultPortalHomeContent: PortalHomeContent = {
   heroPrimaryLabel: "Conheça a história",
   heroPrimaryUrl: "#a-comieadepa",
   heroSecondaryLabel: "Eventos oficiais",
+  heroSideImageUrl: "/img/presidente.png",
   agoBadge: "Próxima AGO",
   agoTitle: "125ª Assembleia Geral Ordinária",
   aboutBadge: "A COMIEADEPA",
@@ -613,7 +615,13 @@ export function HomePageClient({ initialSlides }: HomePageClientProps) {
               transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
               className="absolute -bottom-16 right-0 w-[430px]"
             >
-              <Image src="/img/presidente.png" alt="Pr. Océlio Nauar e esposa" width={860} height={700} className="h-auto w-full drop-shadow-[0_38px_46px_rgba(0,0,0,.58)]" />
+              <Image
+                src={portalHomeContent.heroSideImageUrl}
+                alt="Imagem lateral do hero"
+                width={860}
+                height={700}
+                className="h-auto w-full drop-shadow-[0_38px_46px_rgba(0,0,0,.58)]"
+              />
             </motion.div>
           </motion.div>
         </div>
@@ -1246,6 +1254,7 @@ function mapCmsSettingsToPortalHomeContent(settings: CmsSetting[]): PortalHomeCo
     heroPrimaryLabel: settingMap.get("home_hero_botao_primario") || defaultPortalHomeContent.heroPrimaryLabel,
     heroPrimaryUrl: settingMap.get("home_hero_link_primario") || defaultPortalHomeContent.heroPrimaryUrl,
     heroSecondaryLabel: settingMap.get("home_hero_botao_secundario") || defaultPortalHomeContent.heroSecondaryLabel,
+    heroSideImageUrl: settingMap.get("home_hero_imagem_direita_url") || defaultPortalHomeContent.heroSideImageUrl,
     agoBadge: settingMap.get("home_ago_selo") || defaultPortalHomeContent.agoBadge,
     agoTitle: settingMap.get("home_ago_titulo") || defaultPortalHomeContent.agoTitle,
     aboutBadge: settingMap.get("home_sobre_selo") || defaultPortalHomeContent.aboutBadge,
