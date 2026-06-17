@@ -36,7 +36,6 @@ export const adminSecondaryNavItems = [
   { href: "/admin/paginas", label: "Páginas", icon: FileText, status: "Ativo" },
   { href: "/admin/permissoes", label: "Permissões", icon: ShieldCheck, status: "Ativo" },
   { href: "/admin/home", label: "Configurações da Home", icon: Settings, status: "Ativo" },
-  { href: "/admin/home/hero", label: "Hero Principal", icon: ImageIcon, status: "Ativo" },
 ];
 
 export const editorialWorkflow = [
