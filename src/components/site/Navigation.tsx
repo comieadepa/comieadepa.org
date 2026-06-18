@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = ["A COMIEADEPA", "Presidência", "Eventos", "Notícias", "Departamentos", "Contato"];
+const webmailUrl = "https://comieadepa.org/webmail";
 
 type NavigationProps = {
   mobile?: boolean;
@@ -29,6 +30,15 @@ export function Navigation({ mobile = false, onNavigate }: NavigationProps) {
       <Link href="/paginas" onClick={onNavigate} className={mobile ? undefined : "relative py-2 transition hover:text-[#1D5A8C]"}>
         Institucional
       </Link>
+      <a
+        href={webmailUrl}
+        target="_blank"
+        rel="noreferrer"
+        onClick={onNavigate}
+        className={mobile ? undefined : "relative py-2 transition hover:text-[#1D5A8C]"}
+      >
+        Webmail
+      </a>
     </nav>
   );
 }
