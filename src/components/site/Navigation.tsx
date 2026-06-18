@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const navItems = ["A COMIEADEPA", "Presidência", "Eventos", "Notícias", "Departamentos", "Contato"];
+const navItems = ["A COMIEADEPA", "Eventos", "Notícias", "Departamentos"];
 const webmailUrl = "https://sh-pro126.hostgator.com.br:2096/";
 
 type NavigationProps = {
