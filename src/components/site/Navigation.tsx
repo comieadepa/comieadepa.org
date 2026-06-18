@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = ["A COMIEADEPA", "Eventos", "Notícias", "Departamentos"];
@@ -9,9 +8,10 @@ const webmailUrl = "https://sh-pro126.hostgator.com.br:2096/";
 type NavigationProps = {
   mobile?: boolean;
   onNavigate?: () => void;
+  onOpenInstitutionalMenu: () => void;
 };
 
-export function Navigation({ mobile = false, onNavigate }: NavigationProps) {
+export function Navigation({ mobile = false, onNavigate, onOpenInstitutionalMenu }: NavigationProps) {
   const pathname = usePathname();
   const homePrefix = pathname === "/" ? "" : "/";
 
@@ -27,9 +27,18 @@ export function Navigation({ mobile = false, onNavigate }: NavigationProps) {
           {item}
         </a>
       ))}
-      <Link href="/paginas" onClick={onNavigate} className={mobile ? undefined : "relative py-2 transition hover:text-[#1D5A8C]"}>
+
+      <button
+        type="button"
+        onClick={() => {
+          onNavigate?.();
+          onOpenInstitutionalMenu();
+        }}
+        className={mobile ? "text-left" : "relative py-2 transition hover:text-[#1D5A8C]"}
+      >
         Institucional
-      </Link>
+      </button>
+
       <a
         href={webmailUrl}
         target="_blank"

@@ -81,7 +81,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-white text-[#1F2937]">
-      <Header ministerPortalUrl={config.ministerPortalUrl} />
+      <Header ministerPortalUrl={config.ministerPortalUrl} eventsPortalUrl={config.eventsPortalUrl} />
       <div className={pathname === "/" ? undefined : "pt-20"}>{children}</div>
       <Footer config={config} />
     </div>
