@@ -44,7 +44,7 @@ export function InstitutionalMegaMenu({ onClose, open }: InstitutionalMegaMenuPr
       { label: "Conselhos e Comissões", href: "/paginas/conselhos-e-comissoes", icon: Users },
       { label: "Estatuto", href: "/documentos", icon: FileText },
       { label: "Regimento Interno", href: "/documentos", icon: NotebookText },
-      { label: "Declaração de Fé", href: "/paginas/declaracao-de-fe", icon: ShieldCheck },
+      { label: "Declaração de Fé", href: "/declaracao-de-fe", icon: ShieldCheck },
       { label: "Departamentos", href: "/departamentos", icon: Landmark },
     ],
     [],
