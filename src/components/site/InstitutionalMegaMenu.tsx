@@ -39,13 +39,15 @@ export function InstitutionalMegaMenu({ onClose, open }: InstitutionalMegaMenuPr
 
   const institutionalLinks = useMemo<MenuItem[]>(
     () => [
-      { label: "COMIEADEPA - Quem Somos", href: "/quem-somos", icon: Landmark },
-      { label: "Mesa Diretora", href: "/mesa-diretora", icon: Users },
-      { label: "Conselhos e Comissões", href: "/paginas/conselhos-e-comissoes", icon: Users },
-      { label: "Estatuto", href: "/documentos", icon: FileText },
-      { label: "Regimento Interno", href: "/documentos", icon: NotebookText },
+      { label: "Quem Somos", href: "/quem-somos", icon: Landmark },
+      { label: "Diretoria", href: "/mesa-diretora", icon: Users },
       { label: "Declaração de Fé", href: "/declaracao-de-fe", icon: ShieldCheck },
-      { label: "Departamentos", href: "/departamentos", icon: Landmark },
+      { label: "Presidente", href: "/presidente", icon: Users },
+      { label: "Conselhos", href: "/conselhos", icon: ShieldCheck },
+      { label: "Comissões", href: "/comissoes", icon: Users },
+      { label: "Órgãos", href: "/orgaos", icon: Landmark },
+      { label: "Memória", href: "/memoria", icon: NotebookText },
+      { label: "Documentos", href: "/documentos", icon: FileText },
     ],
     [],
   );
