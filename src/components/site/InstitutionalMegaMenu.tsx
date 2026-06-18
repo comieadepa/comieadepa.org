@@ -4,12 +4,9 @@ import {
   CalendarDays,
   ChevronRight,
   FileText,
-  FolderOpen,
-  Image as ImageIcon,
   Landmark,
-  Newspaper,
-  PlaySquare,
-  Scale,
+  MapPinned,
+  NotebookText,
   ShieldCheck,
   Users,
   X,
@@ -35,7 +32,7 @@ type MenuItem = {
 
 const CLOSE_ANIMATION_MS = 220;
 
-export function InstitutionalMegaMenu({ contactHref, eventsPortalUrl, ministerPortalUrl, onClose, open }: InstitutionalMegaMenuProps) {
+export function InstitutionalMegaMenu({ onClose, open }: InstitutionalMegaMenuProps) {
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const [mounted, setMounted] = useState(open);
   const [visible, setVisible] = useState(false);
@@ -46,24 +43,21 @@ export function InstitutionalMegaMenu({ contactHref, eventsPortalUrl, ministerPo
       { label: "Mesa Diretora", href: "/paginas/mesa-diretora", icon: Users },
       { label: "Conselhos e Comissões", href: "/paginas/conselhos-e-comissoes", icon: Users },
       { label: "Estatuto", href: "/documentos", icon: FileText },
-      { label: "Regimento Interno", href: "/documentos", icon: Scale },
+      { label: "Regimento Interno", href: "/documentos", icon: NotebookText },
       { label: "Declaração de Fé", href: "/paginas/declaracao-de-fe", icon: ShieldCheck },
       { label: "Departamentos", href: "/departamentos", icon: Landmark },
     ],
     [],
   );
 
-  const featuredLinks = useMemo<MenuItem[]>(
+  const agoLinks = useMemo<MenuItem[]>(
     () => [
-      { label: "Documentos Oficiais", href: "/documentos", icon: FolderOpen },
-      { label: "Galeria de Fotos", href: "/galeria", icon: ImageIcon },
-      { label: "Notícias", href: "/noticias", icon: Newspaper },
-      { label: "Vídeos", href: "/videos", icon: PlaySquare },
-      { label: "Eventos", href: eventsPortalUrl || "/#eventos", icon: CalendarDays, external: true },
-      { label: "Área do Ministro", href: ministerPortalUrl || "/paginas", icon: ShieldCheck, external: true },
-      { label: "Contato", href: contactHref || "/#contato", icon: Users },
+      { label: "Sobre a 47ª AGO", href: "/paginas", icon: FileText },
+      { label: "Inscreva-se", href: "/paginas", icon: ShieldCheck },
+      { label: "Programação", href: "/paginas", icon: CalendarDays },
+      { label: "Hospedagem e Alimentação", href: "/paginas", icon: MapPinned },
     ],
-    [contactHref, eventsPortalUrl, ministerPortalUrl],
+    [],
   );
 
   useEffect(() => {
@@ -146,12 +140,12 @@ export function InstitutionalMegaMenu({ contactHref, eventsPortalUrl, ministerPo
                 </section>
 
                 <section className="lg:pt-14">
-                  <p className="text-xs font-black uppercase tracking-[0.24em] text-[#D4A24C]">Portal COMIEADEPA</p>
-                  <p className="mt-5 max-w-md text-lg leading-8 text-white/76">
-                    Acesse informações institucionais, documentos oficiais, notícias, eventos e serviços da Convenção.
+                  <p className="text-xs font-black uppercase tracking-[0.24em] text-[#D4A24C]">47ª AGO DA COMIEADEPA</p>
+                  <p className="mt-5 max-w-md text-lg leading-8 text-white">
+                    A 47ª Assembleia Geral Ordinária da COMIEADEPA reunirá ministros, lideranças e representantes convencionais em um tempo de comunhão, deliberação e fortalecimento da obra de Deus.
                   </p>
                   <div className="mt-8 grid gap-3">
-                    {featuredLinks.map((item) => (
+                    {agoLinks.map((item) => (
                       <MegaMenuLink key={item.label} item={item} onClose={onClose} />
                     ))}
                   </div>
@@ -162,8 +156,8 @@ export function InstitutionalMegaMenu({ contactHref, eventsPortalUrl, ministerPo
                     <span className="relative block h-48 w-48 sm:h-56 sm:w-56 lg:h-72 lg:w-72">
                       <Image src="/assets/logo-comieadepa.png" alt="Brasão COMIEADEPA" fill className="object-contain drop-shadow-[0_25px_50px_rgba(0,0,0,.28)]" />
                     </span>
-                    <p className="mt-6 text-xs font-black uppercase tracking-[0.28em] text-[#D4A24C]">Desde 1921</p>
-                    <p className="mt-3 max-w-xs text-sm leading-7 text-white/58">Portal institucional da primeira convenção assembleiana do Brasil.</p>
+                    <p className="mt-6 text-xs font-black uppercase tracking-[0.28em] text-[#D4A24C]">DESDE 1921</p>
+                    <p className="mt-3 max-w-xs text-sm leading-7 text-white">Portal institucional da primeira convenção assembleiana do Brasil.</p>
                   </div>
                 </section>
               </div>
@@ -177,13 +171,13 @@ export function InstitutionalMegaMenu({ contactHref, eventsPortalUrl, ministerPo
 
 function MegaMenuLink({ item, onClose }: { item: MenuItem; onClose: () => void }) {
   const Icon = item.icon;
-  const className = "group flex items-center gap-3 py-1 text-base text-white/82 transition hover:text-white";
+  const className = "group flex items-center gap-3 py-1.5 text-base font-medium text-white transition hover:text-[#F8D77B]";
 
   const content = (
     <>
       <Icon size={15} className="shrink-0 text-[#D4A24C]" />
       <span>{item.label}</span>
-      <ChevronRight size={15} className="ml-auto shrink-0 opacity-0 transition group-hover:translate-x-1 group-hover:opacity-100" />
+      <ChevronRight size={15} className="ml-auto shrink-0 text-[#D4A24C] opacity-0 transition group-hover:translate-x-1 group-hover:opacity-100" />
     </>
   );
 
