@@ -102,7 +102,7 @@ export function InstitutionalMegaMenu({ onClose, open }: InstitutionalMegaMenuPr
   return (
     <div className={`fixed inset-0 z-[120] transition duration-200 ${visible ? "pointer-events-auto" : "pointer-events-none"}`} aria-hidden={!open}>
       <div
-        className={`absolute inset-0 bg-[#071a2d]/94 backdrop-blur-sm transition-opacity duration-200 ${visible ? "opacity-100" : "opacity-0"}`}
+        className={`absolute inset-0 bg-[#071a2d]/95 backdrop-blur-sm transition-opacity duration-200 ${visible ? "opacity-100" : "opacity-0"}`}
         onClick={onClose}
       />
 
@@ -120,7 +120,7 @@ export function InstitutionalMegaMenu({ onClose, open }: InstitutionalMegaMenuPr
                 ref={closeButtonRef}
                 type="button"
                 onClick={onClose}
-                className="grid h-12 w-12 place-items-center rounded-full border border-white/10 bg-white/5 text-white transition hover:bg-white/10"
+                className="grid h-12 w-12 place-items-center rounded-full border border-white/15 bg-white/8 text-white transition hover:bg-white/14"
                 aria-label="Fechar menu"
               >
                 <X size={20} />
@@ -130,7 +130,7 @@ export function InstitutionalMegaMenu({ onClose, open }: InstitutionalMegaMenuPr
             <div className="flex flex-1 items-center">
               <div className="grid w-full gap-12 py-6 lg:grid-cols-[1.1fr_1fr_.9fr] lg:gap-16">
                 <section>
-                  <p className="text-xs font-black uppercase tracking-[0.24em] text-[#D4A24C]">Institucional</p>
+                  <p className="text-xs font-black uppercase tracking-[0.24em] text-[#D4A24C]">INSTITUCIONAL</p>
                   <h2 className="mt-4 font-serif text-4xl font-black leading-tight text-white sm:text-5xl">A COMIEADEPA</h2>
                   <div className="mt-8 grid gap-3">
                     {institutionalLinks.map((item) => (
@@ -141,7 +141,7 @@ export function InstitutionalMegaMenu({ onClose, open }: InstitutionalMegaMenuPr
 
                 <section className="lg:pt-14">
                   <p className="text-xs font-black uppercase tracking-[0.24em] text-[#D4A24C]">47ª AGO DA COMIEADEPA</p>
-                  <p className="mt-5 max-w-md text-lg leading-8 text-white">
+                  <p className="mt-5 max-w-md text-lg leading-8 text-white/95">
                     A 47ª Assembleia Geral Ordinária da COMIEADEPA reunirá ministros, lideranças e representantes convencionais em um tempo de comunhão, deliberação e fortalecimento da obra de Deus.
                   </p>
                   <div className="mt-8 grid gap-3">
@@ -157,7 +157,7 @@ export function InstitutionalMegaMenu({ onClose, open }: InstitutionalMegaMenuPr
                       <Image src="/assets/logo-comieadepa.png" alt="Brasão COMIEADEPA" fill className="object-contain drop-shadow-[0_25px_50px_rgba(0,0,0,.28)]" />
                     </span>
                     <p className="mt-6 text-xs font-black uppercase tracking-[0.28em] text-[#D4A24C]">DESDE 1921</p>
-                    <p className="mt-3 max-w-xs text-sm leading-7 text-white">Portal institucional da primeira convenção assembleiana do Brasil.</p>
+                    <p className="mt-3 max-w-xs text-sm leading-7 text-white/92">Portal institucional da primeira convenção assembleiana do Brasil.</p>
                   </div>
                 </section>
               </div>
@@ -171,12 +171,13 @@ export function InstitutionalMegaMenu({ onClose, open }: InstitutionalMegaMenuPr
 
 function MegaMenuLink({ item, onClose }: { item: MenuItem; onClose: () => void }) {
   const Icon = item.icon;
-  const className = "group flex items-center gap-3 py-1.5 text-base font-medium text-white transition hover:text-[#F8D77B]";
+  const className =
+    "group flex items-center gap-3 py-1.5 text-base font-semibold text-white no-underline transition hover:text-[#F8D77B] focus:text-[#F8D77B]";
 
   const content = (
     <>
       <Icon size={15} className="shrink-0 text-[#D4A24C]" />
-      <span>{item.label}</span>
+      <span className="text-white group-hover:text-[#F8D77B]">{item.label}</span>
       <ChevronRight size={15} className="ml-auto shrink-0 text-[#D4A24C] opacity-0 transition group-hover:translate-x-1 group-hover:opacity-100" />
     </>
   );
