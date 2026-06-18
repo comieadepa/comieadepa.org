@@ -2,8 +2,14 @@
 
 import { usePathname } from "next/navigation";
 
-const navItems = ["A COMIEADEPA", "Eventos", "Notícias", "Departamentos"];
 const webmailUrl = "https://sh-pro126.hostgator.com.br:2096/";
+
+const primaryNavItems = [
+  { label: "A COMIEADEPA", type: "mega-menu" as const },
+  { label: "Eventos", type: "anchor" as const },
+  { label: "Notícias", type: "anchor" as const },
+  { label: "Departamentos", type: "anchor" as const },
+];
 
 type NavigationProps = {
   mobile?: boolean;
@@ -17,27 +23,30 @@ export function Navigation({ mobile = false, onNavigate, onOpenInstitutionalMenu
 
   return (
     <nav className={mobile ? "mx-auto flex max-w-7xl flex-col gap-4 text-sm font-semibold text-[#1F2937]" : "hidden items-center gap-7 text-sm font-semibold text-[#1F2937]/74 lg:flex"}>
-      {navItems.map((item) => (
-        <a
-          key={item}
-          href={`${homePrefix}#${slugify(item)}`}
-          onClick={onNavigate}
-          className={mobile ? undefined : "relative py-2 transition hover:text-[#1D5A8C]"}
-        >
-          {item}
-        </a>
-      ))}
-
-      <button
-        type="button"
-        onClick={() => {
-          onNavigate?.();
-          onOpenInstitutionalMenu();
-        }}
-        className={mobile ? "text-left" : "relative py-2 transition hover:text-[#1D5A8C]"}
-      >
-        Institucional
-      </button>
+      {primaryNavItems.map((item) =>
+        item.type === "mega-menu" ? (
+          <button
+            key={item.label}
+            type="button"
+            onClick={() => {
+              onNavigate?.();
+              onOpenInstitutionalMenu();
+            }}
+            className={mobile ? "text-left" : "relative py-2 transition hover:text-[#1D5A8C]"}
+          >
+            {item.label}
+          </button>
+        ) : (
+          <a
+            key={item.label}
+            href={`${homePrefix}#${slugify(item.label)}`}
+            onClick={onNavigate}
+            className={mobile ? undefined : "relative py-2 transition hover:text-[#1D5A8C]"}
+          >
+            {item.label}
+          </a>
+        ),
+      )}
 
       <a
         href={webmailUrl}

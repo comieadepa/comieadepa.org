@@ -33,9 +33,7 @@ export function Header({ eventsPortalUrl, ministerPortalUrl }: HeaderProps) {
             </span>
           </Link>
 
-          <Navigation
-            onOpenInstitutionalMenu={() => setInstitutionalMenuOpen(true)}
-          />
+          <Navigation onOpenInstitutionalMenu={() => setInstitutionalMenuOpen(true)} />
 
           <a
             href={ministerPortalUrl}
