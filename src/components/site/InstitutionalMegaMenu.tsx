@@ -40,7 +40,7 @@ export function InstitutionalMegaMenu({ onClose, open }: InstitutionalMegaMenuPr
   const institutionalLinks = useMemo<MenuItem[]>(
     () => [
       { label: "COMIEADEPA - Quem Somos", href: "/quem-somos", icon: Landmark },
-      { label: "Mesa Diretora", href: "/paginas/mesa-diretora", icon: Users },
+      { label: "Mesa Diretora", href: "/mesa-diretora", icon: Users },
       { label: "Conselhos e Comissões", href: "/paginas/conselhos-e-comissoes", icon: Users },
       { label: "Estatuto", href: "/documentos", icon: FileText },
       { label: "Regimento Interno", href: "/documentos", icon: NotebookText },
