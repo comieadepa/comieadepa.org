@@ -30,20 +30,27 @@ export default async function PublicPagesIndex() {
   return (
     <PublicLayout>
       <main className="min-h-screen bg-white text-[#1F2937]">
-      <header className="relative overflow-hidden border-b border-[#0F3B63]/10 px-5 py-16 sm:px-8">
-        <div className="absolute inset-0 bg-[url('/assets/sede-aerea-comieadepa.jpg')] bg-cover bg-center opacity-10" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/96 to-white" />
-        <div className="relative mx-auto max-w-6xl">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.16em] text-[#0F3B63] transition hover:text-[#4A86B8]">
-            COMIEADEPA
-          </Link>
-          <p className="mt-10 text-sm font-black uppercase tracking-[0.22em] text-[#B8872D]">Institucional</p>
-          <h1 className="mt-4 max-w-4xl font-serif text-5xl font-black leading-[1.02] text-[#0F3B63] sm:text-7xl">Páginas institucionais</h1>
-          <p className="mt-6 max-w-3xl text-xl leading-8 text-[#6B7280]">
-            Informações oficiais, documentos editoriais e conteúdos permanentes publicados pela convenção.
-          </p>
-        </div>
-      </header>
+        <section className="relative overflow-hidden bg-[#0F3B63] py-20 text-white md:py-24">
+          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(15,59,99,0.98)_0%,rgba(29,90,140,0.88)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(212,162,76,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(135deg,#fff_1px,transparent_1px)] [background-size:38px_38px]" />
+
+          <div className="relative z-10 mx-auto max-w-6xl px-5 sm:px-8">
+            <Link href="/" className="text-sm font-black uppercase tracking-[0.18em] text-[#F8D77B] transition hover:text-white">
+              COMIEADEPA
+            </Link>
+
+            <div className="mt-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#F8D77B]">Institucional</p>
+                <h1 className="mt-4 font-serif text-5xl font-black leading-[1.04] text-white sm:text-7xl">Páginas institucionais</h1>
+              </div>
+              <p className="text-lg leading-8 text-white/80 border-l border-white/20 pl-6 lg:border-l-2">
+                Informações oficiais, documentos editoriais e conteúdos permanentes publicados pela convenção.
+              </p>
+            </div>
+          </div>
+        </section>
 
       <section className="mx-auto max-w-6xl px-5 py-14 sm:px-8">
         {pages.length > 0 ? (

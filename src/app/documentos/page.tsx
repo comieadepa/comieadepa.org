@@ -81,23 +81,33 @@ export default async function DocumentsPage({ searchParams }: { searchParams?: S
 
   return (
     <PublicLayout>
-      <main className="min-h-screen bg-white px-5 py-16 text-[#1F2937] sm:px-8">
+      <main className="min-h-screen bg-white text-[#1F2937]">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-        <section className="mx-auto max-w-6xl">
-          <Link href="/" className="text-sm font-black uppercase tracking-[0.18em] text-[#0F3B63] transition hover:text-[#4A86B8]">
-            COMIEADEPA
-          </Link>
+        <section className="relative overflow-hidden bg-[#0F3B63] py-20 text-white md:py-24">
+          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(15,59,99,0.98)_0%,rgba(29,90,140,0.88)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(212,162,76,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(135deg,#fff_1px,transparent_1px)] [background-size:38px_38px]" />
 
-          <div className="mt-10 max-w-3xl">
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-[#B8872D]">Documentos</p>
-            <h1 className="mt-5 font-serif text-4xl font-black leading-[1.04] text-[#0F3B63] sm:text-6xl">Central de Documentos</h1>
-            <p className="mt-6 text-lg leading-8 text-[#6B7280]">
-              Encontre atas, estatutos, formularios, circulares, editais e materiais oficiais da COMIEADEPA.
-            </p>
+          <div className="relative z-10 mx-auto max-w-6xl px-5 sm:px-8">
+            <Link href="/" className="text-sm font-black uppercase tracking-[0.18em] text-[#F8D77B] transition hover:text-white">
+              COMIEADEPA
+            </Link>
+
+            <div className="mt-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#F8D77B]">Documentos</p>
+                <h1 className="mt-4 font-serif text-5xl font-black leading-[1.04] text-white sm:text-7xl">Central de Documentos</h1>
+              </div>
+              <p className="text-lg leading-8 text-white/80 border-l border-white/20 pl-6 lg:border-l-2">
+                Encontre atas, estatutos, formulários, circulares, editais e materiais oficiais da COMIEADEPA.
+              </p>
+            </div>
           </div>
+        </section>
 
-          <form className="mt-10 grid gap-4 border border-[#0F3B63]/10 bg-[#F8FAFC] p-5 shadow-[0_18px_50px_rgba(15,59,99,.06)] md:grid-cols-[1.3fr_.8fr_.8fr_auto]">
+        <section className="mx-auto max-w-6xl px-5 py-12 sm:px-8">
+          <form className="grid gap-4 border border-[#0F3B63]/10 bg-[#F8FAFC] p-5 shadow-[0_18px_50px_rgba(15,59,99,.06)] md:grid-cols-[1.3fr_.8fr_.8fr_auto]">
             <label className="flex items-center gap-3 border border-[#0F3B63]/10 bg-white px-4 py-3 text-sm text-[#6B7280]">
               <Search size={18} className="text-[#B8872D]" />
               <input

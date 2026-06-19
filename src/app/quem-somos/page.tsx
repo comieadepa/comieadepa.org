@@ -47,30 +47,36 @@ export default function QuemSomosPage() {
   return (
     <PublicLayout>
       <main className="min-h-screen bg-white text-[#1F2937]">
-        <section className="mx-auto max-w-6xl px-5 py-16 sm:px-8 lg:py-20">
-          <div className="grid gap-10 lg:grid-cols-[1.1fr_.85fr] lg:items-center">
-            <div>
-              <Link href="/" className="text-sm font-black uppercase tracking-[0.18em] text-[#0F3B63] transition hover:text-[#4A86B8]">
-                COMIEADEPA
-              </Link>
-              <p className="mt-10 text-sm font-black uppercase tracking-[0.22em] text-[#B8872D]">INSTITUCIONAL</p>
-              <h1 className="mt-5 max-w-4xl font-serif text-5xl font-black leading-[1.02] text-[#0F3B63] sm:text-7xl">Conheça a COMIEADEPA</h1>
-              <p className="mt-6 max-w-3xl text-xl leading-8 text-[#6B7280]">
-                Convenção Interestadual de Ministros e Igrejas Evangélicas Assembleias de Deus do Estado do Pará
-              </p>
-            </div>
+        <section className="relative overflow-hidden bg-[#0F3B63] py-20 text-white md:py-24">
+          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(15,59,99,0.98)_0%,rgba(29,90,140,0.88)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(212,162,76,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(135deg,#fff_1px,transparent_1px)] [background-size:38px_38px]" />
 
-            <div className="flex justify-center lg:justify-end">
-              <div className="relative flex h-[300px] w-full max-w-[360px] items-center justify-center">
-                <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(212,162,76,.18),transparent_62%)]" />
-                <Image
-                  src="/assets/logo-comieadepa.png"
-                  alt="Brasão COMIEADEPA"
-                  width={280}
-                  height={280}
-                  priority
-                  className="relative h-auto w-[220px] object-contain drop-shadow-[0_22px_45px_rgba(15,59,99,.18)] sm:w-[280px]"
-                />
+          <div className="relative z-10 mx-auto max-w-6xl px-5 sm:px-8">
+            <div className="grid gap-10 lg:grid-cols-[1.15fr_.85fr] lg:items-center">
+              <div>
+                <Link href="/" className="text-sm font-black uppercase tracking-[0.18em] text-[#F8D77B] transition hover:text-white">
+                  COMIEADEPA
+                </Link>
+                <p className="mt-10 text-xs font-black uppercase tracking-[0.22em] text-[#F8D77B]">INSTITUCIONAL</p>
+                <h1 className="mt-4 font-serif text-5xl font-black leading-[1.02] text-white sm:text-7xl">Conheça a COMIEADEPA</h1>
+                <p className="mt-6 max-w-3xl text-xl leading-8 text-white/80 border-l border-white/20 pl-6 lg:border-l-2">
+                  Convenção Interestadual de Ministros e Igrejas Evangélicas Assembleias de Deus do Estado do Pará
+                </p>
+              </div>
+
+              <div className="flex justify-center lg:justify-end">
+                <div className="relative flex h-[300px] w-full max-w-[360px] items-center justify-center">
+                  <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(212,162,76,.12),transparent_62%)]" />
+                  <Image
+                    src="/assets/logo-comieadepa.png"
+                    alt="Brasão COMIEADEPA"
+                    width={280}
+                    height={280}
+                    priority
+                    className="relative h-auto w-[220px] object-contain drop-shadow-[0_22px_45px_rgba(255,255,255,.12)] sm:w-[280px]"
+                  />
+                </div>
               </div>
             </div>
           </div>
