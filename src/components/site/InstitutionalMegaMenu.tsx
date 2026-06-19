@@ -32,7 +32,7 @@ type MenuItem = {
 
 const CLOSE_ANIMATION_MS = 220;
 
-export function InstitutionalMegaMenu({ onClose, open }: InstitutionalMegaMenuProps) {
+export function InstitutionalMegaMenu({ eventsPortalUrl, onClose, open }: InstitutionalMegaMenuProps) {
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const [mounted, setMounted] = useState(open);
   const [visible, setVisible] = useState(false);
@@ -55,11 +55,11 @@ export function InstitutionalMegaMenu({ onClose, open }: InstitutionalMegaMenuPr
   const agoLinks = useMemo<MenuItem[]>(
     () => [
       { label: "Sobre a 47ª AGO", href: "/paginas", icon: FileText },
-      { label: "Inscreva-se", href: "/paginas", icon: ShieldCheck },
+      { label: "Inscreva-se", href: eventsPortalUrl, icon: ShieldCheck, external: true },
       { label: "Programação", href: "/paginas", icon: CalendarDays },
       { label: "Hospedagem e Alimentação", href: "/paginas", icon: MapPinned },
     ],
-    [],
+    [eventsPortalUrl],
   );
 
   useEffect(() => {
