@@ -34,8 +34,14 @@ type CmsGallerySitemapRow = {
   created_at: string;
 };
 
+type CmsInstitucionalSitemapRow = {
+  slug: string;
+  updated_at: string | null;
+  created_at: string;
+};
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [posts, departments, pages, documents, galleries] = await Promise.all([
+  const [posts, departments, pages, documents, galleries, institucionais] = await Promise.all([
     selectPublicRows<CmsPostSitemapRow>(
       "cms_posts",
       `select=slug,publicado_em,created_at&status=eq.publicado${getPublishedPostsPublicFilter()}&order=publicado_em.desc.nullslast,created_at.desc&limit=100`,
@@ -52,6 +58,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     selectPublicRows<CmsGallerySitemapRow>(
       "cms_galerias",
       "select=slug,updated_at,created_at&status=eq.publicado&order=destaque.desc,data_evento.desc.nullslast,updated_at.desc&limit=100",
+    ),
+    selectPublicRows<CmsInstitucionalSitemapRow>(
+      "cms_institucional",
+      "select=slug,updated_at,created_at&status=eq.publicado&order=ordem.asc,updated_at.desc&limit=100",
     ),
   ]);
   const departmentSlugs = new Set(departments.map((department) => department.slug));
@@ -146,6 +156,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...galleries.map((gallery) => ({
       url: absoluteUrl(`/galeria/${gallery.slug}`),
       lastModified: new Date(gallery.updated_at ?? gallery.created_at),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    })),
+    ...institucionais.map((inst) => ({
+      url: absoluteUrl(`/institucional/${inst.slug}`),
+      lastModified: new Date(inst.updated_at ?? inst.created_at),
       changeFrequency: "monthly" as const,
       priority: 0.6,
     })),

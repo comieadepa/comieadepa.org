@@ -1,8 +1,10 @@
 import { Archive, ArrowRight, BookMarked, Landmark, ScrollText } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { PublicLayout } from "@/components/site/PublicLayout";
 import { buildSeoMetadata } from "@/lib/seo";
+import { InstitutionalPageHeader } from "@/components/site/InstitutionalPageHeader";
+import { InstitutionalSection } from "@/components/site/InstitutionalSection";
+import { InstitutionalCard } from "@/components/site/InstitutionalCard";
 
 type MemoryHighlight = {
   title: string;
@@ -48,91 +50,69 @@ export default function MemoriaPage() {
   return (
     <PublicLayout>
       <main className="min-h-screen bg-white text-[#1F2937]">
-        <section className="relative overflow-hidden bg-[#0F3B63] py-20 text-white md:py-24">
-          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(15,59,99,0.98)_0%,rgba(29,90,140,0.88)_100%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(212,162,76,0.15),transparent_50%)]" />
-          <div className="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(135deg,#fff_1px,transparent_1px)] [background-size:38px_38px]" />
+        <InstitutionalPageHeader
+          badge="INSTITUCIONAL"
+          title="Memória"
+          subtitle="Um espaço dedicado à preservação da história, do acervo e do museu da Convenção, honrando a trajetória da COMIEADEPA."
+        />
 
-          <div className="relative z-10 mx-auto max-w-6xl px-5 sm:px-8">
-            <Link href="/" className="text-sm font-black uppercase tracking-[0.18em] text-[#F8D77B] transition hover:text-white">
-              COMIEADEPA
-            </Link>
-
-            <div className="mt-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#F8D77B]">INSTITUCIONAL</p>
-                <h1 className="mt-4 font-serif text-5xl font-black leading-[1.04] text-white sm:text-7xl">Memória</h1>
-              </div>
-              <p className="text-lg leading-8 text-white/80 border-l border-white/20 pl-6 lg:border-l-2">
-                Um espaço dedicado à preservação da história, do acervo e do museu da Convenção, honrando a trajetória da COMIEADEPA.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-6xl px-5 pb-12 sm:px-8 lg:pb-16">
-          <article className="overflow-hidden border border-[#0F3B63]/10 bg-[#F8FAFC] shadow-[0_24px_70px_rgba(15,59,99,.10)]">
-            <div className="grid lg:grid-cols-[320px_minmax(0,1fr)]">
-              <div className="flex min-h-[320px] items-center justify-center bg-[linear-gradient(160deg,rgba(15,59,99,.12),rgba(212,162,76,.18))] p-10">
-                <div className="grid h-28 w-28 place-items-center rounded-full border border-[#0F3B63]/10 bg-white/80 text-[#B8872D] shadow-[0_18px_36px_rgba(15,59,99,.12)]">
-                  <Landmark size={54} />
+        <InstitutionalSection className="pb-8">
+          <article className="overflow-hidden border border-[#0F3B63]/10 bg-[#F8FAFC] shadow-[0_12px_40px_rgba(15,59,99,0.06)]">
+            <div className="grid lg:grid-cols-[240px_minmax(0,1fr)]">
+              <div className="flex min-h-[200px] items-center justify-center bg-[linear-gradient(160deg,rgba(15,59,99,0.12),rgba(212,162,76,0.18))] p-6">
+                <div className="grid h-20 w-20 place-items-center rounded-full border border-[#0F3B63]/10 bg-white/80 text-[#B8872D] shadow-[0_8px_16px_rgba(15,59,99,0.06)]">
+                  <Landmark size={36} />
                 </div>
               </div>
 
-              <div className="flex flex-col justify-between p-8 sm:p-10">
+              <div className="flex flex-col justify-between p-6 sm:p-8">
                 <div>
-                  <p className="text-sm font-black uppercase tracking-[0.18em] text-[#B8872D]">Museu da Convenção</p>
-                  <h2 className="mt-4 font-serif text-4xl font-black leading-tight text-[#0F3B63] sm:text-5xl">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#B8872D]">Museu da Convenção</p>
+                  <h2 className="mt-2 font-serif text-3xl font-bold leading-tight text-[#0F3B63]">
                     Preservando a história que fortalece nossa identidade
                   </h2>
-                  <p className="mt-5 max-w-3xl text-lg leading-8 text-[#6B7280]">
+                  <p className="mt-3 text-sm leading-relaxed text-[#6B7280]">
                     A página Memória será o espaço institucional voltado ao registro do museu da Convenção, reunindo fatos,
                     documentos, imagens e marcos que contam a caminhada da COMIEADEPA e celebram o legado daqueles que
                     serviram à obra de Deus ao longo do tempo.
                   </p>
                 </div>
 
-                <span className="mt-8 inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.16em] text-[#0F3B63]">
+                <span className="mt-6 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-[#0F3B63]">
                   Patrimônio institucional
-                  <ArrowRight size={18} />
+                  <ArrowRight size={14} />
                 </span>
               </div>
             </div>
           </article>
-        </section>
+        </InstitutionalSection>
 
-        <section className="mx-auto max-w-6xl px-5 py-4 sm:px-8 lg:py-8">
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            {highlights.map((item) => {
-              const Icon = item.icon;
-              return (
-                <article
-                  key={item.title}
-                  className="border border-[#0F3B63]/10 bg-white p-7 shadow-[0_18px_48px_rgba(15,59,99,.08)] transition hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,59,99,.14)]"
-                >
-                  <span className="grid h-12 w-12 place-items-center bg-[#F8FAFC] text-[#B8872D]">
-                    <Icon size={22} />
-                  </span>
-                  <h3 className="mt-6 font-serif text-3xl font-black leading-tight text-[#0F3B63]">{item.title}</h3>
-                  <p className="mt-4 text-base leading-8 text-[#6B7280]">{item.summary}</p>
-                </article>
-              );
-            })}
+        {/* Highlights grid (3 columns desktop, 2 tablet, 1 mobile) */}
+        <InstitutionalSection className="py-4 md:py-6">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {highlights.map((item) => (
+              <InstitutionalCard
+                key={item.title}
+                icon={item.icon}
+                title={item.title}
+                description={item.summary}
+              />
+            ))}
           </div>
-        </section>
+        </InstitutionalSection>
 
-        <section className="mx-auto max-w-6xl px-5 py-16 sm:px-8 lg:py-20">
+        <InstitutionalSection>
           <div className="border-t border-[#0F3B63]/10 pt-10">
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-[#B8872D]">Legado e preservação</p>
-            <h2 className="mt-5 font-serif text-4xl font-black leading-tight text-[#0F3B63] sm:text-5xl">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#B8872D]">Legado e preservação</p>
+            <h2 className="mt-3 font-serif text-3xl font-bold leading-tight text-[#0F3B63] sm:text-4xl">
               Guardando a memória da Convenção para as próximas gerações
             </h2>
-            <p className="mt-6 max-w-4xl text-lg leading-8 text-[#6B7280]">
+            <p className="mt-4 text-sm leading-relaxed text-[#6B7280]">
               A preservação da memória institucional contribui para manter viva a identidade da COMIEADEPA, valorizar sua
               história ministerial e reconhecer o testemunho de fé, serviço e unidade construído ao longo de sua jornada.
             </p>
           </div>
-        </section>
+        </InstitutionalSection>
       </main>
     </PublicLayout>
   );

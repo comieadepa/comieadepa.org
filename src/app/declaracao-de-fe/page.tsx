@@ -1,8 +1,9 @@
 import { CheckCircle2 } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { PublicLayout } from "@/components/site/PublicLayout";
 import { buildSeoMetadata } from "@/lib/seo";
+import { InstitutionalPageHeader } from "@/components/site/InstitutionalPageHeader";
+import { InstitutionalSection } from "@/components/site/InstitutionalSection";
 
 const declarations = [
   "Cremos em um só Deus, eternamente subsistente em três pessoas: Pai, Filho e Espírito Santo.",
@@ -25,38 +26,22 @@ export default function DeclaracaoDeFePage() {
   return (
     <PublicLayout>
       <main className="min-h-screen bg-white text-[#1F2937]">
-        <section className="relative overflow-hidden bg-[#0F3B63] py-20 text-white md:py-24">
-          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(15,59,99,0.98)_0%,rgba(29,90,140,0.88)_100%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(212,162,76,0.15),transparent_50%)]" />
-          <div className="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(135deg,#fff_1px,transparent_1px)] [background-size:38px_38px]" />
+        <InstitutionalPageHeader
+          badge="INSTITUCIONAL"
+          title="Declaração de Fé"
+          subtitle="Princípios doutrinários que orientam a fé, a comunhão e o testemunho cristão da COMIEADEPA."
+        />
 
-          <div className="relative z-10 mx-auto max-w-6xl px-5 sm:px-8">
-            <Link href="/" className="text-sm font-black uppercase tracking-[0.18em] text-[#F8D77B] transition hover:text-white">
-              COMIEADEPA
-            </Link>
-
-            <div className="mt-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#F8D77B]">INSTITUCIONAL</p>
-                <h1 className="mt-4 font-serif text-5xl font-black leading-[1.04] text-white sm:text-7xl">Declaração de Fé</h1>
-              </div>
-              <p className="text-lg leading-8 text-white/80 border-l border-white/20 pl-6 lg:border-l-2">
-                Princípios doutrinários que orientam a fé, a comunhão e o testemunho cristão da COMIEADEPA.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-6xl px-5 pb-12 sm:px-8 lg:pb-16">
-          <div className="grid gap-10 lg:grid-cols-[.95fr_1.05fr]">
+        <InstitutionalSection>
+          <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.22em] text-[#B8872D]">Fundamento bíblico</p>
-              <h2 className="mt-5 font-serif text-4xl font-black leading-tight text-[#0F3B63] sm:text-5xl">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#B8872D]">Fundamento bíblico</p>
+              <h2 className="mt-3 font-serif text-3xl font-bold leading-tight text-[#0F3B63] sm:text-4xl">
                 Uma confissão de fé centrada na Palavra de Deus
               </h2>
             </div>
 
-            <div className="space-y-6 text-lg leading-8 text-[#4B5563]">
+            <div className="space-y-5 text-base leading-relaxed text-[#4B5563]">
               <p>
                 A Declaração de Fé da COMIEADEPA expressa convicções bíblicas que sustentam a vida cristã, a prática
                 ministerial e o testemunho da Igreja. Ela afirma nossa confiança na revelação das Escrituras, na obra
@@ -68,41 +53,42 @@ export default function DeclaracaoDeFePage() {
               </p>
             </div>
           </div>
-        </section>
+        </InstitutionalSection>
 
-        <section className="border-y border-[#0F3B63]/10 bg-[#F8FAFC] px-5 py-16 sm:px-8 lg:py-20">
-          <div className="mx-auto max-w-6xl">
-            <div className="grid gap-5 lg:grid-cols-2">
+        {/* Declarations Grid - Desktop 3 columns, Tablet 2, Mobile 1, matching visual layout rules */}
+        <section className="border-y border-[#0F3B63]/10 bg-[#F8FAFC]">
+          <InstitutionalSection className="py-12 md:py-16">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {declarations.map((item, index) => (
                 <article
                   key={item}
-                  className="flex gap-4 border border-[#0F3B63]/10 bg-white p-7 shadow-[0_18px_48px_rgba(15,59,99,.08)]"
+                  className="flex flex-col justify-between border border-[#0F3B63]/10 bg-white p-6 shadow-[0_4px_20px_rgba(15,59,99,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(15,59,99,0.08)]"
                 >
-                  <span className="mt-1 grid h-10 w-10 shrink-0 place-items-center bg-[#F8FAFC] text-[#B8872D]">
-                    <CheckCircle2 size={20} />
-                  </span>
                   <div>
-                    <p className="text-sm font-black uppercase tracking-[0.16em] text-[#B8872D]">Princípio {index + 1}</p>
-                    <p className="mt-4 text-base leading-8 text-[#4B5563]">{item}</p>
+                    <span className="mb-4 inline-grid h-8 w-8 place-items-center bg-[#F8FAFC] text-[#B8872D]">
+                      <CheckCircle2 size={16} />
+                    </span>
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#B8872D]">Princípio {index + 1}</p>
+                    <p className="mt-3 text-sm leading-relaxed text-[#4B5563]">{item}</p>
                   </div>
                 </article>
               ))}
             </div>
-          </div>
+          </InstitutionalSection>
         </section>
 
-        <section className="mx-auto max-w-6xl px-5 py-16 sm:px-8 lg:py-20">
+        <InstitutionalSection>
           <div className="border-t border-[#0F3B63]/10 pt-10">
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-[#B8872D]">Comunhão e fidelidade</p>
-            <h2 className="mt-5 font-serif text-4xl font-black leading-tight text-[#0F3B63] sm:text-5xl">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#B8872D]">Comunhão e fidelidade</p>
+            <h2 className="mt-3 font-serif text-3xl font-bold leading-tight text-[#0F3B63] sm:text-4xl">
               Doutrina, unidade e compromisso com a verdade
             </h2>
-            <p className="mt-6 max-w-4xl text-lg leading-8 text-[#6B7280]">
+            <p className="mt-4 text-sm leading-relaxed text-[#6B7280]">
               A Declaração de Fé da COMIEADEPA serve como referência para a unidade ministerial, a pregação fiel do
               Evangelho e o fortalecimento das igrejas e ministros filiados em sua missão cristã.
             </p>
           </div>
-        </section>
+        </InstitutionalSection>
       </main>
     </PublicLayout>
   );

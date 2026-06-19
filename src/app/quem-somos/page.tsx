@@ -1,9 +1,10 @@
-import { ArrowRight, FileText, GalleryHorizontal, Landmark, Newspaper, ShieldCheck, Users } from "lucide-react";
+import { ArrowRight, GalleryHorizontal, Landmark, Newspaper, ShieldCheck, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { PublicLayout } from "@/components/site/PublicLayout";
 import { buildSeoMetadata } from "@/lib/seo";
+import { InstitutionalSection } from "@/components/site/InstitutionalSection";
 
 export const metadata: Metadata = buildSeoMetadata({
   title: "Quem Somos | COMIEADEPA",
@@ -28,18 +29,18 @@ const institutionalHighlights = [
 ];
 
 const institutionalLinks = [
-  { title: "Mesa Diretora", href: "/paginas/mesa-diretora", icon: Users },
-  { title: "Conselhos e Comissões", href: "/paginas/conselhos-e-comissoes", icon: ShieldCheck },
-  { title: "Departamentos", href: "/departamentos", icon: Landmark },
-  { title: "Documentos Oficiais", href: "/documentos", icon: FileText },
-  { title: "Galeria de Fotos", href: "/galeria", icon: GalleryHorizontal },
+  { title: "Mesa Diretora", href: "/mesa-diretora", icon: Users },
+  { title: "Conselhos", href: "/conselhos", icon: ShieldCheck },
+  { title: "Comissões", href: "/comissoes", icon: Users },
+  { title: "Órgãos", href: "/orgaos", icon: Landmark },
+  { title: "Memória", href: "/memoria", icon: GalleryHorizontal },
   { title: "Notícias", href: "/noticias", icon: Newspaper },
 ];
 
 const documentLinks = [
   { title: "Estatuto", href: "/documentos" },
   { title: "Regimento Interno", href: "/documentos" },
-  { title: "Declaração de Fé", href: "/documentos" },
+  { title: "Declaração de Fé", href: "/declaracao-de-fe" },
   { title: "Central de Documentos", href: "/documentos" },
 ];
 
@@ -47,34 +48,35 @@ export default function QuemSomosPage() {
   return (
     <PublicLayout>
       <main className="min-h-screen bg-white text-[#1F2937]">
-        <section className="relative overflow-hidden bg-[#0F3B63] py-20 text-white md:py-24">
+        {/* Harmonized Hero Section */}
+        <section className="relative overflow-hidden bg-[#0F3B63] py-16 text-white md:py-20">
           <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(15,59,99,0.98)_0%,rgba(29,90,140,0.88)_100%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(212,162,76,0.15),transparent_50%)]" />
-          <div className="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(135deg,#fff_1px,transparent_1px)] [background-size:38px_38px]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(212,162,76,0.12),transparent_50%)]" />
+          <div className="absolute inset-0 opacity-[0.03] [background-image:linear-gradient(135deg,#fff_1px,transparent_1px)] [background-size:38px_38px]" />
 
           <div className="relative z-10 mx-auto max-w-6xl px-5 sm:px-8">
-            <div className="grid gap-10 lg:grid-cols-[1.15fr_.85fr] lg:items-center">
+            <div className="grid gap-8 lg:grid-cols-[1.25fr_0.75fr] lg:items-center">
               <div>
-                <Link href="/" className="text-sm font-black uppercase tracking-[0.18em] text-[#F8D77B] transition hover:text-white">
+                <Link href="/" className="text-xs font-black uppercase tracking-[0.2em] text-[#F8D77B] transition hover:text-white">
                   COMIEADEPA
                 </Link>
-                <p className="mt-10 text-xs font-black uppercase tracking-[0.22em] text-[#F8D77B]">INSTITUCIONAL</p>
-                <h1 className="mt-4 font-serif text-5xl font-black leading-[1.02] text-white sm:text-7xl">Conheça a COMIEADEPA</h1>
-                <p className="mt-6 max-w-3xl text-xl leading-8 text-white/80 border-l border-white/20 pl-6 lg:border-l-2">
-                  Convenção Interestadual de Ministros e Igrejas Evangélicas Assembleias de Deus do Estado do Pará
+                <p className="mt-8 text-[10px] font-black uppercase tracking-[0.25em] text-[#F8D77B] sm:text-xs">INSTITUCIONAL</p>
+                <h1 className="mt-3 font-serif text-3xl font-black leading-tight text-white sm:text-4xl md:text-5xl">Conheça a COMIEADEPA</h1>
+                <p className="mt-5 text-sm leading-relaxed text-white/80 border-l border-white/20 pl-5 sm:text-base lg:border-l-2">
+                  Convenção Interestadual de Ministros e Igrejas Evangélicas Assembleias de Deus do Estado do Pará.
                 </p>
               </div>
 
               <div className="flex justify-center lg:justify-end">
-                <div className="relative flex h-[300px] w-full max-w-[360px] items-center justify-center">
-                  <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(212,162,76,.12),transparent_62%)]" />
+                <div className="relative flex h-[200px] w-full max-w-[260px] items-center justify-center">
+                  <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(212,162,76,0.1),transparent_62%)]" />
                   <Image
                     src="/assets/logo-comieadepa.png"
                     alt="Brasão COMIEADEPA"
-                    width={280}
-                    height={280}
+                    width={180}
+                    height={180}
                     priority
-                    className="relative h-auto w-[220px] object-contain drop-shadow-[0_22px_45px_rgba(255,255,255,.12)] sm:w-[280px]"
+                    className="relative h-auto w-[140px] object-contain drop-shadow-[0_12px_24px_rgba(255,255,255,0.08)] sm:w-[180px]"
                   />
                 </div>
               </div>
@@ -82,15 +84,16 @@ export default function QuemSomosPage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-5 py-6 sm:px-8 lg:pb-20">
-          <div className="grid gap-12 lg:grid-cols-[1.08fr_.92fr]">
+        {/* Story Section */}
+        <InstitutionalSection>
+          <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
             <div>
-              <h2 className="font-serif text-4xl font-black leading-tight text-[#0F3B63] sm:text-5xl">
+              <h2 className="font-serif text-3xl font-bold leading-tight text-[#0F3B63] sm:text-4xl">
                 Uma história de fé, unidade e compromisso com a obra de Deus
               </h2>
             </div>
 
-            <div className="space-y-6 text-lg leading-8 text-[#4B5563]">
+            <div className="space-y-5 text-base leading-relaxed text-[#4B5563]">
               <p>
                 A COMIEADEPA é uma convenção assembleiana com trajetória histórica marcada pela comunhão ministerial,
                 defesa da doutrina bíblica, fortalecimento das igrejas filiadas e compromisso com a expansão do Reino de
@@ -99,95 +102,94 @@ export default function QuemSomosPage() {
               <p>
                 Fundada sobre princípios de fé, organização e serviço cristão, a COMIEADEPA reúne ministros, igrejas e
                 lideranças comprometidas com a Palavra de Deus, com a valorização da família ministerial e com o avanço
-                da obra evangelística no Estado do Pará e em regiões alcançadas por sua atuação.
-              </p>
-              <p>
-                Ao longo de sua caminhada, a Convenção tem atuado na orientação espiritual, no apoio institucional aos
-                ministros, na promoção de assembleias, congressos, reuniões, ações administrativas, eventos de formação
-                e fortalecimento da identidade assembleiana.
+                da obra evangelística no Estado do Pará.
               </p>
             </div>
           </div>
 
-          <div className="mt-14 grid gap-6 border-t border-[#0F3B63]/10 pt-10 lg:grid-cols-3">
+          {/* Harmonized Mission/Vision/Values layout (3 columns) */}
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 border-t border-[#0F3B63]/10 pt-10">
             {institutionalHighlights.map((item) => (
-              <article key={item.title} className="border-l-2 border-[#D4A24C] pl-5">
-                <p className="text-sm font-black uppercase tracking-[0.18em] text-[#0F3B63]">{item.title}</p>
-                <p className="mt-4 text-base leading-8 text-[#6B7280]">{item.text}</p>
+              <article key={item.title} className="border-l-2 border-[#D4A24C] pl-4">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#0F3B63]">{item.title}</p>
+                <p className="mt-3 text-sm leading-relaxed text-[#6B7280]">{item.text}</p>
               </article>
             ))}
           </div>
-        </section>
+        </InstitutionalSection>
 
-        <section className="border-y border-[#0F3B63]/10 bg-[#F8FAFC] px-5 py-16 sm:px-8 lg:py-20">
-          <div className="mx-auto max-w-6xl">
-            <div className="grid gap-10 lg:grid-cols-[.9fr_1.1fr] lg:items-start">
+        {/* Sections & Navigation Links */}
+        <section className="border-y border-[#0F3B63]/10 bg-[#F8FAFC]">
+          <InstitutionalSection className="py-12 md:py-14">
+            <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
               <div>
-                <p className="text-sm font-black uppercase tracking-[0.22em] text-[#B8872D]">Institucional</p>
-                <h2 className="mt-5 font-serif text-4xl font-black leading-tight text-[#0F3B63] sm:text-5xl">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#B8872D]">Estrutura</p>
+                <h2 className="mt-3 font-serif text-3xl font-bold leading-tight text-[#0F3B63]">
                   Áreas e conteúdos da COMIEADEPA
                 </h2>
               </div>
 
-              <div className="grid gap-3">
+              {/* Grid responsivo de links institucionais (3 colunas no desktop) */}
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {institutionalLinks.map((item) => {
                   const Icon = item.icon;
                   return (
                     <Link
                       key={item.title}
                       href={item.href}
-                      className="group flex items-center gap-4 border-b border-[#0F3B63]/10 py-4 text-[#0F3B63] transition hover:text-[#B8872D]"
+                      className="group flex items-center gap-3 border border-[#0F3B63]/10 bg-white p-4 shadow-[0_2px_10px_rgba(15,59,99,0.02)] transition hover:-translate-y-0.5 hover:border-[#B8872D] hover:shadow-[0_8px_20px_rgba(15,59,99,0.06)]"
                     >
-                      <Icon size={18} className="shrink-0 text-[#B8872D]" />
-                      <span className="text-lg font-semibold">{item.title}</span>
-                      <ArrowRight size={18} className="ml-auto transition group-hover:translate-x-1" />
+                      <Icon size={16} className="shrink-0 text-[#B8872D]" />
+                      <span className="text-sm font-semibold text-[#0F3B63] transition group-hover:text-[#B8872D]">{item.title}</span>
                     </Link>
                   );
                 })}
               </div>
             </div>
-          </div>
+          </InstitutionalSection>
         </section>
 
-        <section className="mx-auto max-w-6xl px-5 py-16 sm:px-8 lg:py-20">
-          <div className="grid gap-10 lg:grid-cols-[1fr_.9fr] lg:items-center">
+        {/* Documentation Section */}
+        <InstitutionalSection>
+          <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.22em] text-[#B8872D]">Documentação</p>
-              <h2 className="mt-5 font-serif text-4xl font-black leading-tight text-[#0F3B63] sm:text-5xl">
-                Documentação da COMIEADEPA
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#B8872D]">Documentação</p>
+              <h2 className="mt-3 font-serif text-3xl font-bold leading-tight text-[#0F3B63]">
+                Documentação Oficial
               </h2>
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-[#6B7280]">
+              <p className="mt-4 text-sm leading-relaxed text-[#6B7280]">
                 Acesse estatuto, regimento interno, declarações, formulários e demais documentos oficiais da Convenção.
               </p>
 
-              <div className="mt-10 grid gap-3 sm:grid-cols-2">
+              {/* Grid responsivo de documentos */}
+              <div className="mt-8 grid gap-3 sm:grid-cols-2">
                 {documentLinks.map((item) => (
                   <Link
                     key={item.title}
                     href={item.href}
-                    className="group inline-flex items-center justify-between gap-3 border border-[#0F3B63]/10 bg-white px-5 py-4 text-sm font-black uppercase tracking-[0.14em] text-[#0F3B63] transition hover:border-[#B8872D] hover:text-[#B8872D]"
+                    className="group inline-flex items-center justify-between gap-3 border border-[#0F3B63]/10 bg-white px-4 py-3 text-xs font-black uppercase tracking-[0.12em] text-[#0F3B63] transition hover:border-[#B8872D] hover:text-[#B8872D]"
                   >
                     <span>{item.title}</span>
-                    <ArrowRight size={17} className="transition group-hover:translate-x-1" />
+                    <ArrowRight size={14} className="transition group-hover:translate-x-1" />
                   </Link>
                 ))}
               </div>
             </div>
 
-            <div className="relative overflow-hidden border border-[#0F3B63]/10 bg-[#F8FAFC] shadow-[0_24px_70px_rgba(15,59,99,.10)]">
-              <div className="absolute inset-0 bg-[linear-gradient(145deg,rgba(15,59,99,.06),rgba(212,162,76,.10))]" />
-              <div className="relative flex min-h-[340px] items-center justify-center p-10">
+            <div className="relative overflow-hidden border border-[#0F3B63]/10 bg-[#F8FAFC] shadow-[0_12px_36px_rgba(15,59,99,0.06)]">
+              <div className="absolute inset-0 bg-[linear-gradient(145deg,rgba(15,59,99,0.03),rgba(212,162,76,0.06))]" />
+              <div className="relative flex min-h-[220px] items-center justify-center p-8">
                 <Image
                   src="/assets/logo-comieadepa.png"
                   alt="Identidade institucional COMIEADEPA"
-                  width={260}
-                  height={260}
-                  className="h-auto w-[210px] object-contain drop-shadow-[0_20px_40px_rgba(15,59,99,.16)] sm:w-[260px]"
+                  width={180}
+                  height={180}
+                  className="h-auto w-[140px] object-contain drop-shadow-[0_12px_24px_rgba(15,59,99,0.08)] sm:w-[160px]"
                 />
               </div>
             </div>
           </div>
-        </section>
+        </InstitutionalSection>
       </main>
     </PublicLayout>
   );

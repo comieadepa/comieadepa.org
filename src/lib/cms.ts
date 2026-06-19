@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   Tags,
   Youtube,
+  Users,
 } from "lucide-react";
 
 export const adminNavItems = [
@@ -26,6 +27,9 @@ export const adminNavItems = [
   { href: "/admin/galerias", label: "Galeria de Fotos", icon: ImageIcon },
   { href: "/admin/midia", label: "Mídia", icon: Images },
   { href: "/admin/paginas", label: "Páginas", icon: FileText },
+  { href: "/admin/mesa-diretora", label: "Mesa Diretora", icon: Users },
+  { href: "/admin/mesa-diretora/grupos", label: "Grupos da Mesa Diretora", icon: ListChecks },
+  { href: "/admin/institucional", label: "Institucional", icon: Building2 },
   { href: "/admin/auditoria", label: "Auditoria", icon: ListChecks },
   { href: "/admin/usuarios", label: "Usuários", icon: UserCog },
   { href: "/admin/permissoes", label: "Permissões", icon: ShieldCheck },

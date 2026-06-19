@@ -39,14 +39,14 @@ export function InstitutionalMegaMenu({ eventsPortalUrl, onClose, open }: Instit
 
   const institutionalLinks = useMemo<MenuItem[]>(
     () => [
-      { label: "Quem Somos", href: "/quem-somos", icon: Landmark },
+      { label: "Quem Somos", href: "/institucional/quem-somos", icon: Landmark },
       { label: "Diretoria", href: "/mesa-diretora", icon: Users },
-      { label: "Declaração de Fé", href: "/declaracao-de-fe", icon: ShieldCheck },
-      { label: "Presidente", href: "/presidente", icon: Users },
-      { label: "Conselhos", href: "/conselhos", icon: ShieldCheck },
-      { label: "Comissões", href: "/comissoes", icon: Users },
-      { label: "Órgãos", href: "/orgaos", icon: Landmark },
-      { label: "Memória", href: "/memoria", icon: NotebookText },
+      { label: "Declaração de Fé", href: "/institucional/declaracao-de-fe", icon: ShieldCheck },
+      { label: "Presidente", href: "/institucional/presidente", icon: Users },
+      { label: "Conselhos", href: "/institucional/conselhos", icon: ShieldCheck },
+      { label: "Comissões", href: "/institucional/comissoes", icon: Users },
+      { label: "Órgãos", href: "/institucional/orgaos", icon: Landmark },
+      { label: "Memória", href: "/institucional/memoria", icon: NotebookText },
       { label: "Documentos", href: "/documentos", icon: FileText },
     ],
     [],

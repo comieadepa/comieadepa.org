@@ -13,7 +13,9 @@ export type AdminModule =
   | "usuarios"
   | "configuracoes"
   | "permissoes"
-  | "paginas";
+  | "paginas"
+  | "mesa_diretora"
+  | "institucional";
 export type AdminAction =
   | "view"
   | "create"
@@ -48,6 +50,8 @@ const adminModules: AdminModule[] = [
   "configuracoes",
   "permissoes",
   "paginas",
+  "mesa_diretora",
+  "institucional",
 ];
 export const adminModuleList = [...adminModules] as const;
 const adminActions: AdminAction[] = [
@@ -78,6 +82,8 @@ const adminModulePaths: Record<AdminModule, string> = {
   configuracoes: "/admin/configuracoes",
   permissoes: "/admin/permissoes",
   paginas: "/admin/paginas",
+  mesa_diretora: "/admin/mesa-diretora",
+  institucional: "/admin/institucional",
 };
 
 const rolePermissions: Record<AdminRole, Partial<Record<AdminModule, AdminAction[]>>> = {
@@ -93,6 +99,8 @@ const rolePermissions: Record<AdminRole, Partial<Record<AdminModule, AdminAction
     galerias: ["view", "create", "update", "publish", "archive"],
     midia: ["view", "upload"],
     paginas: ["view", "create", "update", "publish", "archive"],
+    mesa_diretora: ["view", "create", "update", "delete", "publish"],
+    institucional: ["view", "create", "update", "delete", "publish"],
   },
   midia: {
     dashboard: ["view"],
@@ -111,6 +119,8 @@ const rolePermissions: Record<AdminRole, Partial<Record<AdminModule, AdminAction
     galerias: ["view"],
     midia: ["view"],
     paginas: ["view"],
+    mesa_diretora: ["view"],
+    institucional: ["view"],
   },
 };
 
@@ -214,6 +224,14 @@ function getAdminModuleFromPath(pathname: string): AdminModule | null {
     return "paginas";
   }
 
+  if (pathname.startsWith("/admin/mesa-diretora") || pathname.startsWith("/api/admin/mesa-diretora")) {
+    return "mesa_diretora";
+  }
+
+  if (pathname.startsWith("/admin/institucional") || pathname.startsWith("/api/admin/institucional")) {
+    return "institucional";
+  }
+
   if (pathname.startsWith("/admin/paginas")) {
     return "paginas";
   }
@@ -228,6 +246,10 @@ function getAdminModuleFromPath(pathname: string): AdminModule | null {
 
   if (pathname.startsWith("/admin/preview/departamentos")) {
     return "departamentos";
+  }
+
+  if (pathname.startsWith("/admin/preview/institucional")) {
+    return "institucional";
   }
 
   if (pathname.startsWith("/admin/preview/paginas")) {

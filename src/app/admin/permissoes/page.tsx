@@ -53,6 +53,8 @@ const moduleLabels: Record<AdminModule, string> = {
   configuracoes: "Configurações",
   permissoes: "Permissões",
   paginas: "Páginas",
+  mesa_diretora: "Mesa Diretora",
+  institucional: "Institucional",
 };
 
 const actionLabels: Record<AdminAction, string> = {
@@ -82,6 +84,8 @@ const visibleModules: AdminModule[] = [
   "permissoes",
   "configuracoes",
   "paginas",
+  "mesa_diretora",
+  "institucional",
 ];
 
 const visibleActions: AdminAction[] = [
