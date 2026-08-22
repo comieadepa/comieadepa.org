@@ -1,6 +1,6 @@
 import { videoSamples } from "@/lib/cms";
 import { selectSupabaseRows } from "@/lib/supabase-admin";
-import { DownloadCloud, Link2, Plus, Star, Youtube } from "lucide-react";
+import { DownloadCloud, Link2, Plus, Youtube } from "lucide-react";
 import { MediaPickerAsset, MediaUrlField } from "../media-url-field";
 import { StatusMessage } from "../status-message";
 import { AdminFilterPills, AdminPageHeader, AdminStatusBadge } from "../admin-ui";

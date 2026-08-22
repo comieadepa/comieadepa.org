@@ -2,7 +2,7 @@ import { selectSupabaseRows } from "@/lib/supabase-admin";
 import { Save, Tags } from "lucide-react";
 import Link from "next/link";
 import { StatusMessage } from "../status-message";
-import { AdminEmptyState, AdminSubNavTabs } from "../admin-ui";
+import { AdminSubNavTabs } from "../admin-ui";
 
 type CmsCategory = {
   id: string;

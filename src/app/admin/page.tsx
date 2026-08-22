@@ -25,7 +25,6 @@ export default async function AdminDashboardPage() {
   ];
 
   const canCreateNews = canPerformAdminAction(role, "noticias", "create");
-  const canAccessNews = canAccessAdminPath("/admin/noticias", role);
   const canAccessVideos = canAccessAdminPath("/admin/videos", role);
   const canAccessGalleries = canAccessAdminPath("/admin/galerias", role);
   const canAccessMedia = canAccessAdminPath("/admin/midia", role);

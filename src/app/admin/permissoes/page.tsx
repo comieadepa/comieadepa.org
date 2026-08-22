@@ -1,5 +1,4 @@
 import { Check, Save, ShieldCheck, UserRound, X } from "lucide-react";
-import { headers } from "next/headers";
 import { StatusMessage } from "../status-message";
 import {
   AdminAction,
@@ -107,8 +106,6 @@ export default async function AdminPermissionsPage({
   searchParams?: Promise<{ success?: string; error?: string; message?: string }>;
 }) {
   const params = await searchParams;
-  const headerList = await headers();
-  const role = normalizeAdminRole(headerList.get("x-admin-role"));
   const users = await selectSupabaseRows<AdminUser>(
     "cms_admin_users",
     "select=id,nome,email,role,ativo,departamento_id,observacoes,created_at&order=role.asc,nome.asc&limit=120",

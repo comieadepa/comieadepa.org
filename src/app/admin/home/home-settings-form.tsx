@@ -2,7 +2,7 @@
 
 import { ExternalLink, ImageIcon, Save, Sparkles, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { canEditHomeField, canEditHomeSection, homeSettingSections } from "@/lib/home-settings";
+import { canEditHomeField, homeSettingSections, HomeSettingKey } from "@/lib/home-settings";
 import { CmsHomeSlide, HomeSlideStatus } from "@/lib/home-slides";
 import { AdminRole } from "@/lib/admin-permissions";
 import { MediaPickerAsset, MediaUrlField } from "../media-url-field";
@@ -64,7 +64,7 @@ export function HomeSettingsForm({
   async function saveHomeSection(keys: string[], formData: FormData) {
     const payload = new FormData();
     for (const key of keys) {
-      if (canEditHomeField(role, key as any)) {
+      if (canEditHomeField(role, key as HomeSettingKey)) {
         payload.set(key, String(formData.get(key) ?? ""));
       }
     }

@@ -1,7 +1,6 @@
 import {
   BarChart3,
   Building2,
-  FileText,
   FolderOpen,
   ImageIcon,
   Home,
@@ -11,9 +10,9 @@ import {
   UserCog,
   Settings,
   ShieldCheck,
-  Tags,
   Youtube,
   Users,
+  type LucideIcon,
 } from "lucide-react";
 
 export type AdminSubNavItem = {
@@ -24,7 +23,7 @@ export type AdminSubNavItem = {
 export type AdminNavItem = {
   href: string;
   label: string;
-  icon: any;
+  icon: LucideIcon;
   subItems?: AdminSubNavItem[];
 };
 
@@ -99,7 +98,7 @@ export const adminNavGroups: AdminNavGroup[] = [
 ];
 
 export const adminNavItems: AdminNavItem[] = adminNavGroups.flatMap((group) => group.items);
-export const adminSecondaryNavItems: Array<{ href: string; label: string; icon: any; status: string }> = [];
+export const adminSecondaryNavItems: Array<{ href: string; label: string; icon: LucideIcon; status: string }> = [];
 
 export const editorialWorkflow = [
   {

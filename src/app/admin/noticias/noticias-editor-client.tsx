@@ -80,7 +80,7 @@ export function NoticiasEditorClient({
   pageSize,
 }: Props) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const [editingPost, setEditingPost] = useState<CmsPost | null>(initialEditingPost);
   const [title, setTitle] = useState(initialEditingPost?.titulo ?? "");
