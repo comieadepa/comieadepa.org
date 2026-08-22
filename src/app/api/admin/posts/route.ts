@@ -15,7 +15,12 @@ import {
 import { canPerformAdminAction, resolveAdminRoleFromHeaders } from "@/lib/admin-permissions";
 
 export async function POST(request: Request) {
+  const acceptsJson = request.headers.get("accept")?.includes("application/json") || request.headers.get("x-requested-with") === "fetch";
+
   if (!hasSupabaseAdminConfig()) {
+    if (acceptsJson) {
+      return Response.json({ error: "Configuração do Supabase ausente." }, { status: 500 });
+    }
     return missingSupabaseAdminResponse();
   }
 
@@ -29,11 +34,12 @@ export async function POST(request: Request) {
   if (action && id) {
     const actionPermission = action === "publish" ? "publish" : action === "archive" ? "archive" : "update";
     if (!canPerformAdminAction(role, "noticias", actionPermission)) {
+      if (acceptsJson) {
+        return Response.json({ error: "Sem permissão para alterar o status da notícia." }, { status: 403 });
+      }
       return redirectWithStatus(request.url, "/admin/noticias", "error", "Sem permissao para alterar o status da noticia.");
     }
-  }
 
-  if (action && id) {
     try {
       const status = mapPostActionToStatus(action);
       await updateSupabaseRows("cms_posts", `id=eq.${encodeURIComponent(id)}`, {
@@ -49,18 +55,32 @@ export async function POST(request: Request) {
         metadata: { status },
       });
 
+      if (acceptsJson) {
+        return Response.json({ ok: true, id, status, message: "Status da notícia atualizado com sucesso." });
+      }
+
       return redirectWithStatus(request.url, "/admin/noticias", "success");
     } catch (error) {
-      return redirectWithStatus(request.url, "/admin/noticias", "error", error instanceof Error ? error.message : "Erro ao atualizar status da notícia.");
+      const message = error instanceof Error ? error.message : "Erro ao atualizar status da notícia.";
+      if (acceptsJson) {
+        return Response.json({ error: message }, { status: 500 });
+      }
+      return redirectWithStatus(request.url, "/admin/noticias", "error", message);
     }
   }
 
   if (!title) {
+    if (acceptsJson) {
+      return Response.json({ error: "Informe o título da notícia." }, { status: 400 });
+    }
     return redirectWithStatus(request.url, "/admin/noticias", "error", "Informe o título da notícia.");
   }
 
   const writeAction = id ? "update" : "create";
   if (!canPerformAdminAction(role, "noticias", writeAction)) {
+    if (acceptsJson) {
+      return Response.json({ error: "Sem permissão para salvar notícias." }, { status: 403 });
+    }
     return redirectWithStatus(request.url, "/admin/noticias", "error", "Sem permissao para salvar noticias.");
   }
 
@@ -78,9 +98,11 @@ export async function POST(request: Request) {
       status,
       autor_nome: optionalString(formData, "autor_nome"),
       publicado_em: status === "publicado" && !publishAt ? new Date().toISOString() : publishAt,
-      destaque_home: formData.get("destaque_home") === "on",
+      destaque_home: formData.get("destaque_home") === "on" || formData.get("destaque_home") === "true",
       updated_at: new Date().toISOString(),
     };
+
+    let postId = id;
 
     if (id) {
       await updateSupabaseRows("cms_posts", `id=eq.${encodeURIComponent(id)}`, payload);
@@ -94,19 +116,34 @@ export async function POST(request: Request) {
       });
     } else {
       const inserted = (await insertSupabaseRow("cms_posts", payload)) as Array<{ id?: string }>;
+      postId = inserted[0]?.id || "";
       await createAuditLog({
         request,
         action: "create",
         entity: "noticia",
-        entityId: inserted[0]?.id,
+        entityId: postId,
         entityTitle: title,
         metadata: { status, destaque_home: payload.destaque_home },
       });
     }
 
+    if (acceptsJson) {
+      return Response.json({
+        ok: true,
+        id: postId,
+        slug: payload.slug,
+        status: payload.status,
+        message: id ? "Notícia atualizada com sucesso." : "Notícia criada com sucesso.",
+      });
+    }
+
     return redirectWithStatus(request.url, "/admin/noticias", "success");
   } catch (error) {
-    return redirectWithStatus(request.url, "/admin/noticias", "error", error instanceof Error ? error.message : "Erro ao salvar notícia.");
+    const message = error instanceof Error ? error.message : "Erro ao salvar notícia.";
+    if (acceptsJson) {
+      return Response.json({ error: message }, { status: 500 });
+    }
+    return redirectWithStatus(request.url, "/admin/noticias", "error", message);
   }
 }
 

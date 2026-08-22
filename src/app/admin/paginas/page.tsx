@@ -5,6 +5,7 @@ import { StatusMessage } from "../status-message";
 import { selectSupabaseRows } from "@/lib/supabase-admin";
 import { canPerformAdminAction, normalizeAdminRole } from "@/lib/admin-permissions";
 import type { MediaPickerAsset } from "../media-url-field";
+import { AdminPageHeader, AdminSubNavTabs } from "../admin-ui";
 
 type CmsPage = {
   id: string;
@@ -48,22 +49,21 @@ export default async function AdminPagesPage({
 
   return (
     <div className="mx-auto max-w-7xl">
-      <StatusMessage success={params?.success} error={params?.message ?? params?.error} />
+      <AdminSubNavTabs
+        tabs={[
+          { href: "/admin/institucional", label: "Estrutura Institucional", active: false },
+          { href: "/admin/paginas", label: "Páginas Avulsas", active: true },
+        ]}
+      />
 
-      <section className="mb-6 border border-[#d8c38b] bg-white/76 p-6 shadow-[0_18px_50px_rgba(23,16,6,.08)]">
-        <div className="grid gap-5 lg:grid-cols-[auto_1fr] lg:items-center">
-          <div className="grid h-14 w-14 place-items-center bg-[#171006] text-[#f4cf6a]">
-            <FileText size={27} />
-          </div>
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Páginas institucionais</p>
-            <h1 className="mt-2 font-serif text-4xl font-black leading-tight">Crie e organize páginas do portal.</h1>
-            <p className="mt-3 max-w-4xl leading-7 text-[#5a472c]">
-              Utilize este módulo para publicar páginas institucionais com conteúdo completo, SEO e imagem de capa.
-            </p>
-          </div>
-        </div>
-      </section>
+      <StatusMessage success={params?.success} error={params?.error ?? params?.message} />
+
+      <AdminPageHeader
+        icon={FileText}
+        eyebrow="Páginas Institucionais"
+        title="Crie e organize páginas avulsas do portal"
+        description="Publique páginas com conteúdo livre formatado, resumo, imagem de capa e otimização para mecanismos de busca (SEO)."
+      />
 
       <PagesManager
         pages={pages}

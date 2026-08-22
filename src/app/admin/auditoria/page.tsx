@@ -1,5 +1,6 @@
-import { Activity, Clock3, Database, UserRound } from "lucide-react";
+import { Activity, Clock3, Database, ListChecks, UserRound } from "lucide-react";
 import { selectSupabaseRows } from "@/lib/supabase-admin";
+import { AdminPageHeader } from "../admin-ui";
 
 type AuditLog = {
   id: string;
@@ -20,12 +21,19 @@ export default async function AdminAuditPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
+      <AdminPageHeader
+        icon={ListChecks}
+        eyebrow="Trilha de Auditoria"
+        title="Histórico Operacional do Painel"
+        description="Acompanhe todas as ações realizadas pelos operadores: criação, edição, publicação, ativação, arquivamento e uploads de mídia."
+      />
+
       <section className="grid gap-6 lg:grid-cols-[0.78fr_1fr]">
         <div className="border border-[#d8c38b] bg-[#171006] p-6 text-white shadow-[0_18px_50px_rgba(23,16,6,.14)]">
-          <p className="text-sm font-black uppercase tracking-[0.18em] text-[#f4cf6a]">Auditoria</p>
-          <h2 className="mt-4 font-serif text-4xl font-black leading-tight">Histórico editorial do painel.</h2>
-          <p className="mt-5 leading-8 text-white/64">
-            Cada alteração relevante fica registrada para acompanhamento da equipe: criação, edição, publicação, ativação, arquivamento e uploads.
+          <p className="text-sm font-black uppercase tracking-[0.18em] text-[#f4cf6a]">Critérios de Registro</p>
+          <h2 className="mt-2 font-serif text-3xl font-black leading-tight">Segurança e Rastreabilidade</h2>
+          <p className="mt-4 leading-7 text-white/64">
+            Cada operação relevante é auditada com o identificador do operador, data/hora e metadados da modificação.
           </p>
           <div className="mt-8 grid gap-3">
             {[

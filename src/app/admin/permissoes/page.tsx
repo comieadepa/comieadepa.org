@@ -12,6 +12,7 @@ import {
   normalizeAdminRole,
 } from "@/lib/admin-permissions";
 import { selectSupabaseRows } from "@/lib/supabase-admin";
+import { AdminPageHeader } from "../admin-ui";
 
 type AdminUser = {
   id: string;
@@ -118,23 +119,14 @@ export default async function AdminPermissionsPage({
 
   return (
     <div className="mx-auto max-w-7xl">
-      <StatusMessage success={params?.success} error={params?.message ?? params?.error} />
+      <StatusMessage success={params?.success} error={params?.error ?? params?.message} />
 
-      <section className="mb-6 border border-[#d8c38b] bg-white/76 p-6 shadow-[0_18px_50px_rgba(23,16,6,.08)]">
-        <div className="grid gap-5 lg:grid-cols-[auto_1fr] lg:items-center">
-          <div className="grid h-14 w-14 place-items-center bg-[#171006] text-[#f4cf6a]">
-            <ShieldCheck size={27} />
-          </div>
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Permissões</p>
-            <h1 className="mt-2 font-serif text-4xl font-black leading-tight">Perfis de acesso do painel.</h1>
-            <p className="mt-3 max-w-4xl leading-7 text-[#5a472c]">
-              Valide o que cada perfil pode acessar e ajuste rapidamente o perfil dos usuários cadastrados.
-            </p>
-            <p className="mt-3 text-xs font-black uppercase tracking-[0.16em] text-[#5a472c]/70">Perfil atual: {roleLabels[role]}</p>
-          </div>
-        </div>
-      </section>
+      <AdminPageHeader
+        icon={ShieldCheck}
+        eyebrow="Governança e RBAC"
+        title="Matriz de Permissões e Perfis"
+        description="Consulte o escopo de atuação de cada perfil (Administrador, Editor, Mídia e Leitura) e ajuste os acessos dos usuários cadastrados."
+      />
 
       <section className="mb-6 grid gap-4 lg:grid-cols-4">
         {adminRoleList.map((adminRole) => {

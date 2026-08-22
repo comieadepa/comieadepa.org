@@ -2,11 +2,13 @@
 
 import { ExternalLink, ImageIcon, Save, Sparkles, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { homeSettingSections } from "@/lib/home-settings";
+import { canEditHomeField, canEditHomeSection, homeSettingSections } from "@/lib/home-settings";
 import { CmsHomeSlide, HomeSlideStatus } from "@/lib/home-slides";
+import { AdminRole } from "@/lib/admin-permissions";
 import { MediaPickerAsset, MediaUrlField } from "../media-url-field";
 
 type HomeSettingsFormProps = {
+  role?: AdminRole;
   values: Record<string, string>;
   assets: MediaPickerAsset[];
   canEdit?: boolean;
@@ -24,6 +26,7 @@ const statusLabels: Record<HomeSlideStatus, string> = {
 };
 
 export function HomeSettingsForm({
+  role = "admin",
   values,
   assets,
   canEdit = true,
@@ -61,7 +64,9 @@ export function HomeSettingsForm({
   async function saveHomeSection(keys: string[], formData: FormData) {
     const payload = new FormData();
     for (const key of keys) {
-      payload.set(key, String(formData.get(key) ?? ""));
+      if (canEditHomeField(role, key as any)) {
+        payload.set(key, String(formData.get(key) ?? ""));
+      }
     }
 
     const response = await fetch("/api/admin/home", {
@@ -237,20 +242,32 @@ export function HomeSettingsForm({
 
                 <div className="grid gap-5 md:grid-cols-2">
                   {activeSection.fields.map((field) => (
-                    <FieldRenderer key={field.name} field={field} values={values} assets={assets} canEdit={canEdit} />
+                    <FieldRenderer
+                      key={field.name}
+                      field={field}
+                      values={values}
+                      assets={assets}
+                      canEdit={canEdit && canEditHomeField(role, field.name)}
+                    />
                   ))}
                 </div>
 
                 <div className="flex flex-col gap-3 sm:flex-row">
-                  <button
-                    type="submit"
-                    value="save-home"
-                    className="inline-flex items-center justify-center gap-3 bg-[#171006] px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-white disabled:cursor-not-allowed disabled:opacity-60"
-                    disabled={!canEdit}
-                  >
-                    <Save size={18} />
-                    Salvar abertura
-                  </button>
+                  {activeSection.fields.some((field) => canEdit && canEditHomeField(role, field.name)) ? (
+                    <button
+                      type="submit"
+                      value="save-home"
+                      className="inline-flex items-center justify-center gap-3 bg-[#171006] px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-white disabled:cursor-not-allowed disabled:opacity-60"
+                      disabled={!canEdit}
+                    >
+                      <Save size={18} />
+                      Salvar abertura
+                    </button>
+                  ) : (
+                    <div className="flex items-center gap-2 border border-[#d8c38b] bg-[#f7efd6] p-3 text-xs font-bold uppercase tracking-[0.12em] text-[#8b2f2b]">
+                      Ajustes da abertura em modo de leitura.
+                    </div>
+                  )}
                   <a
                     href="/admin/midia"
                     className="inline-flex items-center justify-center gap-3 border border-[#8b2f2b]/30 px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-[#8b2f2b]"
@@ -516,19 +533,31 @@ export function HomeSettingsForm({
 
             <div className="mt-6 grid gap-5">
               {activeSection.fields.map((field) => (
-                <FieldRenderer key={field.name} field={field} values={values} assets={assets} canEdit={canEdit} />
+                <FieldRenderer
+                  key={field.name}
+                  field={field}
+                  values={values}
+                  assets={assets}
+                  canEdit={canEdit && canEditHomeField(role, field.name)}
+                />
               ))}
             </div>
 
             <div className="mt-7 flex flex-col gap-3 border-t border-[#ead9a6] pt-6 sm:flex-row">
-              <button
-                type="submit"
-                className="inline-flex items-center justify-center gap-3 bg-[#171006] px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-white disabled:cursor-not-allowed disabled:opacity-60"
-                disabled={!canEdit}
-              >
-                <Save size={18} />
-                Salvar seção
-              </button>
+              {activeSection.fields.some((field) => canEdit && canEditHomeField(role, field.name)) ? (
+                <button
+                  type="submit"
+                  className="inline-flex items-center justify-center gap-3 bg-[#171006] px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-white disabled:cursor-not-allowed disabled:opacity-60"
+                  disabled={!canEdit}
+                >
+                  <Save size={18} />
+                  Salvar seção
+                </button>
+              ) : (
+                <div className="flex items-center gap-2 border border-[#d8c38b] bg-[#f7efd6] p-4 text-xs font-bold uppercase tracking-[0.12em] text-[#8b2f2b]">
+                  Seção institucional em modo de leitura (governança restrita).
+                </div>
+              )}
               <a
                 href="/admin/midia"
                 className="inline-flex items-center justify-center gap-3 border border-[#8b2f2b]/30 px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-[#8b2f2b]"

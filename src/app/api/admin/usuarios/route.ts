@@ -6,6 +6,7 @@ import {
   optionalString,
   redirectWithStatus,
   requiredString,
+  sendAdminAccessSetupEmail,
   updateSupabaseRows,
 } from "@/lib/supabase-admin";
 import { canPerformAdminAction, resolveAdminRoleFromHeaders } from "@/lib/admin-permissions";
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
   const name = requiredString(formData, "nome");
   const email = requiredString(formData, "email").toLowerCase();
 
-  if (action && id) {
+  if ((action === "activate" || action === "deactivate") && id) {
     try {
       await updateSupabaseRows("cms_admin_users", `id=eq.${encodeURIComponent(id)}`, {
         ativo: action === "activate",
@@ -43,6 +44,24 @@ export async function POST(request: Request) {
       return redirectWithStatus(request.url, "/admin/usuarios", "success");
     } catch (error) {
       return redirectWithStatus(request.url, "/admin/usuarios", "error", error instanceof Error ? error.message : "Erro ao atualizar usuário.");
+    }
+  }
+
+  if (action === "send_access" && id && email) {
+    try {
+      await sendAdminAccessSetupEmail(email, name);
+      await createAuditLog({
+        request,
+        action: "send_access",
+        entity: "usuario",
+        entityId: id,
+        entityTitle: name || email,
+        metadata: { email },
+      });
+
+      return redirectWithStatus(request.url, "/admin/usuarios", "success", "Acesso enviado por e-mail para definição de senha.");
+    } catch (error) {
+      return redirectWithStatus(request.url, "/admin/usuarios", "error", error instanceof Error ? error.message : "Erro ao enviar o acesso do usuário.");
     }
   }
 
@@ -71,19 +90,22 @@ export async function POST(request: Request) {
         entityTitle: name,
         metadata: { email, role: payload.role },
       });
+
+      return redirectWithStatus(request.url, "/admin/usuarios", "success", "Usuário atualizado com sucesso.");
     } else {
       const inserted = (await insertSupabaseRow("cms_admin_users", payload)) as Array<{ id?: string }>;
+      await sendAdminAccessSetupEmail(email, name);
       await createAuditLog({
         request,
         action: "create",
         entity: "usuario",
         entityId: inserted[0]?.id,
         entityTitle: name,
-        metadata: { email, role: payload.role },
+        metadata: { email, role: payload.role, access_email_sent: true },
       });
-    }
 
-    return redirectWithStatus(request.url, "/admin/usuarios", "success");
+      return redirectWithStatus(request.url, "/admin/usuarios", "success", "Usuário salvo e acesso enviado por e-mail.");
+    }
   } catch (error) {
     return redirectWithStatus(request.url, "/admin/usuarios", "error", error instanceof Error ? error.message : "Erro ao salvar usuário.");
   }

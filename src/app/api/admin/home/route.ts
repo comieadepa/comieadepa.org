@@ -1,4 +1,4 @@
-import { homeSettingKeys } from "@/lib/home-settings";
+import { canEditHomeField, homeSettingKeys } from "@/lib/home-settings";
 import {
   createAuditLog,
   hasSupabaseAdminConfig,
@@ -27,9 +27,20 @@ export async function POST(request: Request) {
     return redirectWithStatus(request.url, "/admin/home", "error", "Nenhum campo enviado para salvar.");
   }
 
+  const allowedKeys = submittedKeys.filter((key) => canEditHomeField(role, key));
+
+  if (allowedKeys.length === 0) {
+    return redirectWithStatus(
+      request.url,
+      "/admin/home",
+      "error",
+      "Seu perfil administrativo nao tem permissao para alterar estes campos institucionais ou estruturais.",
+    );
+  }
+
   try {
     await Promise.all(
-      submittedKeys.map(async (key) => {
+      allowedKeys.map(async (key) => {
         const payload = {
           chave: key,
           valor: requiredString(formData, key),

@@ -1,3 +1,5 @@
+import type { AdminRole } from "./admin-permissions";
+
 export type HomeSettingFieldType = "text" | "textarea" | "image" | "number";
 
 export type HomeSettingKey =
@@ -227,3 +229,68 @@ export const homeFallbackSettings: Record<HomeSettingKey, string> = {
   home_eventos_video_botao: "Inscreva-se no Canal",
   home_eventos_video_inscritos: "15.3K inscritos",
 };
+
+export function canEditHomeField(role: AdminRole, fieldName: HomeSettingKey): boolean {
+  if (role === "admin") {
+    return true;
+  }
+  if (role === "viewer") {
+    return false;
+  }
+
+  // Parâmetros técnicos / estruturais: somente admin
+  if (fieldName === "home_hero_intervalo_segundos") {
+    return false;
+  }
+
+  // Seções e campos estritamente institucionais: admin e editor
+  const institutionalFields: HomeSettingKey[] = [
+    "home_hero_botao_secundario",
+    "home_hero_imagem_direita_url",
+    "home_sobre_selo",
+    "home_sobre_titulo",
+    "home_sobre_texto",
+    "home_sobre_imagem_url",
+    "home_sobre_selo_url",
+    "home_sobre_data",
+    "home_sobre_legenda",
+    "home_sobre_pilar_1",
+    "home_sobre_pilar_2",
+    "home_sobre_pilar_3",
+    "home_presidencia_imagem_url",
+    "home_presidencia_nome",
+    "home_presidencia_cargo",
+    "home_presidencia_iniciais",
+    "home_presidencia_selo",
+    "home_presidencia_titulo_linha_1",
+    "home_presidencia_titulo_destaque",
+    "home_presidencia_titulo_linha_2",
+    "home_presidencia_texto_1",
+    "home_presidencia_texto_2",
+    "home_presidencia_texto_3",
+    "home_departamentos_selo",
+    "home_departamentos_titulo",
+    "home_departamentos_texto",
+  ];
+
+  if (institutionalFields.includes(fieldName)) {
+    return role === "editor";
+  }
+
+  // Chamadas editoriais e dinâmicas: admin, editor, midia
+  return role === "editor" || role === "midia";
+}
+
+export function canEditHomeSection(role: AdminRole, sectionId: string): boolean {
+  if (role === "admin") {
+    return true;
+  }
+  if (role === "viewer") {
+    return false;
+  }
+  if (sectionId === "sobre" || sectionId === "presidencia") {
+    return role === "editor";
+  }
+  return true;
+}
+

@@ -4,7 +4,7 @@ import { StatusMessage } from "../status-message";
 export default async function AdminLoginPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ error?: string; next?: string }>;
+  searchParams?: Promise<{ error?: string; success?: string; message?: string; next?: string }>;
 }) {
   const params = await searchParams;
   const nextPath = params?.next ?? "/admin";
@@ -13,7 +13,7 @@ export default async function AdminLoginPage({
     <div className="mx-auto flex min-h-screen max-w-5xl items-center px-6 py-12">
       <div className="grid w-full gap-8 lg:grid-cols-[1.1fr_0.9fr]">
         <section className="border border-[#d8c38b] bg-white/76 p-8 shadow-[0_20px_60px_rgba(23,16,6,.12)]">
-          <StatusMessage error={params?.error} />
+          <StatusMessage success={params?.success} error={params?.error} successMessage={params?.message} />
           <p className="text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Acesso restrito</p>
           <h1 className="mt-3 font-serif text-4xl font-black leading-tight">Login do painel editorial</h1>
           <p className="mt-4 max-w-xl leading-7 text-[#5a472c]">

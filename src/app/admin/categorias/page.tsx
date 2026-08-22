@@ -2,6 +2,7 @@ import { selectSupabaseRows } from "@/lib/supabase-admin";
 import { Save, Tags } from "lucide-react";
 import Link from "next/link";
 import { StatusMessage } from "../status-message";
+import { AdminEmptyState, AdminSubNavTabs } from "../admin-ui";
 
 type CmsCategory = {
   id: string;
@@ -24,12 +25,20 @@ export default async function AdminCategoriesPage({
   const editingCategory = categories.find((category) => category.id === params?.edit);
 
   return (
-    <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[420px_1fr]">
-      <section className="h-fit border border-[#d8c38b] bg-white/76 p-6 shadow-[0_18px_50px_rgba(23,16,6,.08)]">
-        <StatusMessage success={params?.success} error={params?.message ?? params?.error} />
-        <p className="text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Categorias</p>
-        <h2 className="mt-3 font-serif text-4xl font-black leading-tight">{editingCategory ? "Editar categoria" : "Nova categoria"}</h2>
-        <p className="mt-4 leading-7 text-[#5a472c]">Organize notícias por editoria, como comunicados, cobertura, AGO, departamentos e notas oficiais.</p>
+    <div className="mx-auto max-w-7xl">
+      <AdminSubNavTabs
+        tabs={[
+          { href: "/admin/noticias", label: "Todas as notícias", active: false },
+          { href: "/admin/categorias", label: "Categorias", active: true },
+        ]}
+      />
+
+      <div className="grid gap-6 lg:grid-cols-[420px_1fr]">
+        <section className="h-fit border border-[#d8c38b] bg-white/76 p-6 shadow-[0_18px_50px_rgba(23,16,6,.08)]">
+          <StatusMessage success={params?.success} error={params?.message ?? params?.error} />
+          <p className="text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Categorias</p>
+          <h2 className="mt-3 font-serif text-4xl font-black leading-tight">{editingCategory ? "Editar categoria" : "Nova categoria"}</h2>
+          <p className="mt-4 leading-7 text-[#5a472c]">Organize notícias por editoria, como comunicados, cobertura, AGO, departamentos e notas oficiais.</p>
 
         <form action="/api/admin/categorias" method="post" className="mt-8 grid gap-5">
           <input type="hidden" name="id" value={editingCategory?.id ?? ""} />
@@ -89,5 +98,6 @@ export default async function AdminCategoriesPage({
         {categories.length === 0 ? <div className="mt-8 border border-white/10 bg-white/[0.055] p-6 text-white/62">Nenhuma categoria cadastrada ainda.</div> : null}
       </section>
     </div>
+  </div>
   );
 }

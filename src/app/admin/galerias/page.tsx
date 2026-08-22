@@ -5,6 +5,7 @@ import { StatusMessage } from "../status-message";
 import { canPerformAdminAction, normalizeAdminRole } from "@/lib/admin-permissions";
 import { CmsGallery, CmsGalleryPhoto } from "@/lib/galerias";
 import { selectSupabaseRows } from "@/lib/supabase-admin";
+import { AdminPageHeader } from "../admin-ui";
 
 export default async function AdminGalleriesPage({
   searchParams,
@@ -37,22 +38,14 @@ export default async function AdminGalleriesPage({
 
   return (
     <div className="mx-auto max-w-7xl">
-      <StatusMessage success={params?.success} error={params?.message ?? params?.error} />
+      <StatusMessage success={params?.success} error={params?.error ?? params?.message} />
 
-      <section className="mb-6 border border-[#d8c38b] bg-white/76 p-6 shadow-[0_18px_50px_rgba(23,16,6,.08)]">
-        <div className="grid gap-5 lg:grid-cols-[auto_1fr] lg:items-center">
-          <div className="grid h-14 w-14 place-items-center bg-[#171006] text-[#f4cf6a]">
-            <ImageIcon size={27} />
-          </div>
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Galeria de Fotos</p>
-            <h1 className="mt-2 font-serif text-4xl font-black leading-tight">Organize acervos fotogrÃ¡ficos do portal.</h1>
-            <p className="mt-3 max-w-4xl leading-7 text-[#5a472c]">
-              Cadastre galerias com capa, categoria, data do evento, destaque e gerenciamento completo de fotos, legenda e crÃ©dito.
-            </p>
-          </div>
-        </div>
-      </section>
+      <AdminPageHeader
+        icon={ImageIcon}
+        eyebrow="Galeria de Fotos"
+        title="Organize acervos fotográficos do portal"
+        description="Cadastre galerias com capa, categoria, data do evento, destaque e gerenciamento completo de fotos, legendas e créditos."
+      />
 
       <GalleriesManager
         galleries={galleries}

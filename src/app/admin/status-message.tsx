@@ -1,9 +1,11 @@
 export function StatusMessage({
   success,
   error,
+  successMessage,
 }: {
   success?: string;
   error?: string;
+  successMessage?: string;
 }) {
   if (!success && !error) {
     return null;
@@ -17,7 +19,7 @@ export function StatusMessage({
           : "border-[#8b2f2b]/30 bg-[#fff1ed] text-[#8b2f2b]"
       }`}
     >
-      {success ? "Registro salvo com sucesso." : error}
+      {success ? successMessage ?? "Registro salvo com sucesso." : error}
     </div>
   );
 }

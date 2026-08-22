@@ -11,12 +11,20 @@ import {
 import { canPerformAdminAction, resolveAdminRoleFromHeaders } from "@/lib/admin-permissions";
 
 export async function POST(request: Request) {
+  const acceptsJson = request.headers.get("accept")?.includes("application/json") || request.headers.get("x-requested-with") === "fetch";
+
   if (!hasSupabaseAdminConfig()) {
+    if (acceptsJson) {
+      return Response.json({ error: "Configuração do Supabase ausente." }, { status: 500 });
+    }
     return missingSupabaseAdminResponse();
   }
 
   const role = resolveAdminRoleFromHeaders(request.headers);
   if (!canPerformAdminAction(role, "midia", "upload")) {
+    if (acceptsJson) {
+      return Response.json({ error: "Sem permissão para enviar arquivos." }, { status: 403 });
+    }
     return redirectWithStatus(request.url, "/admin/midia", "error", "Sem permissao para enviar arquivos.");
   }
 
@@ -24,10 +32,16 @@ export async function POST(request: Request) {
   const file = formData.get("arquivo");
 
   if (!(file instanceof File) || file.size === 0) {
+    if (acceptsJson) {
+      return Response.json({ error: "Selecione um arquivo para enviar." }, { status: 400 });
+    }
     return redirectWithStatus(request.url, "/admin/midia", "error", "Selecione um arquivo para enviar.");
   }
 
   if (file.size > 10 * 1024 * 1024) {
+    if (acceptsJson) {
+      return Response.json({ error: "Envie arquivos com no máximo 10 MB." }, { status: 400 });
+    }
     return redirectWithStatus(request.url, "/admin/midia", "error", "Envie arquivos com no máximo 10 MB.");
   }
 
@@ -51,8 +65,21 @@ export async function POST(request: Request) {
       metadata: { tipo: file.type, pasta: folder },
     });
 
+    if (acceptsJson) {
+      return Response.json({
+        ok: true,
+        url: uploaded.publicUrl,
+        id: inserted[0]?.id,
+        titulo: inserted[0]?.titulo ?? file.name,
+      });
+    }
+
     return redirectWithStatus(request.url, "/admin/midia", "success");
   } catch (error) {
-    return redirectWithStatus(request.url, "/admin/midia", "error", error instanceof Error ? error.message : "Erro ao enviar arquivo.");
+    const message = error instanceof Error ? error.message : "Erro ao enviar arquivo.";
+    if (acceptsJson) {
+      return Response.json({ error: message }, { status: 500 });
+    }
+    return redirectWithStatus(request.url, "/admin/midia", "error", message);
   }
 }

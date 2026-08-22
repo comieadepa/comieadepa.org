@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://wtifljxpoinpbzyugrfc.supabase.co";
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://wtifljxpoinpbzyugrfc.supabase.co";
+const publicApiKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? serviceRoleKey;
 const mediaBucket = process.env.SUPABASE_MEDIA_BUCKET ?? "cms-media";
 const siteSchema = process.env.SUPABASE_SITE_SCHEMA ?? "site";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://comieadepa.org";
 const publicStorageAllowedMimeTypes = [
   "image/png",
   "image/jpeg",
@@ -216,6 +218,36 @@ export async function uploadPublicStorageObject(file: File, folder: string) {
   };
 }
 
+export async function sendAdminAccessSetupEmail(email: string, name?: string | null) {
+  if (!serviceRoleKey) {
+    throw new Error("Painel temporariamente indisponível. Tente novamente em instantes.");
+  }
+
+  await ensureAuthUserExists(email, name);
+
+  if (!publicApiKey) {
+    throw new Error("A configuração de acesso por e-mail não está disponível neste ambiente.");
+  }
+
+  const response = await fetch(`${supabaseUrl}/auth/v1/recover`, {
+    method: "POST",
+    headers: {
+      apikey: publicApiKey,
+      Authorization: `Bearer ${publicApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email,
+      redirect_to: `${siteUrl}/admin/definir-senha`,
+    }),
+  });
+
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || "Não foi possível enviar o e-mail para definição de senha.");
+  }
+}
+
 async function ensurePublicStorageBucket(bucket: string) {
   if (!serviceRoleKey) {
     throw new Error("Painel temporariamente indisponível. Tente novamente em instantes.");
@@ -384,4 +416,52 @@ async function syncPublicStorageBucket(bucket: string) {
 
 function isSiteRelation(table: string) {
   return table.startsWith("cms_") || table.startsWith("v_");
+}
+
+async function ensureAuthUserExists(email: string, name?: string | null) {
+  if (!serviceRoleKey) {
+    throw new Error("Painel temporariamente indisponível. Tente novamente em instantes.");
+  }
+
+  const response = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
+    method: "POST",
+    headers: {
+      apikey: serviceRoleKey,
+      Authorization: `Bearer ${serviceRoleKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email,
+      password: buildTemporaryPassword(),
+      email_confirm: true,
+      user_metadata: name ? { name } : undefined,
+    }),
+  });
+
+  if (response.ok) {
+    return;
+  }
+
+  const message = await response.text();
+
+  if (response.status === 422 || response.status === 409 || isExistingAuthUserMessage(message)) {
+    return;
+  }
+
+  throw new Error(message || "Não foi possível preparar o acesso do usuário.");
+}
+
+function buildTemporaryPassword() {
+  return `${crypto.randomUUID()}Aa1!`;
+}
+
+function isExistingAuthUserMessage(message: string) {
+  const normalized = message.toLowerCase();
+  return (
+    normalized.includes("already registered") ||
+    normalized.includes("already been registered") ||
+    normalized.includes("user already registered") ||
+    normalized.includes("email_exists") ||
+    normalized.includes("duplicate")
+  );
 }

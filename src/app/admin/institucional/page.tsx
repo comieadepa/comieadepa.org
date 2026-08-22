@@ -6,6 +6,7 @@ import { selectSupabaseRows } from "@/lib/supabase-admin";
 import { MediaPickerAsset } from "../media-url-field";
 import { InstitucionalManager } from "./institucional-manager";
 import { StatusMessage } from "../status-message";
+import { AdminPageHeader, AdminSubNavTabs } from "../admin-ui";
 
 export default async function AdminInstitucionalPage({
   searchParams,
@@ -32,22 +33,21 @@ export default async function AdminInstitucionalPage({
 
   return (
     <div className="mx-auto max-w-7xl">
-      <StatusMessage success={params?.success} error={params?.message ?? params?.error} />
+      <AdminSubNavTabs
+        tabs={[
+          { href: "/admin/institucional", label: "Estrutura Institucional", active: true },
+          { href: "/admin/paginas", label: "Páginas Avulsas", active: false },
+        ]}
+      />
 
-      <section className="mb-6 border border-[#d8c38b] bg-white/76 p-6 shadow-[0_18px_50px_rgba(23,16,6,.08)]">
-        <div className="grid gap-5 lg:grid-cols-[auto_1fr] lg:items-center">
-          <div className="grid h-14 w-14 place-items-center bg-[#171006] text-[#f4cf6a]">
-            <Building2 size={27} />
-          </div>
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Módulo Institucional</p>
-            <h1 className="mt-2 font-serif text-4xl font-black leading-tight">Páginas Institucionais</h1>
-            <p className="mt-3 max-w-4xl leading-7 text-[#5a472c]">
-              Gerencie e ordene as páginas institucionais dinâmicas do portal, como conselhos, comissões, órgãos conveniantes e departamentos.
-            </p>
-          </div>
-        </div>
-      </section>
+      <StatusMessage success={params?.success} error={params?.error ?? params?.message} />
+
+      <AdminPageHeader
+        icon={Building2}
+        eyebrow="Módulo Institucional"
+        title="Estrutura e Páginas Institucionais"
+        description="Gerencie e ordene as páginas institucionais dinâmicas do portal, como conselhos, comissões, órgãos conveniados e departamentos."
+      />
 
       <InstitucionalManager
         initialItems={items}

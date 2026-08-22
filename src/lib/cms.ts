@@ -16,31 +16,90 @@ import {
   Users,
 } from "lucide-react";
 
-export const adminNavItems = [
-  { href: "/admin", label: "Visão Geral", icon: Home },
-  { href: "/admin/home", label: "Home", icon: Settings },
-  { href: "/admin/noticias", label: "Notícias", icon: Newspaper },
-  { href: "/admin/categorias", label: "Categorias", icon: Tags },
-  { href: "/admin/videos", label: "Vídeos", icon: Youtube },
-  { href: "/admin/departamentos", label: "Departamentos", icon: Building2 },
-  { href: "/admin/documentos", label: "Documentos", icon: FolderOpen },
-  { href: "/admin/galerias", label: "Galeria de Fotos", icon: ImageIcon },
-  { href: "/admin/midia", label: "Mídia", icon: Images },
-  { href: "/admin/paginas", label: "Páginas", icon: FileText },
-  { href: "/admin/mesa-diretora", label: "Mesa Diretora", icon: Users },
-  { href: "/admin/mesa-diretora/grupos", label: "Grupos da Mesa Diretora", icon: ListChecks },
-  { href: "/admin/institucional", label: "Institucional", icon: Building2 },
-  { href: "/admin/auditoria", label: "Auditoria", icon: ListChecks },
-  { href: "/admin/usuarios", label: "Usuários", icon: UserCog },
-  { href: "/admin/permissoes", label: "Permissões", icon: ShieldCheck },
-  { href: "/admin/configuracoes", label: "Configurações", icon: Settings },
+export type AdminSubNavItem = {
+  href: string;
+  label: string;
+};
+
+export type AdminNavItem = {
+  href: string;
+  label: string;
+  icon: any;
+  subItems?: AdminSubNavItem[];
+};
+
+export type AdminNavGroup = {
+  id: string;
+  title?: string;
+  items: AdminNavItem[];
+};
+
+export const adminNavGroups: AdminNavGroup[] = [
+  {
+    id: "principal",
+    items: [
+      { href: "/admin", label: "Visão Geral", icon: Home },
+    ],
+  },
+  {
+    id: "editorial",
+    title: "Conteúdo & Mídia",
+    items: [
+      {
+        href: "/admin/noticias",
+        label: "Notícias",
+        icon: Newspaper,
+        subItems: [
+          { href: "/admin/noticias", label: "Todas as notícias" },
+          { href: "/admin/categorias", label: "Categorias" },
+        ],
+      },
+      { href: "/admin/galerias", label: "Galeria de Fotos", icon: ImageIcon },
+      { href: "/admin/videos", label: "Vídeos & YouTube", icon: Youtube },
+      { href: "/admin/midia", label: "Biblioteca de Mídia", icon: Images },
+      { href: "/admin/home", label: "Destaques da Home", icon: Settings },
+    ],
+  },
+  {
+    id: "institucional",
+    title: "Institucional",
+    items: [
+      {
+        href: "/admin/institucional",
+        label: "Páginas Institucionais",
+        icon: Building2,
+        subItems: [
+          { href: "/admin/institucional", label: "Estrutura Institucional" },
+          { href: "/admin/paginas", label: "Páginas Avulsas" },
+        ],
+      },
+      {
+        href: "/admin/mesa-diretora",
+        label: "Mesa Diretora",
+        icon: Users,
+        subItems: [
+          { href: "/admin/mesa-diretora", label: "Membros da Mesa" },
+          { href: "/admin/mesa-diretora/grupos", label: "Grupos e Comissões" },
+        ],
+      },
+      { href: "/admin/departamentos", label: "Departamentos", icon: Building2 },
+      { href: "/admin/documentos", label: "Documentos", icon: FolderOpen },
+    ],
+  },
+  {
+    id: "sistema",
+    title: "Sistema & Governança",
+    items: [
+      { href: "/admin/usuarios", label: "Usuários", icon: UserCog },
+      { href: "/admin/permissoes", label: "Permissões (RBAC)", icon: ShieldCheck },
+      { href: "/admin/auditoria", label: "Auditoria", icon: ListChecks },
+      { href: "/admin/configuracoes", label: "Configurações", icon: Settings },
+    ],
+  },
 ];
 
-export const adminSecondaryNavItems = [
-  { href: "/admin/paginas", label: "Páginas", icon: FileText, status: "Ativo" },
-  { href: "/admin/permissoes", label: "Permissões", icon: ShieldCheck, status: "Ativo" },
-  { href: "/admin/home", label: "Configurações da Home", icon: Settings, status: "Ativo" },
-];
+export const adminNavItems: AdminNavItem[] = adminNavGroups.flatMap((group) => group.items);
+export const adminSecondaryNavItems: Array<{ href: string; label: string; icon: any; status: string }> = [];
 
 export const editorialWorkflow = [
   {

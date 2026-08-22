@@ -239,7 +239,7 @@ export function GalleriesManager({
                 disabled={!canWrite}
                 defaultValue={editingGallery?.categoria ?? ""}
                 className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
-                placeholder="Congressos, ReuniÃµes, Eventos..."
+                placeholder="Congressos, Reuniões, Eventos..."
               />
             </label>
 
@@ -297,13 +297,13 @@ export function GalleriesManager({
           </div>
 
           <label className="grid gap-2">
-            <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Descricao</span>
+            <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Descrição</span>
             <textarea
               name="descricao"
               disabled={!canWrite}
               defaultValue={editingGallery?.descricao ?? ""}
               className="min-h-28 border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
-              placeholder="Resumo da galeria para listagem e pÃ¡gina interna."
+              placeholder="Resumo da galeria para listagem e página interna."
             />
           </label>
 
@@ -325,7 +325,7 @@ export function GalleriesManager({
             </label>
 
             <label className="grid gap-2">
-              <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Upload mÃºltiplo de fotos</span>
+              <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Upload múltiplo de fotos</span>
               <input
                 name="fotos"
                 type="file"
@@ -335,7 +335,7 @@ export function GalleriesManager({
                 className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 text-sm outline-none file:mr-4 file:border-0 file:bg-[#171006] file:px-4 file:py-2 file:font-black file:uppercase file:tracking-[0.12em] file:text-[#f4cf6a] disabled:cursor-not-allowed disabled:opacity-60"
               />
               <span className="text-xs text-[#5a472c]">
-                {editingGallery ? "Selecione novas fotos para acrescentar nesta galeria." : "Ao criar a galeria, vocÃª pode enviar vÃ¡rias fotos de uma vez."}
+                {editingGallery ? "Selecione novas fotos para acrescentar nesta galeria." : "Ao criar a galeria, você pode enviar várias fotos de uma vez."}
               </span>
             </label>
           </div>
@@ -528,7 +528,7 @@ function PhotoEditorCard({
         </label>
 
         <label className="grid gap-2">
-          <span className="text-xs font-black uppercase tracking-[0.12em] text-[#5a472c]">CrÃ©dito</span>
+          <span className="text-xs font-black uppercase tracking-[0.12em] text-[#5a472c]">Crédito</span>
           <input value={credito} onChange={(event) => setCredito(event.target.value)} disabled={!canUpdate} className="border border-[#d8c38b] bg-white px-3 py-2 outline-none disabled:cursor-not-allowed disabled:opacity-60" />
         </label>
 

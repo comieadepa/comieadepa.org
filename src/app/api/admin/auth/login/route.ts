@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://wtifljxpoinpbzyugrfc.supabase.co";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabasePublicKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const siteSchema = process.env.SUPABASE_SITE_SCHEMA ?? "site";
 
@@ -25,7 +25,7 @@ type AdminUser = {
 };
 
 export async function POST(request: Request) {
-  if (!supabaseAnonKey || !serviceRoleKey) {
+  if (!supabasePublicKey || !serviceRoleKey) {
     return redirectWithError(request.url, "Painel temporariamente indisponível. Tente novamente em instantes.");
   }
 
@@ -42,8 +42,8 @@ export async function POST(request: Request) {
     const authResponse = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
       method: "POST",
       headers: {
-        apikey: supabaseAnonKey,
-        Authorization: `Bearer ${supabaseAnonKey}`,
+        apikey: supabasePublicKey,
+        Authorization: `Bearer ${supabasePublicKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email, password }),

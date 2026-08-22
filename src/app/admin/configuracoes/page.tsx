@@ -3,6 +3,7 @@ import { canPerformAdminAction, normalizeAdminRole } from "@/lib/admin-permissio
 import { Settings } from "lucide-react";
 import { SettingsForm } from "./settings-form";
 import { StatusMessage } from "../status-message";
+import { AdminPageHeader } from "../admin-ui";
 import { headers } from "next/headers";
 
 type CmsSetting = {
@@ -205,24 +206,18 @@ export default async function AdminSettingsPage({
   const settingValues = Object.fromEntries(Object.keys(fallbackSettings).map((key) => [key, settingMap.get(key) ?? fallbackSettings[key] ?? ""]));
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <div className="mx-auto max-w-7xl">
       <StatusMessage success={params?.success} error={params?.message ?? params?.error} />
 
-      <section className="border border-[#d8c38b] bg-white/76 p-6 shadow-[0_18px_50px_rgba(23,16,6,.08)]">
-        <div className="grid gap-6 lg:grid-cols-[0.75fr_1.25fr]">
-          <div>
-            <div className="grid h-12 w-12 place-items-center bg-[#171006] text-[#f4cf6a]">
-              <Settings size={24} />
-            </div>
-            <p className="mt-6 text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Configurações</p>
-            <h2 className="mt-3 font-serif text-4xl font-black leading-tight">Dados globais do portal.</h2>
-            <p className="mt-4 leading-8 text-[#5a472c]">
-              Esta área mantém o portal alinhado aos sistemas oficiais sem duplicar módulos. Eventos e Área do Ministro usam links institucionais externos quando necessário.
-            </p>
-          </div>
+      <AdminPageHeader
+        icon={Settings}
+        eyebrow="Sistema e Parâmetros"
+        title="Configurações Gerais do Portal"
+        description="Mantenha os links oficiais, contatos, integrações externas (Eventos e Área do Ministro) e padrões de SEO sincronizados."
+      />
 
-          <SettingsForm groups={settingFields} values={settingValues} canEdit={canEdit} />
-        </div>
+      <section className="border border-[#d8c38b] bg-white/76 p-6 shadow-[0_18px_50px_rgba(23,16,6,.08)]">
+        <SettingsForm groups={settingFields} values={settingValues} canEdit={canEdit} />
       </section>
     </div>
   );

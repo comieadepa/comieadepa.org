@@ -104,7 +104,9 @@ const rolePermissions: Record<AdminRole, Partial<Record<AdminModule, AdminAction
   },
   midia: {
     dashboard: ["view"],
-    home: ["view", "create", "update", "delete", "publish", "archive"],
+    home: ["view", "create", "update", "publish", "archive"],
+    noticias: ["view", "create", "update", "publish", "archive"],
+    galerias: ["view", "create", "update", "publish", "archive"],
     midia: ["view", "upload"],
     videos: ["view", "create", "update"],
   },
@@ -161,6 +163,31 @@ export function canAccessAdminPath(pathname: string, role: AdminRole) {
 
 export function filterAdminNavByRole<TItem extends { href: string }>(items: TItem[], role: AdminRole) {
   return items.filter((item) => canAccessAdminPath(item.href, role));
+}
+
+export function filterAdminNavGroupsByRole<
+  TSubItem extends { href: string },
+  TItem extends { href: string; subItems?: TSubItem[] },
+  TGroup extends { id: string; title?: string; items: TItem[] }
+>(groups: TGroup[], role: AdminRole): TGroup[] {
+  return groups
+    .map((group) => {
+      const visibleItems = group.items
+        .filter((item) => canAccessAdminPath(item.href, role) || item.subItems?.some((sub) => canAccessAdminPath(sub.href, role)))
+        .map((item) => {
+          const visibleSubItems = item.subItems?.filter((sub) => canAccessAdminPath(sub.href, role));
+          return {
+            ...item,
+            subItems: visibleSubItems && visibleSubItems.length > 0 ? visibleSubItems : undefined,
+          };
+        });
+
+      return {
+        ...group,
+        items: visibleItems,
+      };
+    })
+    .filter((group) => group.items.length > 0);
 }
 
 function getAdminModuleFromPath(pathname: string): AdminModule | null {
@@ -230,10 +257,6 @@ function getAdminModuleFromPath(pathname: string): AdminModule | null {
 
   if (pathname.startsWith("/admin/institucional") || pathname.startsWith("/api/admin/institucional")) {
     return "institucional";
-  }
-
-  if (pathname.startsWith("/admin/paginas")) {
-    return "paginas";
   }
 
   if (pathname.startsWith("/admin/preview/noticias")) {

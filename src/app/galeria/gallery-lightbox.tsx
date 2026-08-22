@@ -89,7 +89,7 @@ export function GalleryLightbox({ photos, galleryTitle }: { photos: CmsGalleryPh
                 type="button"
                 onClick={() => setActiveIndex((current) => (current === null ? 0 : (current + 1) % photos.length))}
                 className="hidden h-14 w-14 place-items-center border border-white/15 bg-white/10 text-white lg:grid"
-                aria-label="PrÃ³xima foto"
+                aria-label="Próxima foto"
               >
                 <ChevronRight size={22} />
               </button>

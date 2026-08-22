@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { canAccessAdminPath, normalizeAdminRole } from "@/lib/admin-permissions";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://wtifljxpoinpbzyugrfc.supabase.co";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabasePublicKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const siteSchema = process.env.SUPABASE_SITE_SCHEMA ?? "site";
 
@@ -30,7 +30,7 @@ type AdminUser = {
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  if (pathname.startsWith("/admin/login") || pathname.startsWith("/api/admin/auth")) {
+  if (pathname.startsWith("/admin/login") || pathname.startsWith("/admin/definir-senha") || pathname.startsWith("/api/admin/auth")) {
     return NextResponse.next({
       request: {
         headers: buildRequestHeaders(request, { pathname }),
@@ -38,7 +38,7 @@ export async function middleware(request: NextRequest) {
     });
   }
 
-  if (!supabaseAnonKey || !serviceRoleKey) {
+  if (!supabasePublicKey || !serviceRoleKey) {
     return configurationMissingResponse();
   }
 
@@ -126,7 +126,7 @@ async function resolveSession(accessToken?: string, refreshToken?: string) {
 async function fetchAuthUser(accessToken: string) {
   const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
     headers: {
-      apikey: supabaseAnonKey ?? "",
+      apikey: supabasePublicKey ?? "",
       Authorization: `Bearer ${accessToken}`,
     },
     cache: "no-store",
@@ -143,8 +143,8 @@ async function refreshAuthSession(refreshToken: string) {
   const response = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=refresh_token`, {
     method: "POST",
     headers: {
-      apikey: supabaseAnonKey ?? "",
-      Authorization: `Bearer ${supabaseAnonKey ?? ""}`,
+      apikey: supabasePublicKey ?? "",
+      Authorization: `Bearer ${supabasePublicKey ?? ""}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ refresh_token: refreshToken }),

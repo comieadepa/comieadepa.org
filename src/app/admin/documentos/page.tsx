@@ -5,6 +5,7 @@ import { StatusMessage } from "../status-message";
 import { canPerformAdminAction, normalizeAdminRole } from "@/lib/admin-permissions";
 import { CmsDocument } from "@/lib/documentos";
 import { selectSupabaseRows } from "@/lib/supabase-admin";
+import { AdminPageHeader } from "../admin-ui";
 
 export default async function AdminDocumentsPage({
   searchParams,
@@ -31,23 +32,14 @@ export default async function AdminDocumentsPage({
 
   return (
     <div className="mx-auto max-w-7xl">
-      <StatusMessage success={params?.success} error={params?.message ?? params?.error} />
+      <StatusMessage success={params?.success} error={params?.error ?? params?.message} />
 
-      <section className="mb-6 border border-[#d8c38b] bg-white/76 p-6 shadow-[0_18px_50px_rgba(23,16,6,.08)]">
-        <div className="grid gap-5 lg:grid-cols-[auto_1fr] lg:items-center">
-          <div className="grid h-14 w-14 place-items-center bg-[#171006] text-[#f4cf6a]">
-            <FolderOpen size={27} />
-          </div>
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Central de documentos</p>
-            <h1 className="mt-2 font-serif text-4xl font-black leading-tight">Organize arquivos oficiais do portal.</h1>
-            <p className="mt-3 max-w-4xl leading-7 text-[#5a472c]">
-              Cadastre atas, estatutos, formularios, circulares, editais e outros materiais oficiais com capa opcional,
-              categoria, destaque e controle de downloads.
-            </p>
-          </div>
-        </div>
-      </section>
+      <AdminPageHeader
+        icon={FolderOpen}
+        eyebrow="Central de Documentos"
+        title="Organize arquivos oficiais do portal"
+        description="Cadastre atas, estatutos, formulários, circulares, editais e materiais oficiais com controle de downloads, destaque e categorias."
+      />
 
       <DocumentsManager
         documents={documents}

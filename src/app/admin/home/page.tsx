@@ -57,6 +57,7 @@ export default async function AdminHomePage({
       </section>
 
       <HomeSettingsForm
+        role={role}
         values={values}
         assets={mediaAssets}
         canEdit={canEdit}

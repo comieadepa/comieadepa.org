@@ -41,7 +41,7 @@ export async function countPublicRows(table: string, query = "select=id") {
   });
 
   if (!response.ok) {
-    console.warn(`NÃ£o foi possÃ­vel contar ${table}. Status: ${response.status}.`);
+    console.warn(`Não foi possível contar ${table}. Status: ${response.status}.`);
     return 0;
   }
 

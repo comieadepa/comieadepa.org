@@ -61,7 +61,7 @@ export default async function GalleryDetailPage({ params }: PageProps) {
     "@context": "https://schema.org",
     "@type": "ImageGallery",
     name: gallery.titulo,
-    description: gallery.descricao || "Galeria fotogrÃ¡fica institucional da COMIEADEPA.",
+    description: gallery.descricao || "Galeria fotográfica institucional da COMIEADEPA.",
     url: absoluteUrl(`/galeria/${gallery.slug}`),
     image: photos.map((photo) => absoluteUrl(photo.imagem_url)),
   };

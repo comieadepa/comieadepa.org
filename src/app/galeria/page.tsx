@@ -26,7 +26,7 @@ const pageSize = 9;
 
 export const metadata: Metadata = buildSeoMetadata({
   title: "Galeria de Fotos | COMIEADEPA",
-  description: "Confira registros fotogrÃ¡ficos de eventos, reuniÃµes, congressos e aÃ§Ãµes institucionais da COMIEADEPA.",
+  description: "Confira registros fotográficos de eventos, reuniões, congressos e ações institucionais da COMIEADEPA.",
   path: "/galeria",
 });
 
@@ -67,7 +67,7 @@ export default async function GalleryIndexPage({ searchParams }: { searchParams?
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     name: "Galeria de Fotos",
-    description: "Confira registros fotogrÃ¡ficos de eventos, reuniÃµes, congressos e aÃ§Ãµes institucionais da COMIEADEPA.",
+    description: "Confira registros fotográficos de eventos, reuniões, congressos e ações institucionais da COMIEADEPA.",
     url: absoluteUrl("/galeria"),
     mainEntity: {
       "@type": "ItemList",

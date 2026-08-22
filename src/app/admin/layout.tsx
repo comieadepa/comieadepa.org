@@ -1,5 +1,5 @@
-import { adminNavItems, adminSecondaryNavItems } from "@/lib/cms";
-import { filterAdminNavByRole, normalizeAdminRole } from "@/lib/admin-permissions";
+import { adminNavGroups } from "@/lib/cms";
+import { filterAdminNavGroupsByRole, normalizeAdminRole } from "@/lib/admin-permissions";
 import { ArrowLeft, Bell, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,16 +15,16 @@ export default async function AdminLayout({
   const adminEmail = headerList.get("x-admin-email");
   const currentPath = headerList.get("x-admin-path") ?? "";
 
-  if (currentPath.startsWith("/admin/login")) {
+  if (currentPath.startsWith("/admin/login") || currentPath.startsWith("/admin/definir-senha")) {
     return <main className="min-h-screen bg-[#f4efe1] text-[#171006]">{children}</main>;
   }
-  const visibleNavItems = filterAdminNavByRole(adminNavItems, role);
-  const visibleSecondaryNavItems = filterAdminNavByRole(adminSecondaryNavItems, role);
+
+  const visibleNavGroups = filterAdminNavGroupsByRole(adminNavGroups, role);
 
   return (
     <main className="min-h-screen bg-[#f4efe1] text-[#171006]">
       <div className="grid min-h-screen lg:grid-cols-[292px_1fr]">
-        <aside className="border-r border-[#d8c38b] bg-[#120f0a] px-5 py-6 text-white">
+        <aside className="flex flex-col border-r border-[#d8c38b] bg-[#120f0a] px-5 py-6 text-white">
           <div className="flex items-center gap-3">
             <Image src="/assets/logo-comieadepa.png" alt="COMIEADEPA" width={54} height={54} className="h-14 w-14 object-contain" />
             <div>
@@ -41,34 +41,70 @@ export default async function AdminLayout({
             Voltar ao portal
           </Link>
 
-          <nav className="mt-8 grid gap-2">
-            {visibleNavItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="group flex items-center gap-3 rounded-sm border border-transparent px-4 py-3 text-sm font-bold text-white/76 transition hover:border-[#f4cf6a]/35 hover:bg-[#f4cf6a]/10 hover:text-white"
-              >
-                <item.icon size={19} className="text-[#f4cf6a]" />
-                {item.label}
-              </Link>
+          <nav className="mt-6 flex-1 space-y-6 overflow-y-auto">
+            {visibleNavGroups.map((group) => (
+              <div key={group.id} className="space-y-1.5">
+                {group.title ? (
+                  <p className="px-3 text-[11px] font-black uppercase tracking-[0.18em] text-[#f4cf6a]/70">
+                    {group.title}
+                  </p>
+                ) : null}
+
+                <div className="grid gap-1">
+                  {group.items.map((item) => {
+                    const isItemActive =
+                      currentPath === item.href ||
+                      (item.href !== "/admin" && currentPath.startsWith(item.href)) ||
+                      item.subItems?.some((sub) => currentPath === sub.href);
+
+                    return (
+                      <div key={item.href} className="space-y-1">
+                        <Link
+                          href={item.href}
+                          className={`group flex items-center gap-3 rounded-sm border px-3.5 py-2.5 text-sm font-bold transition ${
+                            isItemActive
+                              ? "border-[#f4cf6a]/60 bg-[#f4cf6a]/15 text-white shadow-sm"
+                              : "border-transparent text-white/76 hover:border-[#f4cf6a]/35 hover:bg-[#f4cf6a]/10 hover:text-white"
+                          }`}
+                        >
+                          <item.icon
+                            size={18}
+                            className={isItemActive ? "text-[#f4cf6a]" : "text-[#f4cf6a]/80 group-hover:text-[#f4cf6a]"}
+                          />
+                          <span className="flex-1">{item.label}</span>
+                        </Link>
+
+                        {item.subItems && item.subItems.length > 0 && isItemActive ? (
+                          <div className="ml-6 grid gap-1 border-l border-white/12 pl-3 py-1">
+                            {item.subItems.map((sub) => {
+                              const isSubActive = currentPath === sub.href;
+                              return (
+                                <Link
+                                  key={sub.href}
+                                  href={sub.href}
+                                  className={`rounded-sm px-3 py-1.5 text-xs font-semibold transition ${
+                                    isSubActive
+                                      ? "bg-[#f4cf6a] text-[#171006] font-bold"
+                                      : "text-white/60 hover:bg-white/[0.07] hover:text-white"
+                                  }`}
+                                >
+                                  {sub.label}
+                                </Link>
+                              );
+                            })}
+                          </div>
+                        ) : null}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             ))}
           </nav>
 
-          <div className="mt-9 border-t border-white/10 pt-6">
-            <p className="px-4 text-xs font-black uppercase tracking-[0.18em] text-white/38">Módulos ativos</p>
-            <div className="mt-4 grid gap-2">
-              {visibleSecondaryNavItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="flex items-center gap-3 rounded-sm px-4 py-2 text-sm text-white/60 transition hover:bg-white/[0.055] hover:text-white"
-                >
-                  <item.icon size={17} className="text-white/42" />
-                  <span className="flex-1">{item.label}</span>
-                  <span className="text-[10px] uppercase tracking-[0.12em] text-[#f4cf6a]/70">{item.status}</span>
-                </Link>
-              ))}
-            </div>
+          <div className="mt-8 border-t border-white/10 pt-4 text-xs text-white/40 px-3 flex items-center justify-between">
+            <span>Portal COMIEADEPA</span>
+            <span className="text-[10px] uppercase tracking-wider text-[#f4cf6a]/70">CMS v2.0</span>
           </div>
         </aside>
 

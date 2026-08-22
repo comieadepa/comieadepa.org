@@ -4,6 +4,7 @@ import { ArrowRight, Building2, Save } from "lucide-react";
 import Link from "next/link";
 import { MediaPickerAsset, MediaUrlField } from "../media-url-field";
 import { StatusMessage } from "../status-message";
+import { AdminFilterPills, AdminPageHeader, AdminStatusBadge } from "../admin-ui";
 
 type CmsDepartment = {
   id: string;
@@ -47,149 +48,145 @@ export default async function AdminDepartmentsPage({
   return (
     <div className="mx-auto max-w-7xl">
       <StatusMessage success={params?.success} error={params?.message ?? params?.error} />
+
+      <AdminPageHeader
+        icon={Building2}
+        eyebrow="Departamentos & Secretarias"
+        title="Gestão de Departamentos da Convenção"
+        description="Configure páginas dedicadas a conselhos, secretarias e comissões da COMIEADEPA, com coordenação, notícias, banners e arquivos oficiais."
+      />
+
       <section className="border border-[#d8c38b] bg-white/76 p-6 shadow-[0_18px_50px_rgba(23,16,6,.08)]">
-        <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Departamentos</p>
-            <h2 className="mt-3 font-serif text-4xl font-black leading-tight">
-              Páginas editáveis para conselhos, comissões e departamentos.
-            </h2>
-            <p className="mt-4 leading-8 text-[#5a472c]">
-              Cada área terá conteúdo próprio, notícias vinculadas, vídeos, eventos, coordenação, banners e arquivos oficiais.
-            </p>
+        <div className="flex items-center justify-between gap-4">
+          <p className="text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">
+            {editingDepartment ? "Editar Departamento" : "Novo Departamento"}
+          </p>
+          {editingDepartment ? (
+            <Link href="/admin/departamentos" className="text-sm font-semibold text-[#8b2f2b] underline underline-offset-4">
+              Cancelar edição
+            </Link>
+          ) : null}
+        </div>
+
+        <form action="/api/admin/departamentos" method="post" className="mt-6 grid gap-5">
+          <input type="hidden" name="id" value={editingDepartment?.id ?? ""} />
+          <div className="grid gap-5 md:grid-cols-2">
+            <label className="grid gap-2">
+              <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Nome</span>
+              <input name="nome" required defaultValue={editingDepartment?.nome} className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]" placeholder="Ex.: UMADEP" />
+            </label>
+            <label className="grid gap-2">
+              <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Título institucional</span>
+              <input name="titulo" defaultValue={editingDepartment?.titulo ?? ""} className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]" placeholder="União da Mocidade das Assembleias de Deus no Pará" />
+            </label>
           </div>
 
-          <form action="/api/admin/departamentos" method="post" className="grid gap-4 border border-[#ead9a6] bg-[#f7efd6] p-5">
-            <input type="hidden" name="id" value={editingDepartment?.id ?? ""} />
-            {editingDepartment ? (
-              <div className="flex flex-wrap items-center gap-3 border border-[#d8c38b] bg-white/70 p-3 text-sm font-semibold text-[#5a472c]">
-                Editando: <span className="font-black text-[#171006]">{editingDepartment.nome}</span>
-                <a href="/admin/departamentos" className="ml-auto text-[#8b2f2b] underline underline-offset-4">
-                  Cancelar
-                </a>
-              </div>
-            ) : null}
-            <div className="grid gap-4 md:grid-cols-2">
-              <label className="grid gap-2">
-                <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Nome</span>
-                <input name="nome" required defaultValue={editingDepartment?.nome} className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]" placeholder="Ex.: COADESPA" />
-              </label>
-              <label className="grid gap-2">
-                <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Slug</span>
-                <input name="slug" defaultValue={editingDepartment?.slug} className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]" placeholder="coadespa" />
-              </label>
-            </div>
-            <div className="grid gap-4 md:grid-cols-3">
-              <label className="grid gap-2 md:col-span-2">
-                <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Contato oficial</span>
-                <input name="contato_nome" defaultValue={editingDepartment?.contato_nome ?? ""} className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]" placeholder="Ex.: Secretaria SEIADEPA" />
-              </label>
-              <label className="grid gap-2">
-                <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Ordem</span>
-                <input name="ordem" type="number" defaultValue={editingDepartment?.ordem ?? 0} className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]" placeholder="10" />
-              </label>
-            </div>
+          <div className="grid gap-5 md:grid-cols-2">
             <label className="grid gap-2">
-              <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">WhatsApp do departamento</span>
-              <input name="contato_whatsapp" defaultValue={editingDepartment?.contato_whatsapp ?? ""} className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]" placeholder="5591999999999" />
+              <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Slug</span>
+              <input name="slug" pattern="^[a-z0-9-]+$" defaultValue={editingDepartment?.slug} className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]" placeholder="umadep" />
+              <span className="text-xs font-semibold text-[#8b2f2b]/80">Use apenas letras minúsculas, números e hífen.</span>
             </label>
             <label className="grid gap-2">
-              <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Título da página</span>
-              <input name="titulo" defaultValue={editingDepartment?.titulo ?? ""} className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]" placeholder="Título institucional" />
+              <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Ordem</span>
+              <input name="ordem" type="number" defaultValue={editingDepartment?.ordem} className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]" placeholder="1" />
+            </label>
+          </div>
+
+          <label className="grid gap-2">
+            <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Resumo</span>
+            <textarea name="resumo" defaultValue={editingDepartment?.resumo ?? ""} className="min-h-24 border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]" placeholder="Breve apresentação da atuação do departamento." />
+          </label>
+
+          <label className="grid gap-2">
+            <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Conteúdo completo</span>
+            <textarea name="conteudo" defaultValue={editingDepartment?.conteudo ?? ""} className="min-h-36 border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]" placeholder="História, diretoria, missão, visão, atuação e agenda própria." />
+          </label>
+
+          <div className="grid gap-5 md:grid-cols-2">
+            <MediaUrlField name="logo_url" label="Logo do departamento" defaultValue={editingDepartment?.logo_url} assets={mediaAssets} helper="Símbolo oficial ou marca do departamento." />
+            <MediaUrlField name="banner_url" label="Banner de capa" defaultValue={editingDepartment?.banner_url} assets={mediaAssets} helper="Imagem principal de topo da página." />
+          </div>
+
+          <div className="grid gap-5 md:grid-cols-2">
+            <label className="grid gap-2">
+              <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Líder ou coordenador</span>
+              <input name="contato_nome" defaultValue={editingDepartment?.contato_nome ?? ""} className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]" placeholder="Ex.: Pr. Coordenador Geral" />
             </label>
             <label className="grid gap-2">
-              <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Resumo</span>
-              <textarea name="resumo" defaultValue={editingDepartment?.resumo ?? ""} className="min-h-28 border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]" placeholder="Descrição curta para a página e cards." />
+              <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">WhatsApp / Contato</span>
+              <input name="contato_whatsapp" defaultValue={editingDepartment?.contato_whatsapp ?? ""} className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]" placeholder="55 (91) 00000-0000" />
             </label>
-            <div className="grid gap-4 md:grid-cols-2">
-              <MediaUrlField name="logo_url" label="Logo" defaultValue={editingDepartment?.logo_url} assets={mediaAssets} helper="Imagem transparente ou símbolo do departamento." />
-              <MediaUrlField name="banner_url" label="Banner" defaultValue={editingDepartment?.banner_url} assets={mediaAssets} helper="Imagem ampla para topo da página pública." />
-            </div>
+          </div>
+
+          <div className="grid gap-5 md:grid-cols-2">
             <label className="grid gap-2">
-              <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Conteúdo institucional</span>
-              <textarea name="conteudo" defaultValue={editingDepartment?.conteudo ?? ""} className="min-h-32 border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]" placeholder="Texto completo da página do departamento." />
+              <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Redes sociais (uma por linha)</span>
+              <textarea name="redes_sociais" defaultValue={formatLinksForTextarea(editingDepartment?.redes_sociais)} className="min-h-24 border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]" placeholder="Instagram | https://instagram.com/..." />
+              <span className="text-xs font-semibold text-[#8b2f2b]/80">Formato: Nome da rede | URL</span>
             </label>
-            <div className="grid gap-4 md:grid-cols-2">
-              <label className="grid gap-2">
-                <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Links oficiais</span>
-                <textarea
-                  name="redes_sociais"
-                  defaultValue={formatLinksForTextarea(editingDepartment?.redes_sociais)}
-                  className="min-h-28 border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]"
-                  placeholder={"Instagram | https://instagram.com/...\nYouTube | https://youtube.com/..."}
-                />
-                <span className="text-xs font-semibold text-[#8b2f2b]/80">Um link por linha no formato: Título | URL</span>
-              </label>
-              <label className="grid gap-2">
-                <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Documentos e materiais</span>
-                <textarea
-                  name="documentos"
-                  defaultValue={formatLinksForTextarea(editingDepartment?.documentos)}
-                  className="min-h-28 border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]"
-                  placeholder={"Regimento | https://...\nFormulário | https://..."}
-                />
-                <span className="text-xs font-semibold text-[#8b2f2b]/80">Use para PDFs, formulários, editais e materiais oficiais.</span>
-              </label>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <button type="submit" className="inline-flex items-center justify-center gap-3 bg-[#171006] px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-white">
-                <Save size={18} />
-                {editingDepartment ? "Atualizar departamento" : "Salvar departamento"}
-              </button>
-            </div>
-          </form>
-        </div>
+            <label className="grid gap-2">
+              <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Documentos / Downloads (um por linha)</span>
+              <textarea name="documentos" defaultValue={formatLinksForTextarea(editingDepartment?.documentos)} className="min-h-24 border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]" placeholder="Regimento Interno | https://..." />
+              <span className="text-xs font-semibold text-[#8b2f2b]/80">Use para PDFs, formulários, editais e materiais oficiais.</span>
+            </label>
+          </div>
+
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <button type="submit" className="inline-flex items-center justify-center gap-3 bg-[#171006] px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-white">
+              <Save size={18} />
+              {editingDepartment ? "Atualizar departamento" : "Salvar departamento"}
+            </button>
+          </div>
+        </form>
       </section>
 
       <section className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        <div className="md:col-span-2 xl:col-span-3 flex flex-wrap gap-2">
-          {[
-            ["todos", "Todos"],
-            ["ativos", "Ativos"],
-            ["inativos", "Inativos"],
-          ].map(([value, label]) => (
-            <Link
-              key={value}
-              href={value === "todos" ? "/admin/departamentos" : `/admin/departamentos?ativo=${value}`}
-              className={`px-3 py-2 text-[11px] font-black uppercase tracking-[0.12em] transition ${
-                activeFilter === value ? "bg-[#171006] text-[#f4cf6a]" : "border border-[#d8c38b] text-[#8b2f2b] hover:bg-white"
-              }`}
-            >
-              {label}
-            </Link>
-          ))}
+        <div className="md:col-span-2 xl:col-span-3">
+          <AdminFilterPills
+            current={activeFilter}
+            baseUrl="/admin/departamentos"
+            paramName="ativo"
+            options={[
+              { value: "todos", label: "Todos" },
+              { value: "ativos", label: "Ativos" },
+              { value: "inativos", label: "Inativos" },
+            ]}
+          />
         </div>
         {(departments.length > 0 ? departments : departmentPages).map((department) => (
-          <article key={"id" in department ? department.id : department.slug} className="group border border-[#d8c38b] bg-white/70 p-6 shadow-[0_18px_50px_rgba(23,16,6,.08)] transition hover:-translate-y-1 hover:bg-white">
-            <div className="flex items-center justify-between gap-4">
-              <div className="grid h-12 w-12 place-items-center bg-[#171006] text-[#f4cf6a]">
-                <Building2 size={22} />
+          <article key={"id" in department ? department.id : department.slug} className="group flex flex-col justify-between border border-[#d8c38b] bg-white/70 p-6 shadow-[0_18px_50px_rgba(23,16,6,.08)] transition hover:-translate-y-1 hover:bg-white">
+            <div>
+              <div className="flex items-center justify-between gap-4">
+                <div className="grid h-12 w-12 place-items-center bg-[#171006] text-[#f4cf6a]">
+                  <Building2 size={22} />
+                </div>
+                <AdminStatusBadge status={"ativo" in department ? (department.ativo ? "ativo" : "inativo") : "ativo"} />
               </div>
-              <span className="bg-[#f4cf6a] px-3 py-1 text-xs font-black uppercase tracking-[0.12em]">
-                {"ativo" in department ? (department.ativo ? "Ativo" : "Inativo") : department.status}
-              </span>
+              <p className="mt-6 text-xs font-black uppercase tracking-[0.18em] text-[#8b2f2b]">{"nome" in department ? department.nome : department.name}</p>
+              <h3 className="mt-2 font-serif text-2xl font-black leading-tight">{"titulo" in department ? department.titulo ?? department.nome : department.title}</h3>
+              <p className="mt-4 leading-7 text-[#5a472c]">{"resumo" in department ? department.resumo ?? "Página institucional em construção." : department.text}</p>
             </div>
-            <p className="mt-6 text-xs font-black uppercase tracking-[0.18em] text-[#8b2f2b]">{"nome" in department ? department.nome : department.name}</p>
-            <h3 className="mt-2 font-serif text-3xl font-black leading-tight">{"titulo" in department ? department.titulo ?? department.nome : department.title}</h3>
-            <p className="mt-4 leading-7 text-[#5a472c]">{"resumo" in department ? department.resumo ?? "Página institucional em construção." : department.text}</p>
-            <Link href={"id" in department ? `/admin/preview/departamentos/${department.id}` : `/departamentos/${department.slug}`} target="_blank" className="mt-6 inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.12em] text-[#8b2f2b]">
-              Prévia da página
-              <ArrowRight size={17} />
-            </Link>
-            {"id" in department ? (
-              <div className="mt-6 flex flex-wrap gap-4">
-                <Link href={`/admin/departamentos?edit=${department.id}`} className="inline-flex text-sm font-black uppercase tracking-[0.12em] text-[#8b2f2b] underline underline-offset-4">
-                  Editar
-                </Link>
-                <form action="/api/admin/departamentos" method="post">
-                  <input type="hidden" name="id" value={department.id} />
-                  <input type="hidden" name="action" value={department.ativo ? "deactivate" : "activate"} />
-                  <button type="submit" className="text-sm font-black uppercase tracking-[0.12em] text-[#8b2f2b]/70 underline underline-offset-4 transition hover:text-[#8b2f2b]">
-                    {department.ativo ? "Desativar" : "Ativar"}
-                  </button>
-                </form>
-              </div>
-            ) : null}
+            <div>
+              <Link href={"id" in department ? `/admin/preview/departamentos/${department.id}` : `/departamentos/${department.slug}`} target="_blank" className="mt-6 inline-flex items-center gap-2 text-sm font-black uppercase tracking-[0.12em] text-[#8b2f2b]">
+                Prévia da página
+                <ArrowRight size={17} />
+              </Link>
+              {"id" in department ? (
+                <div className="mt-6 flex flex-wrap gap-4 border-t border-[#d8c38b]/40 pt-3">
+                  <Link href={`/admin/departamentos?edit=${department.id}`} className="inline-flex text-xs font-black uppercase tracking-[0.14em] text-[#8b2f2b]">
+                    Editar
+                  </Link>
+                  <form action="/api/admin/departamentos" method="post">
+                    <input type="hidden" name="id" value={department.id} />
+                    <input type="hidden" name="action" value={department.ativo ? "deactivate" : "activate"} />
+                    <button type="submit" className="text-xs font-black uppercase tracking-[0.14em] text-[#8b2f2b]/70 transition hover:text-[#8b2f2b]">
+                      {department.ativo ? "Desativar" : "Ativar"}
+                    </button>
+                  </form>
+                </div>
+              ) : null}
+            </div>
           </article>
         ))}
       </section>

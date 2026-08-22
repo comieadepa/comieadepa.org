@@ -4,6 +4,7 @@ import { Copy, ExternalLink, FileImage, ImagePlus, UploadCloud } from "lucide-re
 import Image from "next/image";
 import { StatusMessage } from "../status-message";
 import { CopyUrlButton } from "./copy-url-button";
+import { AdminFilterPills } from "../admin-ui";
 import { headers } from "next/headers";
 
 type MediaAsset = {
@@ -106,22 +107,16 @@ export default async function AdminMediaPage({
           <p className="text-sm text-white/52">{assets.length} arquivo(s)</p>
         </div>
 
-        <div className="mt-6 flex flex-wrap gap-2">
-          {folders.map((folder) => {
-            const active = (selectedFolder ?? "todos") === folder;
-
-            return (
-              <a
-                key={folder}
-                href={folder === "todos" ? "/admin/midia" : `/admin/midia?pasta=${folder}`}
-                className={`px-4 py-2 text-xs font-black uppercase tracking-[0.14em] transition ${
-                  active ? "bg-[#f4cf6a] text-[#171006]" : "border border-white/12 text-white/58 hover:border-[#f4cf6a] hover:text-[#f4cf6a]"
-                }`}
-              >
-                {folder}
-              </a>
-            );
-          })}
+        <div className="mt-6">
+          <AdminFilterPills
+            current={selectedFolder ?? "todos"}
+            baseUrl="/admin/midia"
+            paramName="pasta"
+            options={folders.map((f) => ({
+              value: f,
+              label: f.charAt(0).toUpperCase() + f.slice(1),
+            }))}
+          />
         </div>
 
         <div className="mt-8 grid gap-5 md:grid-cols-2">

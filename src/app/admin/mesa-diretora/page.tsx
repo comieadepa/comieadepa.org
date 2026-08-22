@@ -6,6 +6,7 @@ import { listarTodosNoAdmin, listarGruposAdmin } from "@/lib/mesa-diretora";
 import { selectSupabaseRows } from "@/lib/supabase-admin";
 import { MediaPickerAsset } from "../media-url-field";
 import { MesaDiretoraManager } from "./mesa-diretora-manager";
+import { AdminPageHeader, AdminSubNavTabs } from "../admin-ui";
 
 export default async function AdminMesaDiretoraPage({
   searchParams,
@@ -35,22 +36,21 @@ export default async function AdminMesaDiretoraPage({
 
   return (
     <div className="mx-auto max-w-7xl">
-      <StatusMessage success={params?.success} error={params?.message ?? params?.error} />
+      <AdminSubNavTabs
+        tabs={[
+          { href: "/admin/mesa-diretora", label: "Membros da Mesa", active: true },
+          { href: "/admin/mesa-diretora/grupos", label: "Grupos e Comissões", active: false },
+        ]}
+      />
 
-      <section className="mb-6 border border-[#d8c38b] bg-white/76 p-6 shadow-[0_18px_50px_rgba(23,16,6,.08)]">
-        <div className="grid gap-5 lg:grid-cols-[auto_1fr] lg:items-center">
-          <div className="grid h-14 w-14 place-items-center bg-[#171006] text-[#f4cf6a]">
-            <Users size={27} />
-          </div>
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Mesa Diretora</p>
-            <h1 className="mt-2 font-serif text-4xl font-black leading-tight">Membros da Mesa Diretora</h1>
-            <p className="mt-3 max-w-4xl leading-7 text-[#5a472c]">
-              Gerencie os pastores que compõem a liderança da convenção, ordenando por grupos hierárquicos e exibindo-os de forma dinâmica no portal público.
-            </p>
-          </div>
-        </div>
-      </section>
+      <StatusMessage success={params?.success} error={params?.error ?? params?.message} />
+
+      <AdminPageHeader
+        icon={Users}
+        eyebrow="Mesa Diretora"
+        title="Membros da Mesa Diretora"
+        description="Gerencie os pastores e líderes que compõem a diretoria e conselhos da convenção, organizados por hierarquia e exibidos dinamicamente no portal."
+      />
 
       <MesaDiretoraManager
         initialMembers={members}

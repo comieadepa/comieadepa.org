@@ -1,9 +1,14 @@
 import { contentModules, editorialWorkflow } from "@/lib/cms";
 import { countSupabaseRows } from "@/lib/supabase-admin";
+import { canAccessAdminPath, canPerformAdminAction, normalizeAdminRole } from "@/lib/admin-permissions";
 import { ArrowRight, CheckCircle2, Clock3 } from "lucide-react";
 import Link from "next/link";
+import { headers } from "next/headers";
 
 export default async function AdminDashboardPage() {
+  const headerList = await headers();
+  const role = normalizeAdminRole(headerList.get("x-admin-role"));
+
   const visiblePublishedPostsQuery = `select=id&status=eq.publicado&or=(publicado_em.is.null,publicado_em.lte.${encodeURIComponent(new Date().toISOString())})`;
   const [publishedPosts, draftPosts, activeVideos, mediaAssets, openEvents] = await Promise.all([
     countSupabaseRows("cms_posts", visiblePublishedPostsQuery),
@@ -19,6 +24,26 @@ export default async function AdminDashboardPage() {
     { label: "Eventos abertos", value: String(openEvents), detail: "Lidos diretamente do sistema de eventos" },
   ];
 
+  const canCreateNews = canPerformAdminAction(role, "noticias", "create");
+  const canAccessNews = canAccessAdminPath("/admin/noticias", role);
+  const canAccessVideos = canAccessAdminPath("/admin/videos", role);
+  const canAccessGalleries = canAccessAdminPath("/admin/galerias", role);
+  const canAccessMedia = canAccessAdminPath("/admin/midia", role);
+
+  const primaryAction = canCreateNews
+    ? { href: "/admin/noticias", label: "Criar notícia" }
+    : canAccessGalleries
+    ? { href: "/admin/galerias", label: "Gerenciar galerias" }
+    : canAccessVideos
+    ? { href: "/admin/videos", label: "Organizar vídeos" }
+    : canAccessMedia
+    ? { href: "/admin/midia", label: "Biblioteca de mídia" }
+    : null;
+
+  const secondaryAction = primaryAction?.href === "/admin/videos"
+    ? (canAccessMedia ? { href: "/admin/midia", label: "Biblioteca de mídia" } : null)
+    : (canAccessVideos ? { href: "/admin/videos", label: "Organizar vídeos" } : canAccessGalleries && primaryAction?.href !== "/admin/galerias" ? { href: "/admin/galerias", label: "Gerenciar galerias" } : null);
+
   return (
     <div className="mx-auto max-w-7xl">
       <section className="overflow-hidden border border-[#d8c38b] bg-[#171006] text-white shadow-[0_24px_70px_rgba(23,16,6,.18)]">
@@ -31,15 +56,21 @@ export default async function AdminDashboardPage() {
             <p className="mt-6 max-w-2xl text-lg leading-8 text-white/68">
               O painel organiza notícias, vídeos, departamentos e destaques da home em um fluxo simples para a equipe de mídia publicar com consistência, revisão e identidade institucional.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/admin/noticias" className="inline-flex items-center justify-center gap-3 bg-[#f4cf6a] px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-[#171006]">
-                Criar notícia
-                <ArrowRight size={18} />
-              </Link>
-              <Link href="/admin/videos" className="inline-flex items-center justify-center gap-3 border border-white/18 px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-white">
-                Organizar vídeos
-              </Link>
-            </div>
+            {(primaryAction || secondaryAction) ? (
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                {primaryAction ? (
+                  <Link href={primaryAction.href} className="inline-flex items-center justify-center gap-3 bg-[#f4cf6a] px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-[#171006]">
+                    {primaryAction.label}
+                    <ArrowRight size={18} />
+                  </Link>
+                ) : null}
+                {secondaryAction ? (
+                  <Link href={secondaryAction.href} className="inline-flex items-center justify-center gap-3 border border-white/18 px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-white">
+                    {secondaryAction.label}
+                  </Link>
+                ) : null}
+              </div>
+            ) : null}
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {dashboardStats.map((stat) => (
@@ -89,13 +120,15 @@ export default async function AdminDashboardPage() {
               { label: "Páginas institucionais publicáveis", href: "/admin/paginas", done: true },
               { label: "Home editável para a equipe de mídia", href: "/admin/home", done: true },
               { label: "Revisar conteúdos finais antes da publicação", href: "/admin/noticias", done: false },
-            ].map((item) => (
-              <Link key={item.label} href={item.href} className="group flex items-center gap-3 border-b border-[#ead9a6] pb-4 last:border-b-0">
-                {item.done ? <CheckCircle2 size={20} className="text-[#0b6b3a]" /> : <Clock3 size={20} className="text-[#d97a00]" />}
-                <span className="flex-1 font-semibold text-[#342411] transition group-hover:text-[#8b2f2b]">{item.label}</span>
-                <ArrowRight size={16} className="text-[#8b2f2b] opacity-0 transition group-hover:opacity-100" />
-              </Link>
-            ))}
+            ]
+              .filter((item) => canAccessAdminPath(item.href, role))
+              .map((item) => (
+                <Link key={item.label} href={item.href} className="group flex items-center gap-3 border-b border-[#ead9a6] pb-4 last:border-b-0">
+                  {item.done ? <CheckCircle2 size={20} className="text-[#0b6b3a]" /> : <Clock3 size={20} className="text-[#d97a00]" />}
+                  <span className="flex-1 font-semibold text-[#342411] transition group-hover:text-[#8b2f2b]">{item.label}</span>
+                  <ArrowRight size={16} className="text-[#8b2f2b] opacity-0 transition group-hover:opacity-100" />
+                </Link>
+              ))}
           </div>
         </div>
       </section>
