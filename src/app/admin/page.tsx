@@ -79,13 +79,11 @@ export default async function AdminDashboardPage() {
   // Permissions for Quick Actions and Module Links
   const canAccessNews = canAccessAdminPath("/admin/noticias", role);
   const canAccessVideos = canAccessAdminPath("/admin/videos", role);
-  const canAccessEvents = canAccessAdminPath("/admin/eventos", role);
   const canAccessMedia = canAccessAdminPath("/admin/midia", role);
 
   const canCreateNews = canPerformAdminAction(role, "noticias", "create");
   const canCreateGalleries = canPerformAdminAction(role, "galerias", "create");
   const canCreateVideos = canPerformAdminAction(role, "videos", "create");
-  const canCreateEvents = canPerformAdminAction(role, "eventos", "create");
 
   const kpiStats = [
     {
@@ -117,8 +115,9 @@ export default async function AdminDashboardPage() {
       value: String(openEventsCount),
       detail: "Eventos na agenda oficial",
       icon: Calendar,
-      href: "/admin/eventos",
-      canAccess: canAccessEvents,
+      href: "",
+      canAccess: false,
+      readOnlyLabel: "Lido do CRM oficial",
     },
   ];
 
@@ -159,15 +158,6 @@ export default async function AdminDashboardPage() {
                 Novo vídeo
               </Link>
             ) : null}
-            {canCreateEvents ? (
-              <Link
-                href="/admin/eventos"
-                className="inline-flex items-center gap-1.5 border border-[#8b2f2b]/40 bg-[#f7efd6] px-3.5 py-2 text-xs font-black uppercase tracking-[0.12em] text-[#8b2f2b] transition hover:bg-[#8b2f2b] hover:text-white"
-              >
-                <Calendar size={14} />
-                Novo evento
-              </Link>
-            ) : null}
           </div>
         }
       />
@@ -196,7 +186,7 @@ export default async function AdminDashboardPage() {
                 <ArrowRight size={12} />
               </Link>
             ) : (
-              <span className="text-[10px] text-white/30">Acesso restrito</span>
+              <span className="text-[10px] text-white/40">{stat.readOnlyLabel || "Acesso restrito"}</span>
             )}
           </div>
         ))}
@@ -383,21 +373,14 @@ export default async function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* 6. Próximos Eventos */}
+        {/* 6. Próximos Eventos (Somente Leitura) */}
         <div className="border border-[#d8c38b] bg-[#171006] p-6 text-white shadow-[0_18px_50px_rgba(23,16,6,.14)]">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.18em] text-[#f4cf6a]">Agenda do Portal</p>
               <h2 className="mt-1 font-serif text-xl font-black text-white">Próximos Eventos</h2>
             </div>
-            {canAccessEvents ? (
-              <Link
-                href="/admin/eventos"
-                className="text-xs font-bold text-[#f4cf6a] underline underline-offset-4 hover:opacity-80"
-              >
-                Ver agenda completa
-              </Link>
-            ) : null}
+            <span className="text-[11px] text-white/50">Sincronizado do CRM</span>
           </div>
 
           <div className="mt-4 grid gap-3">
@@ -421,7 +404,7 @@ export default async function AdminDashboardPage() {
             {upcomingEvents.length === 0 ? (
               <AdminEmptyState
                 title="Nenhum evento programado"
-                description="Cadastre os próximos eventos e assembleias na agenda oficial."
+                description="Nenhum evento ativo retornado pelo sistema oficial de eventos."
               />
             ) : null}
           </div>

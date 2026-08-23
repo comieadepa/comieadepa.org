@@ -2,7 +2,6 @@ export type AdminRole = "admin" | "editor" | "midia" | "viewer";
 export type AdminModule =
   | "dashboard"
   | "home"
-  | "eventos"
   | "noticias"
   | "videos"
   | "departamentos"
@@ -38,7 +37,6 @@ export const adminRoleList = [...adminRoles] as const;
 const adminModules: AdminModule[] = [
   "dashboard",
   "home",
-  "eventos",
   "noticias",
   "videos",
   "departamentos",
@@ -70,7 +68,6 @@ export const adminActionList = [...adminActions] as const;
 const adminModulePaths: Record<AdminModule, string> = {
   dashboard: "/admin",
   home: "/admin/home",
-  eventos: "/admin/eventos",
   noticias: "/admin/noticias",
   videos: "/admin/videos",
   departamentos: "/admin/departamentos",
@@ -91,7 +88,6 @@ const rolePermissions: Record<AdminRole, Partial<Record<AdminModule, AdminAction
   editor: {
     dashboard: ["view"],
     home: ["view", "create", "update", "delete", "publish", "archive"],
-    eventos: ["view", "create", "update"],
     noticias: ["view", "create", "update", "publish", "archive"],
     videos: ["view", "create", "update"],
     departamentos: ["view", "create", "update"],
@@ -113,7 +109,6 @@ const rolePermissions: Record<AdminRole, Partial<Record<AdminModule, AdminAction
   viewer: {
     dashboard: ["view"],
     home: ["view"],
-    eventos: ["view"],
     noticias: ["view"],
     videos: ["view"],
     departamentos: ["view"],
@@ -197,10 +192,6 @@ function getAdminModuleFromPath(pathname: string): AdminModule | null {
 
   if (pathname.startsWith("/admin/home") || pathname.startsWith("/api/admin/home")) {
     return "home";
-  }
-
-  if (pathname.startsWith("/admin/eventos") || pathname.startsWith("/api/admin/eventos")) {
-    return "eventos";
   }
 
   if (pathname.startsWith("/admin/noticias") || pathname.startsWith("/api/admin/posts")) {

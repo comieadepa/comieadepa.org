@@ -41,7 +41,6 @@ const roleDescriptions: Record<AdminRole, string> = {
 const moduleLabels: Record<AdminModule, string> = {
   dashboard: "Dashboard",
   home: "Home",
-  eventos: "Eventos",
   noticias: "Notícias",
   videos: "Vídeos",
   departamentos: "Departamentos",
@@ -72,7 +71,6 @@ const actionLabels: Record<AdminAction, string> = {
 const visibleModules: AdminModule[] = [
   "dashboard",
   "home",
-  "eventos",
   "noticias",
   "videos",
   "departamentos",
