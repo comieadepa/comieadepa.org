@@ -1,4 +1,4 @@
-﻿import type { LucideIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
@@ -87,17 +87,37 @@ export function AdminFilterPills({
   options,
   baseUrl,
   paramName = "status",
+  onSelect,
 }: {
   current: string;
   options: Array<{ value: string; label: string; count?: number }>;
-  baseUrl: string;
+  baseUrl?: string;
   paramName?: string;
+  onSelect?: (value: string) => void;
 }) {
   return (
     <div className="flex flex-wrap gap-2">
       {options.map((option) => {
         const isActive = current === option.value;
-        const href = option.value === "todos" ? baseUrl : `${baseUrl}?${paramName}=${option.value}`;
+        const href = baseUrl ? (option.value === "todos" ? baseUrl : `${baseUrl}?${paramName}=${option.value}`) : undefined;
+
+        if (onSelect || !href) {
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => onSelect?.(option.value)}
+              className={`px-3 py-2 text-[11px] font-black uppercase tracking-[0.12em] transition ${
+                isActive
+                  ? "bg-[#f4cf6a] text-[#171006]"
+                  : "border border-white/10 text-white/54 hover:border-[#f4cf6a] hover:text-[#f4cf6a]"
+              }`}
+            >
+              {option.label}
+              {typeof option.count === "number" ? <span className="ml-1.5 opacity-60">({option.count})</span> : null}
+            </button>
+          );
+        }
 
         return (
           <Link
@@ -120,14 +140,17 @@ export function AdminFilterPills({
 
 export function AdminEmptyState({
   message,
+  title,
   description,
 }: {
-  message: string;
+  message?: string;
+  title?: string;
   description?: string;
 }) {
+  const displayTitle = title || message || "Nenhum registro encontrado";
   return (
     <div className="mt-8 border border-white/10 bg-white/[0.055] p-8 text-center text-white/62">
-      <p className="font-serif text-lg font-bold text-white/80">{message}</p>
+      <p className="font-serif text-lg font-bold text-white/80">{displayTitle}</p>
       {description ? <p className="mt-2 text-sm text-white/50">{description}</p> : null}
     </div>
   );

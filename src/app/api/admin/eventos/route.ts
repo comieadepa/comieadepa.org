@@ -1,5 +1,6 @@
 import {
   createAuditLog,
+  deleteSupabaseRows,
   hasSupabaseAdminConfig,
   insertSupabaseRow,
   missingSupabaseAdminResponse,
@@ -36,7 +37,13 @@ type EventPayload = {
 };
 
 export async function POST(request: Request) {
+  const acceptsJson =
+    request.headers.get("accept")?.includes("application/json") || request.headers.get("x-requested-with") === "fetch";
+
   if (!hasSupabaseAdminConfig()) {
+    if (acceptsJson) {
+      return Response.json({ error: "Configuração do Supabase ausente." }, { status: 500 });
+    }
     return missingSupabaseAdminResponse();
   }
 
@@ -48,11 +55,12 @@ export async function POST(request: Request) {
 
   if (action && id) {
     if (!canPerformAdminAction(role, "eventos", "update")) {
+      if (acceptsJson) {
+        return Response.json({ error: "Sem permissão para atualizar status de eventos." }, { status: 403 });
+      }
       return redirectWithStatus(request.url, "/admin/eventos", "error", "Sem permissao para atualizar eventos.");
     }
-  }
 
-  if (action && id) {
     try {
       const nextStatus = mapActionToStatus(action);
       await updateSupabaseRows("eventos", `id=eq.${encodeURIComponent(id)}`, {
@@ -68,9 +76,22 @@ export async function POST(request: Request) {
         metadata: { status: nextStatus },
       });
 
+      if (acceptsJson) {
+        return Response.json({
+          ok: true,
+          id,
+          status: nextStatus,
+          message: `Status do evento atualizado para ${nextStatus}.`,
+        });
+      }
+
       return redirectWithStatus(request.url, "/admin/eventos", "success");
     } catch (error) {
-      return redirectWithStatus(request.url, "/admin/eventos", "error", error instanceof Error ? error.message : "Erro ao atualizar evento.");
+      const message = error instanceof Error ? error.message : "Erro ao atualizar evento.";
+      if (acceptsJson) {
+        return Response.json({ error: message }, { status: 500 });
+      }
+      return redirectWithStatus(request.url, "/admin/eventos", "error", message);
     }
   }
 
@@ -80,11 +101,17 @@ export async function POST(request: Request) {
   const dataFim = requiredString(formData, "data_fim") || dataInicio;
 
   if (!name || !departamento || !dataInicio || !dataFim) {
+    if (acceptsJson) {
+      return Response.json({ error: "Informe nome, departamento e datas do evento." }, { status: 400 });
+    }
     return redirectWithStatus(request.url, "/admin/eventos", "error", "Informe nome, departamento e datas do evento.");
   }
 
   const writeAction = id ? "update" : "create";
   if (!canPerformAdminAction(role, "eventos", writeAction)) {
+    if (acceptsJson) {
+      return Response.json({ error: "Sem permissão para salvar eventos." }, { status: 403 });
+    }
     return redirectWithStatus(request.url, "/admin/eventos", "error", "Sem permissao para salvar eventos.");
   }
 
@@ -108,6 +135,8 @@ export async function POST(request: Request) {
       updated_at: new Date().toISOString(),
     };
 
+    let savedId = id;
+
     if (id) {
       await updateSupabaseRows("eventos", `id=eq.${encodeURIComponent(id)}`, payload);
       await createAuditLog({
@@ -120,19 +149,59 @@ export async function POST(request: Request) {
       });
     } else {
       const inserted = (await insertSupabaseRow("eventos", payload)) as Array<{ id?: string }>;
+      savedId = inserted[0]?.id ?? "";
       await createAuditLog({
         request,
         action: "create",
         entity: "evento",
-        entityId: inserted[0]?.id,
+        entityId: savedId,
         entityTitle: name,
         metadata: { status: payload.status, inscricoes_abertas: payload.inscricoes_abertas },
       });
     }
 
+    if (acceptsJson) {
+      return Response.json({
+        ok: true,
+        id: savedId,
+        message: id ? "Evento atualizado com sucesso!" : "Evento cadastrado com sucesso!",
+      });
+    }
+
     return redirectWithStatus(request.url, "/admin/eventos", "success");
   } catch (error) {
-    return redirectWithStatus(request.url, "/admin/eventos", "error", error instanceof Error ? error.message : "Erro ao salvar evento.");
+    const message = error instanceof Error ? error.message : "Erro ao salvar evento.";
+    if (acceptsJson) {
+      return Response.json({ error: message }, { status: 500 });
+    }
+    return redirectWithStatus(request.url, "/admin/eventos", "error", message);
+  }
+}
+
+export async function DELETE(request: Request) {
+  if (!hasSupabaseAdminConfig()) {
+    return Response.json({ error: "Configuração do Supabase ausente." }, { status: 500 });
+  }
+
+  const role = resolveAdminRoleFromHeaders(request.headers);
+  if (!canPerformAdminAction(role, "eventos", "delete")) {
+    return Response.json({ error: "Sem permissão para excluir eventos. Ação restrita a administradores." }, { status: 403 });
+  }
+
+  const url = new URL(request.url);
+  const id = url.searchParams.get("id");
+  if (!id) {
+    return Response.json({ error: "Informe o ID do evento." }, { status: 400 });
+  }
+
+  try {
+    // Delete associated registration types first to keep database clean
+    await deleteSupabaseRows("evento_tipos_inscricao", `evento_id=eq.${encodeURIComponent(id)}`);
+    await deleteSupabaseRows("eventos", `id=eq.${encodeURIComponent(id)}`);
+    await createAuditLog({ request, action: "delete", entity: "evento", entityId: id });
+    return Response.json({ ok: true, message: "Evento excluído definitivamente." });
+  } catch (error) {
+    return Response.json({ error: error instanceof Error ? error.message : "Erro ao excluir evento." }, { status: 500 });
   }
 }
 
@@ -172,3 +241,4 @@ function parseNumber(formData: FormData, key: string) {
   const parsed = Number(raw);
   return Number.isFinite(parsed) ? parsed : null;
 }
+

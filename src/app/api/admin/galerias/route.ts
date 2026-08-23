@@ -59,12 +59,20 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const acceptsJson = request.headers.get("accept")?.includes("application/json") || request.headers.get("x-requested-with") === "fetch";
+
   if (!hasSupabaseAdminConfig()) {
+    if (acceptsJson) {
+      return Response.json({ error: "Configuração do Supabase ausente." }, { status: 500 });
+    }
     return missingSupabaseAdminResponse();
   }
 
   const role = normalizeAdminRole(request.headers.get("x-admin-role"));
   if (!canPerformAdminAction(role, "galerias", "create")) {
+    if (acceptsJson) {
+      return Response.json({ error: "Sem permissão para criar galerias." }, { status: 403 });
+    }
     return redirectWithStatus(request.url, "/admin/galerias", "error", "Sem permissao para criar galerias.");
   }
 
@@ -74,43 +82,63 @@ export async function POST(request: Request) {
   const slug = slugify(rawSlug || title);
 
   if (!title || !slug) {
+    if (acceptsJson) {
+      return Response.json({ error: "Informe título e slug da galeria." }, { status: 400 });
+    }
     return redirectWithStatus(request.url, "/admin/galerias", "error", "Informe titulo e slug da galeria.");
   }
 
   if (rawSlug && rawSlug !== slug) {
+    if (acceptsJson) {
+      return Response.json({ error: "Slug inválido. Use apenas letras, números e hífen." }, { status: 400 });
+    }
     return redirectWithStatus(request.url, "/admin/galerias", "error", "Slug invalido. Use apenas letras, numeros e hifen.");
   }
 
   const status = normalizeGalleryStatus(requiredString(formData, "status"));
   if (status === "publicado" && !canPerformAdminAction(role, "galerias", "publish")) {
+    if (acceptsJson) {
+      return Response.json({ error: "Sem permissão para publicar galerias." }, { status: 403 });
+    }
     return redirectWithStatus(request.url, "/admin/galerias", "error", "Sem permissao para publicar galerias.");
   }
 
   const existing = await selectSupabaseRows<CmsGallery>("cms_galerias", `select=id,slug&slug=eq.${encodeURIComponent(slug)}&limit=1`);
   if (existing.length > 0) {
+    if (acceptsJson) {
+      return Response.json({ error: "Slug já existe. Escolha outro." }, { status: 409 });
+    }
     return redirectWithStatus(request.url, "/admin/galerias", "error", "Slug ja existe. Escolha outro.");
   }
 
   const cover = readOptionalFile(formData, "capa");
   const coverError = cover ? validateFileSize(cover) : null;
   if (coverError) {
+    if (acceptsJson) {
+      return Response.json({ error: coverError }, { status: 400 });
+    }
     return redirectWithStatus(request.url, "/admin/galerias", "error", coverError);
   }
 
   const photos = readMultipleFiles(formData, "fotos");
   const photoError = validateFiles(photos);
   if (photoError) {
+    if (acceptsJson) {
+      return Response.json({ error: photoError }, { status: 400 });
+    }
     return redirectWithStatus(request.url, "/admin/galerias", "error", photoError);
   }
 
   try {
     const uploadedCover = cover ? await uploadPublicStorageObject(cover, "galerias-capas") : null;
+    const coverUrl = uploadedCover?.publicUrl || optionalString(formData, "capa_url") || null;
+
     const inserted = (await insertSupabaseRow("cms_galerias", {
       titulo: title,
       slug,
       descricao: optionalString(formData, "descricao"),
       categoria: optionalString(formData, "categoria"),
-      capa_url: uploadedCover?.publicUrl ?? null,
+      capa_url: coverUrl,
       status,
       destaque: formData.get("destaque") === "on",
       ordem: Number(requiredString(formData, "ordem") || 0),
@@ -122,7 +150,7 @@ export async function POST(request: Request) {
 
     if (galleryId && photos.length > 0) {
       const uploadedPhotos = await uploadGalleryPhotos(galleryId, photos);
-      if (!uploadedCover?.publicUrl && uploadedPhotos[0]?.publicUrl) {
+      if (!coverUrl && uploadedPhotos[0]?.publicUrl) {
         await updateSupabaseRows("cms_galerias", `id=eq.${encodeURIComponent(galleryId)}`, {
           capa_url: uploadedPhotos[0].publicUrl,
           updated_at: new Date().toISOString(),
@@ -139,9 +167,17 @@ export async function POST(request: Request) {
       metadata: { status, totalFotos: photos.length },
     });
 
+    if (acceptsJson) {
+      return Response.json({ ok: true, id: galleryId, message: "Galeria criada com sucesso." });
+    }
+
     return redirectWithStatus(request.url, "/admin/galerias", "success");
   } catch (error) {
-    return redirectWithStatus(request.url, "/admin/galerias", "error", error instanceof Error ? error.message : "Erro ao criar galeria.");
+    const message = error instanceof Error ? error.message : "Erro ao criar galeria.";
+    if (acceptsJson) {
+      return Response.json({ error: message }, { status: 500 });
+    }
+    return redirectWithStatus(request.url, "/admin/galerias", "error", message);
   }
 }
 
@@ -214,7 +250,7 @@ export async function PUT(request: Request) {
       slug,
       descricao: optionalString(formData, "descricao"),
       categoria: optionalString(formData, "categoria"),
-      capa_url: uploadedCover?.publicUrl ?? current.capa_url,
+      capa_url: uploadedCover?.publicUrl || optionalString(formData, "capa_url") || current.capa_url,
       status,
       destaque: formData.get("destaque") === "on",
       ordem: Number(requiredString(formData, "ordem") || 0),

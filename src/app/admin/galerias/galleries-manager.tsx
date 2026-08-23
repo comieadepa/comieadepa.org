@@ -1,14 +1,33 @@
 "use client";
 
-import { CalendarDays, Eye, ImagePlus, Save, Search, Star, Trash2 } from "lucide-react";
+import {
+  Archive,
+  CalendarDays,
+  CheckCircle2,
+  Eye,
+  ImagePlus,
+  Loader2,
+  Plus,
+  Save,
+  Search,
+  Sparkles,
+  Star,
+  Trash2,
+  UploadCloud,
+  X,
+} from "lucide-react";
 import Image from "next/image";
-import { useMemo, useState } from "react";
-import { CmsGallery, CmsGalleryPhoto, GalleryStatus, galleryStatusOptions, formatGalleryDate } from "@/lib/galerias";
+import { useRouter } from "next/navigation";
+import { useMemo, useRef, useState, useTransition } from "react";
+import { CmsGallery, CmsGalleryPhoto, GalleryStatus, formatGalleryDate } from "@/lib/galerias";
+import { MediaPickerAsset, MediaUrlField } from "../media-url-field";
+import { AdminEmptyState, AdminFilterPills, AdminStatusBadge } from "../admin-ui";
 
 type GalleriesManagerProps = {
   galleries: CmsGallery[];
   photos: CmsGalleryPhoto[];
   categories: string[];
+  mediaAssets: MediaPickerAsset[];
   canCreate: boolean;
   canUpdate: boolean;
   canPublish: boolean;
@@ -16,26 +35,45 @@ type GalleriesManagerProps = {
   canDelete: boolean;
 };
 
-const statusLabels: Record<GalleryStatus, string> = {
-  rascunho: "Rascunho",
-  publicado: "Publicado",
-  arquivado: "Arquivado",
-};
-
 export function GalleriesManager({
-  galleries,
-  photos,
+  galleries: initialGalleries,
+  photos: initialPhotos,
   categories,
+  mediaAssets,
   canCreate,
   canUpdate,
   canPublish,
   canArchive,
   canDelete,
 }: GalleriesManagerProps) {
+  const router = useRouter();
+  const [, startTransition] = useTransition();
+
+  const [galleries, setGalleries] = useState<CmsGallery[]>(initialGalleries);
+  const [photos, setPhotos] = useState<CmsGalleryPhoto[]>(initialPhotos);
   const [editingId, setEditingId] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"todos" | GalleryStatus>("todos");
+  const [statusFilter, setStatusFilter] = useState("todos");
   const [categoryFilter, setCategoryFilter] = useState("todas");
   const [search, setSearch] = useState("");
+
+  // Form states
+  const [titulo, setTitulo] = useState("");
+  const [slug, setSlug] = useState("");
+  const [categoria, setCategoria] = useState("");
+  const [status, setStatus] = useState<GalleryStatus>("rascunho");
+  const [ordem, setOrdem] = useState(0);
+  const [dataEvento, setDataEvento] = useState("");
+  const [destaque, setDestaque] = useState(false);
+  const [descricao, setDescricao] = useState("");
+  const [capaUrl, setCapaUrl] = useState("");
+
+  // Async states
+  const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
+
+  const batchPhotosInputRef = useRef<HTMLInputElement>(null);
 
   const photosByGallery = useMemo(() => {
     const map = new Map<string, CmsGalleryPhoto[]>();
@@ -67,63 +105,220 @@ export function GalleriesManager({
   const editingPhotos = editingGallery ? photosByGallery.get(editingGallery.id) ?? [] : [];
   const canWrite = editingGallery ? canUpdate : canCreate;
 
+  function handleStartEdit(gallery: CmsGallery) {
+    setEditingId(gallery.id);
+    setTitulo(gallery.titulo);
+    setSlug(gallery.slug);
+    setCategoria(gallery.categoria ?? "");
+    setStatus(gallery.status);
+    setOrdem(gallery.ordem ?? 0);
+    setDataEvento(gallery.data_evento?.slice(0, 10) ?? "");
+    setDestaque(gallery.destaque ?? false);
+    setDescricao(gallery.descricao ?? "");
+    setCapaUrl(gallery.capa_url ?? "");
+    setFeedback(null);
+  }
+
+  function handleNewGallery() {
+    setEditingId("");
+    setTitulo("");
+    setSlug("");
+    setCategoria("");
+    setStatus("rascunho");
+    setOrdem(0);
+    setDataEvento("");
+    setDestaque(false);
+    setDescricao("");
+    setCapaUrl("");
+    setFeedback(null);
+  }
+
+  function generateSlug() {
+    if (!titulo.trim()) return;
+    const generated = titulo
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    setSlug(generated);
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!canWrite || isSaving) return;
 
-    if (!canWrite) {
+    if (!titulo.trim()) {
+      setFeedback({ type: "error", message: "Informe o título da galeria para continuar." });
       return;
     }
 
+    setIsSaving(true);
+    setFeedback(null);
+
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const isEditing = Boolean(formData.get("id"));
+    formData.set("id", editingId);
+    formData.set("titulo", titulo);
+    formData.set("slug", slug || titulo);
+    formData.set("categoria", categoria);
+    formData.set("status", status);
+    formData.set("ordem", String(ordem));
+    formData.set("data_evento", dataEvento);
+    formData.set("descricao", descricao);
+    formData.set("capa_url", capaUrl);
+    if (destaque) {
+      formData.set("destaque", "on");
+    } else {
+      formData.delete("destaque");
+    }
+
+    const isEditing = Boolean(editingId);
 
     try {
       const response = await fetch("/api/admin/galerias", {
         method: isEditing ? "PUT" : "POST",
+        headers: {
+          Accept: "application/json",
+          "x-requested-with": "fetch",
+        },
         body: formData,
       });
 
-      if (response.redirected) {
-        window.location.href = response.url;
-        return;
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || data.error) {
+        throw new Error(data.error || "Erro ao salvar galeria.");
       }
 
-      if (!response.ok) {
-        const payload = await response.json().catch(() => ({}));
-        const message = typeof payload?.error === "string" ? payload.error : "Erro ao salvar galeria.";
-        window.location.href = `/admin/galerias?error=1&message=${encodeURIComponent(message)}`;
-        return;
+      setFeedback({
+        type: "success",
+        message: isEditing ? "Galeria atualizada com sucesso!" : "Galeria criada com sucesso!",
+      });
+
+      const savedId = editingId || data.id;
+
+      if (!isEditing && savedId) {
+        setEditingId(savedId);
       }
 
-      window.location.href = "/admin/galerias?success=1";
+      startTransition(() => {
+        router.refresh();
+      });
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Erro ao salvar galeria.";
-      window.location.href = `/admin/galerias?error=1&message=${encodeURIComponent(message)}`;
+      setFeedback({
+        type: "error",
+        message: error instanceof Error ? error.message : "Erro ao salvar galeria.",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleBatchPhotoUpload(files: FileList | null) {
+    if (!files || files.length === 0 || !editingId || isUploadingPhotos) return;
+
+    setIsUploadingPhotos(true);
+    setUploadMessage(`Enviando ${files.length} foto(s)...`);
+    setFeedback(null);
+
+    const formData = new FormData();
+    formData.set("galeria_id", editingId);
+    for (let i = 0; i < files.length; i++) {
+      formData.append("fotos", files[i]);
+    }
+
+    try {
+      const response = await fetch("/api/admin/galerias/fotos", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "x-requested-with": "fetch",
+        },
+        body: formData,
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || "Erro ao enviar fotos adicionais.");
+      }
+
+      const newPhotos: CmsGalleryPhoto[] = (data.photos || []).map((p: { id?: string; imagem_url?: string }, index: number) => ({
+        id: p.id || crypto.randomUUID(),
+        galeria_id: editingId,
+        imagem_url: p.imagem_url || "",
+        legenda: null,
+        credito: null,
+        ordem: editingPhotos.length + index,
+        created_at: new Date().toISOString(),
+      }));
+
+      setPhotos((prev) => [...prev, ...newPhotos]);
+      setFeedback({
+        type: "success",
+        message: `${newPhotos.length} foto(s) adicionada(s) à galeria com sucesso!`,
+      });
+
+      startTransition(() => {
+        router.refresh();
+      });
+    } catch (err) {
+      setFeedback({
+        type: "error",
+        message: err instanceof Error ? err.message : "Falha no upload das fotos.",
+      });
+    } finally {
+      setIsUploadingPhotos(false);
+      setUploadMessage(null);
+      if (batchPhotosInputRef.current) {
+        batchPhotosInputRef.current.value = "";
+      }
     }
   }
 
   async function handleArchive(id: string) {
-    await handleDeleteRequest(`/api/admin/galerias?id=${encodeURIComponent(id)}`, "Erro ao arquivar galeria.");
+    try {
+      const response = await fetch(`/api/admin/galerias?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || "Erro ao arquivar galeria.");
+      }
+
+      setGalleries((prev) => prev.map((g) => (g.id === id ? { ...g, status: "arquivado" } : g)));
+      setFeedback({ type: "success", message: "Galeria arquivada com sucesso." });
+      startTransition(() => router.refresh());
+    } catch (err) {
+      setFeedback({ type: "error", message: err instanceof Error ? err.message : "Erro ao arquivar galeria." });
+    }
   }
 
   async function handleDelete(id: string) {
-    if (!canDelete) {
-      return;
-    }
+    if (!canDelete) return;
 
-    const confirmed = window.confirm("Excluir definitivamente esta galeria?");
-    if (!confirmed) {
-      return;
-    }
+    const confirmed = window.confirm("Excluir definitivamente esta galeria e todo o seu acervo?");
+    if (!confirmed) return;
 
-    await handleDeleteRequest(`/api/admin/galerias?id=${encodeURIComponent(id)}&hard=1`, "Erro ao excluir galeria.");
+    try {
+      const response = await fetch(`/api/admin/galerias?id=${encodeURIComponent(id)}&hard=1`, { method: "DELETE" });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || "Erro ao excluir galeria.");
+      }
+
+      setGalleries((prev) => prev.filter((g) => g.id !== id));
+      if (editingId === id) {
+        handleNewGallery();
+      }
+      setFeedback({ type: "success", message: "Galeria excluída com sucesso." });
+      startTransition(() => router.refresh());
+    } catch (err) {
+      setFeedback({ type: "error", message: err instanceof Error ? err.message : "Erro ao excluir galeria." });
+    }
   }
 
-  async function handleQuickStatus(gallery: CmsGallery, status: GalleryStatus) {
-    if (!canUpdate) {
-      return;
-    }
+  async function handleQuickStatus(gallery: CmsGallery, nextStatus: GalleryStatus) {
+    if (!canUpdate) return;
 
     try {
       const formData = new FormData();
@@ -132,24 +327,35 @@ export function GalleriesManager({
       formData.set("slug", gallery.slug);
       formData.set("descricao", gallery.descricao ?? "");
       formData.set("categoria", gallery.categoria ?? "");
-      formData.set("status", status);
+      formData.set("status", nextStatus);
       formData.set("ordem", String(gallery.ordem));
       formData.set("data_evento", gallery.data_evento ?? "");
       if (gallery.destaque) {
         formData.set("destaque", "on");
       }
 
-      const response = await fetch("/api/admin/galerias", { method: "PUT", body: formData });
-      if (!response.ok) {
-        const payload = await response.json().catch(() => ({}));
-        const message = typeof payload?.error === "string" ? payload.error : "Erro ao atualizar status.";
-        window.location.href = `/admin/galerias?error=1&message=${encodeURIComponent(message)}`;
-        return;
+      const response = await fetch("/api/admin/galerias", {
+        method: "PUT",
+        headers: { Accept: "application/json", "x-requested-with": "fetch" },
+        body: formData,
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || data.error) {
+        throw new Error(data.error || "Erro ao atualizar status da galeria.");
       }
-      window.location.href = "/admin/galerias?success=1";
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Erro ao atualizar status.";
-      window.location.href = `/admin/galerias?error=1&message=${encodeURIComponent(message)}`;
+
+      setGalleries((prev) => prev.map((g) => (g.id === gallery.id ? { ...g, status: nextStatus } : g)));
+      if (editingId === gallery.id) {
+        setStatus(nextStatus);
+      }
+      setFeedback({
+        type: "success",
+        message: nextStatus === "publicado" ? "Galeria publicada com sucesso!" : "Status atualizado com sucesso.",
+      });
+      startTransition(() => router.refresh());
+    } catch (err) {
+      setFeedback({ type: "error", message: err instanceof Error ? err.message : "Erro ao atualizar status." });
     }
   }
 
@@ -161,83 +367,163 @@ export function GalleriesManager({
     formData.set("ordem", String(values.ordem));
 
     try {
-      const response = await fetch("/api/admin/galerias/fotos", { method: "PUT", body: formData });
-      if (!response.ok) {
-        const payload = await response.json().catch(() => ({}));
-        const message = typeof payload?.error === "string" ? payload.error : "Erro ao atualizar foto.";
-        window.location.href = `/admin/galerias?error=1&message=${encodeURIComponent(message)}`;
-        return;
+      const response = await fetch("/api/admin/galerias/fotos", {
+        method: "PUT",
+        headers: { Accept: "application/json", "x-requested-with": "fetch" },
+        body: formData,
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || "Erro ao atualizar foto.");
       }
-      window.location.href = "/admin/galerias?success=1";
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Erro ao atualizar foto.";
-      window.location.href = `/admin/galerias?error=1&message=${encodeURIComponent(message)}`;
+
+      setPhotos((prev) =>
+        prev.map((p) => (p.id === photo.id ? { ...p, legenda: values.legenda, credito: values.credito, ordem: values.ordem } : p)),
+      );
+      setFeedback({ type: "success", message: "Foto atualizada com sucesso!" });
+      startTransition(() => router.refresh());
+    } catch (err) {
+      setFeedback({ type: "error", message: err instanceof Error ? err.message : "Erro ao salvar foto." });
     }
   }
 
   async function handlePhotoDelete(id: string) {
     const confirmed = window.confirm("Excluir esta foto da galeria?");
-    if (!confirmed) {
-      return;
-    }
+    if (!confirmed) return;
 
-    await handleDeleteRequest(`/api/admin/galerias/fotos?id=${encodeURIComponent(id)}`, "Erro ao excluir foto.", "DELETE");
-  }
-
-  async function handleDeleteRequest(url: string, fallbackMessage: string, method = "DELETE") {
     try {
-      const response = await fetch(url, { method });
-      if (!response.ok) {
-        const payload = await response.json().catch(() => ({}));
-        const message = typeof payload?.error === "string" ? payload.error : fallbackMessage;
-        window.location.href = `/admin/galerias?error=1&message=${encodeURIComponent(message)}`;
-        return;
+      const response = await fetch(`/api/admin/galerias/fotos?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || "Erro ao excluir foto.");
       }
-      window.location.href = "/admin/galerias?success=1";
-    } catch (error) {
-      const message = error instanceof Error ? error.message : fallbackMessage;
-      window.location.href = `/admin/galerias?error=1&message=${encodeURIComponent(message)}`;
+
+      setPhotos((prev) => prev.filter((p) => p.id !== id));
+      setFeedback({ type: "success", message: "Foto removida com sucesso." });
+      startTransition(() => router.refresh());
+    } catch (err) {
+      setFeedback({ type: "error", message: err instanceof Error ? err.message : "Erro ao excluir foto." });
     }
   }
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[1fr_430px]">
+    <div className="grid gap-6 xl:grid-cols-[1fr_420px]">
+      {/* Main Form Section */}
       <section className="border border-[#d8c38b] bg-white/76 p-6 shadow-[0_18px_50px_rgba(23,16,6,.08)]">
-        <form onSubmit={handleSubmit} className="grid gap-5">
+        {/* Header bar */}
+        <div className="flex flex-col gap-4 border-b border-[#d8c38b]/40 pb-5 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="flex items-center gap-3">
+              <p className="text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">
+                {editingGallery ? "Edição de Galeria" : "Nova Galeria"}
+              </p>
+              {editingGallery ? <AdminStatusBadge status={status} /> : null}
+            </div>
+            <h2 className="mt-1 font-serif text-3xl font-black text-[#171006]">
+              {editingGallery ? "Editar Galeria e Fotos" : "Cadastrar Nova Galeria"}
+            </h2>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {editingGallery ? (
+              <>
+                <a
+                  href={`/galeria/${editingGallery.slug}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 border border-[#d8c38b] bg-white px-3.5 py-2 text-xs font-black uppercase tracking-[0.12em] text-[#8b2f2b] transition hover:bg-[#fffaf0]"
+                >
+                  <Eye size={14} />
+                  Ver no Portal
+                </a>
+                <button
+                  type="button"
+                  onClick={handleNewGallery}
+                  className="inline-flex items-center gap-2 bg-[#171006] px-3.5 py-2 text-xs font-black uppercase tracking-[0.12em] text-[#f4cf6a] transition hover:bg-[#2c2212]"
+                >
+                  <Plus size={14} />
+                  Nova Galeria
+                </button>
+              </>
+            ) : null}
+          </div>
+        </div>
+
+        {/* Feedback Banner */}
+        {feedback ? (
+          <div
+            className={`my-4 flex items-center justify-between gap-3 border p-4 text-sm font-semibold ${
+              feedback.type === "success"
+                ? "border-[#00b67a]/40 bg-[#e8fff4] text-[#075f3f]"
+                : "border-[#8b2f2b]/40 bg-[#fff1ed] text-[#8b2f2b]"
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              {feedback.type === "success" ? <CheckCircle2 size={18} /> : <X size={18} />}
+              <span>{feedback.message}</span>
+            </div>
+            <button type="button" onClick={() => setFeedback(null)} className="text-xs underline opacity-70 hover:opacity-100">
+              Fechar
+            </button>
+          </div>
+        ) : null}
+
+        {/* Gallery Metadata Form */}
+        <form onSubmit={handleSubmit} className="mt-6 grid gap-5">
           <input type="hidden" name="id" value={editingGallery?.id ?? ""} />
 
+          {/* Title */}
           <label className="grid gap-2">
-            <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Titulo</span>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Título da Galeria</span>
+              <span className="text-xs text-[#5a472c]/60">{titulo.length} caracteres</span>
+            </div>
             <input
               name="titulo"
               required
               disabled={!canWrite}
-              defaultValue={editingGallery?.titulo}
-              className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
-              placeholder="Ex.: Congresso estadual"
+              value={titulo}
+              onChange={(e) => setTitulo(e.target.value)}
+              className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 text-base font-semibold outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
+              placeholder="Ex.: 45º Congresso Geral COMIEADEPA - Belém"
             />
           </label>
 
-          <label className="grid gap-2">
-            <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Slug</span>
+          {/* Slug with Auto-generate helper */}
+          <div className="grid gap-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Slug (URL amigável)</span>
+              <button
+                type="button"
+                onClick={generateSlug}
+                disabled={!canWrite || !titulo.trim()}
+                className="inline-flex items-center gap-1 text-xs font-black uppercase tracking-[0.12em] text-[#8b2f2b] underline underline-offset-4 disabled:opacity-40"
+              >
+                <Sparkles size={13} />
+                Gerar do título
+              </button>
+            </div>
             <input
               name="slug"
               pattern="^[a-z0-9-]+$"
-              title="Use apenas letras minusculas, numeros e hifen."
+              title="Use apenas letras minúsculas, números e hífen."
               disabled={!canWrite}
-              defaultValue={editingGallery?.slug}
-              className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
-              placeholder="congresso-estadual"
+              value={slug}
+              onChange={(e) => setSlug(e.target.value)}
+              className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 font-mono text-sm outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
+              placeholder="congresso-geral-comieadepa-belem"
             />
-          </label>
+          </div>
 
+          {/* Category, Status, Order */}
           <div className="grid gap-5 md:grid-cols-4">
             <label className="grid gap-2 md:col-span-2">
               <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Categoria</span>
               <input
                 name="categoria"
                 disabled={!canWrite}
-                defaultValue={editingGallery?.categoria ?? ""}
+                value={categoria}
+                onChange={(e) => setCategoria(e.target.value)}
                 className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
                 placeholder="Congressos, Reuniões, Eventos..."
               />
@@ -248,8 +534,9 @@ export function GalleriesManager({
               <select
                 name="status"
                 disabled={!canWrite}
-                defaultValue={editingGallery?.status ?? "rascunho"}
-                className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
+                value={status}
+                onChange={(e) => setStatus(e.target.value as GalleryStatus)}
+                className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 font-bold outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <option value="rascunho">Rascunho</option>
                 {canPublish ? <option value="publicado">Publicado</option> : null}
@@ -263,12 +550,14 @@ export function GalleriesManager({
                 name="ordem"
                 type="number"
                 disabled={!canWrite}
-                defaultValue={editingGallery?.ordem ?? 0}
+                value={ordem}
+                onChange={(e) => setOrdem(Number(e.target.value) || 0)}
                 className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
               />
             </label>
           </div>
 
+          {/* Event Date and Destaque */}
           <div className="grid gap-5 md:grid-cols-2">
             <label className="grid gap-2">
               <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Data do evento</span>
@@ -278,7 +567,8 @@ export function GalleriesManager({
                   name="data_evento"
                   type="date"
                   disabled={!canWrite}
-                  defaultValue={editingGallery?.data_evento?.slice(0, 10) ?? ""}
+                  value={dataEvento}
+                  onChange={(e) => setDataEvento(e.target.value)}
                   className="w-full bg-transparent outline-none disabled:cursor-not-allowed disabled:opacity-60"
                 />
               </span>
@@ -288,201 +578,331 @@ export function GalleriesManager({
               <input
                 name="destaque"
                 type="checkbox"
-                defaultChecked={editingGallery?.destaque ?? false}
+                checked={destaque}
+                onChange={(e) => setDestaque(e.target.checked)}
                 disabled={!canWrite}
-                className="h-4 w-4 accent-[#8b2f2b]"
+                className="h-5 w-5 accent-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
               />
-              Destacar galeria no portal
+              Destacar galeria na página inicial
             </label>
           </div>
 
+          {/* Description */}
           <label className="grid gap-2">
-            <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Descrição</span>
+            <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Descrição do evento</span>
             <textarea
               name="descricao"
               disabled={!canWrite}
-              defaultValue={editingGallery?.descricao ?? ""}
-              className="min-h-28 border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
-              placeholder="Resumo da galeria para listagem e página interna."
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
+              className="min-h-24 border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
+              placeholder="Resumo dos registros fotográficos, local e momentos marcantes..."
             />
           </label>
 
+          {/* Cover using MediaUrlField & Initial Photos upload */}
           <div className="grid gap-5 md:grid-cols-2">
-            <label className="grid gap-2">
-              <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Capa da galeria</span>
-              <input
-                name="capa"
-                type="file"
-                accept="image/*"
-                disabled={!canWrite}
-                className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 text-sm outline-none file:mr-4 file:border-0 file:bg-[#171006] file:px-4 file:py-2 file:font-black file:uppercase file:tracking-[0.12em] file:text-[#f4cf6a] disabled:cursor-not-allowed disabled:opacity-60"
-              />
-              {editingGallery?.capa_url ? (
-                <div className="relative aspect-[16/10] overflow-hidden border border-[#d8c38b] bg-[#f7efd6]">
-                  <Image src={editingGallery.capa_url} alt={editingGallery.titulo} fill className="object-cover" />
-                </div>
-              ) : null}
-            </label>
+            <MediaUrlField
+              name="capa_url"
+              label="Capa da Galeria"
+              defaultValue={capaUrl}
+              assets={mediaAssets}
+              helper="Selecione da biblioteca ou envie do computador. Caso não informe, a primeira foto enviada será usada como capa."
+              disabled={!canWrite}
+            />
 
-            <label className="grid gap-2">
-              <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Upload múltiplo de fotos</span>
-              <input
-                name="fotos"
-                type="file"
-                accept="image/*"
-                multiple
-                disabled={!canWrite}
-                className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 text-sm outline-none file:mr-4 file:border-0 file:bg-[#171006] file:px-4 file:py-2 file:font-black file:uppercase file:tracking-[0.12em] file:text-[#f4cf6a] disabled:cursor-not-allowed disabled:opacity-60"
-              />
-              <span className="text-xs text-[#5a472c]">
-                {editingGallery ? "Selecione novas fotos para acrescentar nesta galeria." : "Ao criar a galeria, você pode enviar várias fotos de uma vez."}
-              </span>
-            </label>
+            {!editingGallery ? (
+              <label className="grid gap-2">
+                <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Fotos iniciais (em lote)</span>
+                <div className="flex flex-col justify-center border border-dashed border-[#b98e3b] bg-[#f7efd6] p-4 text-sm text-[#8b2f2b]">
+                  <input
+                    name="fotos"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    disabled={!canWrite}
+                    className="w-full text-xs file:mr-3 file:border-0 file:bg-[#171006] file:px-3 file:py-2 file:font-black file:uppercase file:tracking-[0.12em] file:text-[#f4cf6a] disabled:cursor-not-allowed disabled:opacity-60"
+                  />
+                  <span className="mt-2 text-xs text-[#5a472c]">
+                    Você pode selecionar várias fotos de uma só vez para criar a galeria.
+                  </span>
+                </div>
+              </label>
+            ) : null}
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row">
+          {/* Action Bar */}
+          <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-[#d8c38b]/40 pt-5">
             <button
               type="submit"
-              disabled={!canWrite}
-              className="inline-flex w-fit items-center gap-3 bg-[#171006] px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={!canWrite || isSaving}
+              className="inline-flex items-center gap-2.5 bg-[#171006] px-6 py-3.5 text-sm font-black uppercase tracking-[0.14em] text-white transition hover:bg-[#2c2212] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <Save size={18} />
-              {editingGallery ? "Atualizar galeria" : "Salvar galeria"}
+              {isSaving ? <Loader2 size={16} className="animate-spin text-[#f4cf6a]" /> : <Save size={16} />}
+              {editingGallery ? "Salvar Alterações" : "Salvar Galeria"}
             </button>
+
+            {canPublish && status !== "publicado" && editingGallery ? (
+              <button
+                type="button"
+                disabled={!canWrite || isSaving}
+                onClick={() => handleQuickStatus(editingGallery, "publicado")}
+                className="inline-flex items-center gap-2 bg-[#00a86b] px-5 py-3 text-sm font-black uppercase tracking-[0.12em] text-white transition hover:bg-[#00915c] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <CheckCircle2 size={16} />
+                Publicar Galeria
+              </button>
+            ) : null}
+
+            {canArchive && status !== "arquivado" && editingGallery ? (
+              <button
+                type="button"
+                disabled={!canWrite || isSaving}
+                onClick={() => handleArchive(editingGallery.id)}
+                className="inline-flex items-center gap-2 border border-[#d8c38b]/60 bg-transparent px-4 py-3 text-xs font-black uppercase tracking-[0.12em] text-[#5a472c] transition hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <Archive size={14} />
+                Arquivar
+              </button>
+            ) : null}
+
             {editingGallery ? (
               <button
                 type="button"
-                onClick={() => setEditingId("")}
-                className="text-sm font-semibold text-[#8b2f2b] underline underline-offset-4"
+                onClick={handleNewGallery}
+                className="text-xs font-bold text-[#8b2f2b] underline underline-offset-4 hover:opacity-80"
               >
-                Cancelar edicao
+                Cancelar edição
               </button>
             ) : null}
           </div>
         </form>
 
+        {/* Photos Management Section in Edit Mode */}
         {editingGallery ? (
-          <section className="mt-8 border-t border-[#d8c38b] pt-6">
-            <div className="flex items-center gap-3">
-              <ImagePlus size={18} className="text-[#8b2f2b]" />
-              <h2 className="font-serif text-3xl font-black">Fotos da galeria</h2>
+          <section className="mt-10 border-t-2 border-[#d8c38b]/60 pt-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <ImagePlus size={20} className="text-[#8b2f2b]" />
+                  <h3 className="font-serif text-2xl font-black text-[#171006]">Fotos da Galeria</h3>
+                </div>
+                <p className="mt-1 text-xs text-[#5a472c]">
+                  Total de {editingPhotos.length} foto(s) cadastradas nesta galeria.
+                </p>
+              </div>
+
+              {canWrite ? (
+                <label className="inline-flex cursor-pointer items-center justify-center gap-2 bg-[#8b2f2b] px-4 py-2.5 text-xs font-black uppercase tracking-[0.12em] text-[#f4cf6a] transition hover:bg-[#6e221f]">
+                  {isUploadingPhotos ? (
+                    <>
+                      <Loader2 size={15} className="animate-spin" />
+                      {uploadMessage || "Enviando..."}
+                    </>
+                  ) : (
+                    <>
+                      <UploadCloud size={15} />
+                      Adicionar fotos à galeria
+                    </>
+                  )}
+                  <input
+                    ref={batchPhotosInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    disabled={isUploadingPhotos}
+                    onChange={(e) => handleBatchPhotoUpload(e.target.files)}
+                  />
+                </label>
+              ) : null}
             </div>
 
-            <div className="mt-5 grid gap-4 lg:grid-cols-2">
+            <div className="mt-6 grid gap-4 lg:grid-cols-2">
               {editingPhotos.map((photo) => (
-                <PhotoEditorCard key={photo.id} photo={photo} onSave={handlePhotoSave} onDelete={handlePhotoDelete} canUpdate={canUpdate} />
+                <PhotoEditorCard
+                  key={photo.id}
+                  photo={photo}
+                  onSave={handlePhotoSave}
+                  onDelete={handlePhotoDelete}
+                  canUpdate={canUpdate}
+                />
               ))}
             </div>
 
             {editingPhotos.length === 0 ? (
-              <div className="mt-5 border border-[#d8c38b] bg-[#fffaf0] p-6 text-[#5a472c]">
-                Nenhuma foto cadastrada nesta galeria ainda.
+              <div className="mt-6">
+                <AdminEmptyState
+                  title="Nenhuma foto cadastrada nesta galeria"
+                  description="Utilize o botão acima para enviar fotos do evento em lote."
+                />
               </div>
             ) : null}
           </section>
         ) : null}
       </section>
 
-      <aside className="border border-[#d8c38b] bg-[#171006] p-6 text-white shadow-[0_18px_50px_rgba(23,16,6,.14)]">
-        <div className="flex flex-wrap items-end justify-between gap-4">
+      {/* Gallery List Sidebar */}
+      <aside className="h-fit border border-[#d8c38b] bg-[#171006] p-6 text-white shadow-[0_18px_50px_rgba(23,16,6,.14)]">
+        <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#f4cf6a]">Galerias</p>
-            <h2 className="mt-2 font-serif text-4xl font-black">Acervo visual</h2>
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-[#f4cf6a]">Acervo Visual</p>
+            <span className="text-xs text-white/50">{filteredGalleries.length} galeria(s)</span>
           </div>
-          <label className="flex items-center gap-3 border border-white/10 bg-white/[0.06] px-3 py-2 text-sm text-white/70">
-            <Search size={16} className="text-[#f4cf6a]" />
-            <input value={search} onChange={(event) => setSearch(event.target.value)} className="w-full bg-transparent outline-none" placeholder="Pesquisar" />
-          </label>
+
+          <button
+            type="button"
+            onClick={handleNewGallery}
+            className="inline-flex items-center gap-1.5 bg-[#f4cf6a] px-3 py-1.5 text-xs font-black uppercase tracking-[0.12em] text-[#171006] transition hover:bg-[#ffe599]"
+          >
+            <Plus size={13} />
+            Novo
+          </button>
         </div>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          <select
-            value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value as typeof statusFilter)}
-            className="border border-white/10 bg-white/[0.06] px-3 py-3 text-sm text-white outline-none"
-          >
-            <option value="todos">Todos os status</option>
-            {galleryStatusOptions.map((status) => (
-              <option key={status} value={status}>
-                {statusLabels[status]}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={categoryFilter}
-            onChange={(event) => setCategoryFilter(event.target.value)}
-            className="border border-white/10 bg-white/[0.06] px-3 py-3 text-sm text-white outline-none"
-          >
-            <option value="todas">Todas as categorias</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
+        {/* Search bar */}
+        <div className="mt-4 flex items-center gap-2 border border-white/15 bg-white/10 px-3 py-2 text-sm">
+          <Search size={16} className="text-[#f4cf6a]" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full bg-transparent text-xs text-white placeholder:text-white/40 outline-none"
+            placeholder="Buscar galeria por título, categoria ou slug..."
+          />
+          {search ? (
+            <button type="button" onClick={() => setSearch("")} className="text-white/50 hover:text-white">
+              <X size={14} />
+            </button>
+          ) : null}
         </div>
 
+        {/* Status Filter Pills */}
+        <div className="mt-4">
+          <AdminFilterPills
+            current={statusFilter}
+            onSelect={(val) => setStatusFilter(val)}
+            options={[
+              { value: "todos", label: "Todos" },
+              { value: "rascunho", label: "Rascunhos" },
+              { value: "publicado", label: "Publicados" },
+              { value: "arquivado", label: "Arquivados" },
+            ]}
+          />
+        </div>
+
+        {/* Category Filter Select */}
+        {categories.length > 0 ? (
+          <div className="mt-3">
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="w-full border border-white/15 bg-white/10 px-3 py-2 text-xs text-white outline-none"
+            >
+              <option value="todas" className="bg-[#171006] text-white">
+                Todas as categorias ({categories.length})
+              </option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat} className="bg-[#171006] text-white">
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : null}
+
+        {/* Galleries List */}
         <div className="mt-6 grid gap-4">
           {filteredGalleries.map((gallery) => {
             const galleryPhotos = photosByGallery.get(gallery.id) ?? [];
+            const isCurrent = editingId === gallery.id;
 
             return (
-              <article key={gallery.id} className="border border-white/10 bg-white/[0.055] p-4">
+              <article
+                key={gallery.id}
+                className={`border p-4 transition ${
+                  isCurrent
+                    ? "border-[#f4cf6a] bg-white/15 shadow-md"
+                    : "border-white/10 bg-white/[0.055] hover:border-white/25"
+                }`}
+              >
                 <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-black uppercase tracking-[0.16em] text-[#f4cf6a]">{statusLabels[gallery.status]}</p>
-                    <h3 className="mt-2 font-serif text-2xl font-black">{gallery.titulo}</h3>
+                  <div className="flex items-center gap-2">
+                    <AdminStatusBadge status={gallery.status} />
+                    {gallery.destaque ? (
+                      <span className="inline-flex bg-[#f4cf6a] px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.12em] text-[#171006]">
+                        Home
+                      </span>
+                    ) : null}
                   </div>
                   {gallery.destaque ? <Star size={16} className="shrink-0 text-[#f4cf6a]" /> : null}
                 </div>
 
-                <p className="mt-2 text-xs uppercase tracking-[0.14em] text-white/60">/{gallery.slug}</p>
-                <div className="mt-4 grid gap-2 text-sm text-white/68">
-                  <p>{gallery.categoria || "Sem categoria"}</p>
-                  <p>{formatGalleryDate(gallery.data_evento)}</p>
-                  <p>{galleryPhotos.length} foto(s)</p>
-                </div>
-                {gallery.descricao ? <p className="mt-4 text-sm leading-6 text-white/58">{gallery.descricao}</p> : null}
+                <h3 className="mt-3 font-serif text-lg font-black leading-snug text-white">{gallery.titulo}</h3>
 
-                <div className="mt-5 flex flex-wrap gap-3">
-                  {canUpdate ? (
-                    <button type="button" onClick={() => setEditingId(gallery.id)} className="inline-flex text-xs font-black uppercase tracking-[0.14em] text-[#f4cf6a]">
-                      Editar
-                    </button>
-                  ) : null}
+                <p className="mt-1 font-mono text-xs text-white/50">/{gallery.slug}</p>
+
+                <div className="mt-3 flex flex-wrap items-center justify-between text-xs text-white/60">
+                  <span>{gallery.categoria || "Geral"}</span>
+                  <span>{formatGalleryDate(gallery.data_evento)}</span>
+                  <span>{galleryPhotos.length} foto(s)</span>
+                </div>
+
+                <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-white/10 pt-3">
+                  <button
+                    type="button"
+                    onClick={() => handleStartEdit(gallery)}
+                    className="inline-flex text-xs font-black uppercase tracking-[0.14em] text-[#f4cf6a] hover:underline"
+                  >
+                    Editar
+                  </button>
 
                   <a
                     href={`/galeria/${gallery.slug}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-white/72 transition hover:text-[#f4cf6a]"
+                    className="inline-flex items-center gap-1 text-xs font-black uppercase tracking-[0.14em] text-white/70 transition hover:text-white"
                   >
-                    <Eye size={14} />
-                    Ver galeria
+                    <Eye size={12} />
+                    Prévia
                   </a>
 
                   {canPublish && gallery.status !== "publicado" ? (
-                    <button type="button" onClick={() => handleQuickStatus(gallery, "publicado")} className="inline-flex text-xs font-black uppercase tracking-[0.14em] text-white/60 transition hover:text-[#f4cf6a]">
+                    <button
+                      type="button"
+                      onClick={() => handleQuickStatus(gallery, "publicado")}
+                      className="text-xs font-black uppercase tracking-[0.14em] text-[#00b67a] hover:underline"
+                    >
                       Publicar
                     </button>
                   ) : null}
 
                   {canPublish && gallery.status === "publicado" ? (
-                    <button type="button" onClick={() => handleQuickStatus(gallery, "rascunho")} className="inline-flex text-xs font-black uppercase tracking-[0.14em] text-white/60 transition hover:text-[#f4cf6a]">
+                    <button
+                      type="button"
+                      onClick={() => handleQuickStatus(gallery, "rascunho")}
+                      className="text-xs font-black uppercase tracking-[0.14em] text-white/50 hover:text-white"
+                    >
                       Despublicar
                     </button>
                   ) : null}
 
                   {canArchive && gallery.status !== "arquivado" ? (
-                    <button type="button" onClick={() => handleArchive(gallery.id)} className="inline-flex text-xs font-black uppercase tracking-[0.14em] text-white/50 transition hover:text-[#f4cf6a]">
+                    <button
+                      type="button"
+                      onClick={() => handleArchive(gallery.id)}
+                      className="text-xs font-black uppercase tracking-[0.14em] text-white/40 hover:text-white"
+                    >
                       Arquivar
                     </button>
                   ) : null}
 
                   {canDelete ? (
-                    <button type="button" onClick={() => handleDelete(gallery.id)} className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-white/50 transition hover:text-[#f4cf6a]">
-                      <Trash2 size={14} />
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(gallery.id)}
+                      className="inline-flex items-center gap-1 text-xs font-black uppercase tracking-[0.14em] text-red-400 hover:text-red-300"
+                    >
+                      <Trash2 size={12} />
                       Excluir
                     </button>
                   ) : null}
@@ -492,7 +912,9 @@ export function GalleriesManager({
           })}
 
           {filteredGalleries.length === 0 ? (
-            <div className="border border-white/10 bg-white/[0.055] p-6 text-white/62">Nenhuma galeria encontrada com os filtros atuais.</div>
+            <div className="border border-white/10 bg-white/[0.055] p-6 text-center text-xs text-white/50">
+              Nenhuma galeria encontrada com os filtros selecionados.
+            </div>
           ) : null}
         </div>
       </aside>
@@ -514,47 +936,78 @@ function PhotoEditorCard({
   const [legenda, setLegenda] = useState(photo.legenda ?? "");
   const [credito, setCredito] = useState(photo.credito ?? "");
   const [ordem, setOrdem] = useState(photo.ordem);
+  const [isSaving, setIsSaving] = useState(false);
+
+  async function handleSavePhoto() {
+    if (!canUpdate || isSaving) return;
+    setIsSaving(true);
+    try {
+      await onSave(photo, { legenda, credito, ordem });
+    } finally {
+      setIsSaving(false);
+    }
+  }
 
   return (
-    <article className="border border-[#d8c38b] bg-[#fffaf0] p-4">
+    <article className="border border-[#d8c38b] bg-[#fffaf0] p-4 shadow-sm">
       <div className="relative aspect-[4/3] overflow-hidden border border-[#d8c38b] bg-white">
-        <Image src={photo.imagem_url} alt={photo.legenda || "Foto da galeria"} fill className="object-cover" />
+        <Image src={photo.imagem_url} alt={photo.legenda || "Foto da galeria"} fill className="object-cover" unoptimized />
       </div>
 
       <div className="mt-4 grid gap-3">
-        <label className="grid gap-2">
+        <label className="grid gap-1">
           <span className="text-xs font-black uppercase tracking-[0.12em] text-[#5a472c]">Legenda</span>
-          <input value={legenda} onChange={(event) => setLegenda(event.target.value)} disabled={!canUpdate} className="border border-[#d8c38b] bg-white px-3 py-2 outline-none disabled:cursor-not-allowed disabled:opacity-60" />
+          <input
+            value={legenda}
+            onChange={(event) => setLegenda(event.target.value)}
+            disabled={!canUpdate}
+            className="border border-[#d8c38b] bg-white px-3 py-2 text-xs outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
+            placeholder="Descrição ou momento registrado na foto..."
+          />
         </label>
 
-        <label className="grid gap-2">
-          <span className="text-xs font-black uppercase tracking-[0.12em] text-[#5a472c]">Crédito</span>
-          <input value={credito} onChange={(event) => setCredito(event.target.value)} disabled={!canUpdate} className="border border-[#d8c38b] bg-white px-3 py-2 outline-none disabled:cursor-not-allowed disabled:opacity-60" />
-        </label>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="grid gap-1">
+            <span className="text-xs font-black uppercase tracking-[0.12em] text-[#5a472c]">Crédito Fotográfico</span>
+            <input
+              value={credito}
+              onChange={(event) => setCredito(event.target.value)}
+              disabled={!canUpdate}
+              className="border border-[#d8c38b] bg-white px-3 py-2 text-xs outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
+              placeholder="Ex.: Pr. João / COMIEADEPA"
+            />
+          </label>
 
-        <label className="grid gap-2">
-          <span className="text-xs font-black uppercase tracking-[0.12em] text-[#5a472c]">Ordem</span>
-          <input value={ordem} onChange={(event) => setOrdem(Number(event.target.value) || 0)} type="number" disabled={!canUpdate} className="border border-[#d8c38b] bg-white px-3 py-2 outline-none disabled:cursor-not-allowed disabled:opacity-60" />
-        </label>
+          <label className="grid gap-1">
+            <span className="text-xs font-black uppercase tracking-[0.12em] text-[#5a472c]">Ordem</span>
+            <input
+              value={ordem}
+              onChange={(event) => setOrdem(Number(event.target.value) || 0)}
+              type="number"
+              disabled={!canUpdate}
+              className="border border-[#d8c38b] bg-white px-3 py-2 text-xs outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
+            />
+          </label>
+        </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-3">
+      <div className="mt-4 flex flex-wrap gap-3 border-t border-[#d8c38b]/30 pt-3">
         <button
           type="button"
-          onClick={() => onSave(photo, { legenda, credito, ordem })}
-          disabled={!canUpdate}
-          className="inline-flex items-center gap-2 bg-[#171006] px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-white disabled:cursor-not-allowed disabled:opacity-60"
+          onClick={handleSavePhoto}
+          disabled={!canUpdate || isSaving}
+          className="inline-flex items-center gap-2 bg-[#171006] px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-white transition hover:bg-[#2c2212] disabled:cursor-not-allowed disabled:opacity-60"
         >
-          <Save size={14} />
-          Salvar
+          {isSaving ? <Loader2 size={12} className="animate-spin text-[#f4cf6a]" /> : <Save size={12} />}
+          Salvar Dados
         </button>
         <button
           type="button"
           onClick={() => onDelete(photo.id)}
           disabled={!canUpdate}
-          className="inline-flex items-center gap-2 border border-[#8b2f2b]/20 px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center gap-1.5 border border-[#8b2f2b]/30 px-3 py-2 text-xs font-black uppercase tracking-[0.12em] text-[#8b2f2b] transition hover:bg-[#8b2f2b]/10 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          <Trash2 size={14} />
+          <Trash2 size={12} />
           Excluir
         </button>
       </div>

@@ -47,12 +47,21 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const acceptsJson =
+    request.headers.get("accept")?.includes("application/json") || request.headers.get("x-requested-with") === "fetch";
+
   if (!hasSupabaseAdminConfig()) {
+    if (acceptsJson) {
+      return Response.json({ error: "Configuração do Supabase ausente." }, { status: 500 });
+    }
     return missingSupabaseAdminResponse();
   }
 
   const role = resolveAdminRoleFromHeaders(request.headers);
   if (!canPerformAdminAction(role, "home", "create")) {
+    if (acceptsJson) {
+      return Response.json({ error: "Sem permissão para criar slides." }, { status: 403 });
+    }
     return redirectWithStatus(request.url, "/admin/home", "error", "Sem permissao para criar slides.");
   }
 
@@ -62,10 +71,16 @@ export async function POST(request: Request) {
   const status = normalizeHomeSlideStatus(requiredString(formData, "status"));
 
   if (!titulo || !imagemUrl) {
+    if (acceptsJson) {
+      return Response.json({ error: "Informe título e imagem do slide." }, { status: 400 });
+    }
     return redirectWithStatus(request.url, "/admin/home", "error", "Informe titulo e imagem do slide.");
   }
 
   if (status === "publicado" && !canPerformAdminAction(role, "home", "publish")) {
+    if (acceptsJson) {
+      return Response.json({ error: "Sem permissão para publicar slides." }, { status: 403 });
+    }
     return redirectWithStatus(request.url, "/admin/home", "error", "Sem permissao para publicar slides.");
   }
 
@@ -85,18 +100,28 @@ export async function POST(request: Request) {
       updated_at: new Date().toISOString(),
     })) as Array<{ id?: string }>;
 
+    const savedId = inserted[0]?.id;
+
     await createAuditLog({
       request,
       action: "create",
       entity: "home_slide",
-      entityId: inserted[0]?.id,
+      entityId: savedId,
       entityTitle: titulo,
       metadata: { status },
     });
 
+    if (acceptsJson) {
+      return Response.json({ ok: true, id: savedId, message: "Slide criado com sucesso!" });
+    }
+
     return redirectWithStatus(request.url, "/admin/home", "success");
   } catch (error) {
-    return redirectWithStatus(request.url, "/admin/home", "error", error instanceof Error ? error.message : "Erro ao criar slide.");
+    const message = error instanceof Error ? error.message : "Erro ao criar slide.";
+    if (acceptsJson) {
+      return Response.json({ error: message }, { status: 500 });
+    }
+    return redirectWithStatus(request.url, "/admin/home", "error", message);
   }
 }
 

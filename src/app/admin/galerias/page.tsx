@@ -6,6 +6,7 @@ import { canPerformAdminAction, normalizeAdminRole } from "@/lib/admin-permissio
 import { CmsGallery, CmsGalleryPhoto } from "@/lib/galerias";
 import { selectSupabaseRows } from "@/lib/supabase-admin";
 import { AdminPageHeader } from "../admin-ui";
+import { MediaPickerAsset } from "../media-url-field";
 
 export default async function AdminGalleriesPage({
   searchParams,
@@ -21,7 +22,7 @@ export default async function AdminGalleriesPage({
   const canArchive = canPerformAdminAction(role, "galerias", "archive");
   const canDelete = canPerformAdminAction(role, "galerias", "delete");
 
-  const [galleries, photos] = await Promise.all([
+  const [galleries, photos, mediaAssets] = await Promise.all([
     selectSupabaseRows<CmsGallery>(
       "cms_galerias",
       "select=id,titulo,slug,descricao,categoria,capa_url,status,destaque,ordem,data_evento,created_at,updated_at,created_by&order=destaque.desc,data_evento.desc.nullslast,ordem.asc,updated_at.desc&limit=200",
@@ -30,11 +31,15 @@ export default async function AdminGalleriesPage({
       "cms_galeria_fotos",
       "select=id,galeria_id,imagem_url,legenda,credito,ordem,created_at&order=galeria_id.asc,ordem.asc,created_at.asc&limit=1000",
     ),
+    selectSupabaseRows<MediaPickerAsset>(
+      "cms_media_assets",
+      "select=id,titulo,arquivo_url,tipo,pasta&order=created_at.desc&limit=50",
+    ),
   ]);
 
-  const categories = Array.from(new Set(galleries.map((gallery) => gallery.categoria?.trim()).filter((value): value is string => Boolean(value)))).sort((a, b) =>
-    a.localeCompare(b, "pt-BR"),
-  );
+  const categories = Array.from(
+    new Set(galleries.map((gallery) => gallery.categoria?.trim()).filter((value): value is string => Boolean(value))),
+  ).sort((a, b) => a.localeCompare(b, "pt-BR"));
 
   return (
     <div className="mx-auto max-w-7xl">
@@ -51,6 +56,7 @@ export default async function AdminGalleriesPage({
         galleries={galleries}
         photos={photos}
         categories={categories}
+        mediaAssets={mediaAssets}
         canCreate={canCreate}
         canUpdate={canUpdate}
         canPublish={canPublish}

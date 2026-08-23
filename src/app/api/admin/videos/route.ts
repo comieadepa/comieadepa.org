@@ -1,5 +1,6 @@
 import {
   createAuditLog,
+  deleteSupabaseRows,
   getYoutubeId,
   hasSupabaseAdminConfig,
   insertSupabaseRow,
@@ -12,7 +13,13 @@ import {
 import { canPerformAdminAction, resolveAdminRoleFromHeaders } from "@/lib/admin-permissions";
 
 export async function POST(request: Request) {
+  const acceptsJson =
+    request.headers.get("accept")?.includes("application/json") || request.headers.get("x-requested-with") === "fetch";
+
   if (!hasSupabaseAdminConfig()) {
+    if (acceptsJson) {
+      return Response.json({ error: "Configuração do Supabase ausente." }, { status: 500 });
+    }
     return missingSupabaseAdminResponse();
   }
 
@@ -26,11 +33,12 @@ export async function POST(request: Request) {
 
   if (action && id) {
     if (!canPerformAdminAction(role, "videos", "update")) {
+      if (acceptsJson) {
+        return Response.json({ error: "Sem permissão para atualizar vídeos." }, { status: 403 });
+      }
       return redirectWithStatus(request.url, "/admin/videos", "error", "Sem permissao para atualizar videos.");
     }
-  }
 
-  if (action && id) {
     try {
       await updateSupabaseRows("cms_videos", `id=eq.${encodeURIComponent(id)}`, {
         ativo: action === "activate",
@@ -44,18 +52,32 @@ export async function POST(request: Request) {
         metadata: { ativo: action === "activate" },
       });
 
+      if (acceptsJson) {
+        return Response.json({ ok: true, id, message: action === "activate" ? "Vídeo ativado com sucesso." : "Vídeo desativado com sucesso." });
+      }
+
       return redirectWithStatus(request.url, "/admin/videos", "success");
     } catch (error) {
-      return redirectWithStatus(request.url, "/admin/videos", "error", error instanceof Error ? error.message : "Erro ao atualizar vídeo.");
+      const message = error instanceof Error ? error.message : "Erro ao atualizar vídeo.";
+      if (acceptsJson) {
+        return Response.json({ error: message }, { status: 500 });
+      }
+      return redirectWithStatus(request.url, "/admin/videos", "error", message);
     }
   }
 
   if (!title || !youtubeUrl) {
+    if (acceptsJson) {
+      return Response.json({ error: "Informe título e URL do YouTube." }, { status: 400 });
+    }
     return redirectWithStatus(request.url, "/admin/videos", "error", "Informe título e URL do YouTube.");
   }
 
   const writeAction = id ? "update" : "create";
   if (!canPerformAdminAction(role, "videos", writeAction)) {
+    if (acceptsJson) {
+      return Response.json({ error: "Sem permissão para salvar vídeos." }, { status: 403 });
+    }
     return redirectWithStatus(request.url, "/admin/videos", "error", "Sem permissao para salvar videos.");
   }
 
@@ -73,6 +95,8 @@ export async function POST(request: Request) {
       updated_at: new Date().toISOString(),
     };
 
+    let savedId = id;
+
     if (id) {
       await updateSupabaseRows("cms_videos", `id=eq.${encodeURIComponent(id)}`, payload);
       await createAuditLog({
@@ -85,18 +109,52 @@ export async function POST(request: Request) {
       });
     } else {
       const inserted = (await insertSupabaseRow("cms_videos", payload)) as Array<{ id?: string }>;
+      savedId = inserted[0]?.id ?? "";
       await createAuditLog({
         request,
         action: "create",
         entity: "video",
-        entityId: inserted[0]?.id,
+        entityId: savedId,
         entityTitle: title,
         metadata: { tipo: payload.tipo, destaque_home: payload.destaque_home },
       });
     }
 
+    if (acceptsJson) {
+      return Response.json({ ok: true, id: savedId, message: id ? "Vídeo atualizado com sucesso." : "Vídeo adicionado com sucesso." });
+    }
+
     return redirectWithStatus(request.url, "/admin/videos", "success");
   } catch (error) {
-    return redirectWithStatus(request.url, "/admin/videos", "error", error instanceof Error ? error.message : "Erro ao salvar vídeo.");
+    const message = error instanceof Error ? error.message : "Erro ao salvar vídeo.";
+    if (acceptsJson) {
+      return Response.json({ error: message }, { status: 500 });
+    }
+    return redirectWithStatus(request.url, "/admin/videos", "error", message);
+  }
+}
+
+export async function DELETE(request: Request) {
+  if (!hasSupabaseAdminConfig()) {
+    return Response.json({ error: "Configuração do Supabase ausente." }, { status: 500 });
+  }
+
+  const role = resolveAdminRoleFromHeaders(request.headers);
+  if (!canPerformAdminAction(role, "videos", "delete")) {
+    return Response.json({ error: "Sem permissão para excluir vídeos." }, { status: 403 });
+  }
+
+  const url = new URL(request.url);
+  const id = url.searchParams.get("id");
+  if (!id) {
+    return Response.json({ error: "Informe o ID do vídeo." }, { status: 400 });
+  }
+
+  try {
+    await deleteSupabaseRows("cms_videos", `id=eq.${encodeURIComponent(id)}`);
+    await createAuditLog({ request, action: "delete", entity: "video", entityId: id });
+    return Response.json({ ok: true, message: "Vídeo excluído com sucesso." });
+  } catch (error) {
+    return Response.json({ error: error instanceof Error ? error.message : "Erro ao excluir vídeo." }, { status: 500 });
   }
 }
