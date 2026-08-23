@@ -36,6 +36,7 @@ type UpcomingEvent = {
   local: string | null;
   cidade: string | null;
   status: string | null;
+  inscricoes_abertas: boolean | null;
 };
 
 export default async function AdminDashboardPage() {
@@ -51,17 +52,19 @@ export default async function AdminDashboardPage() {
     reviewPostsCount,
     activeVideosCount,
     mediaAssetsCount,
-    openEventsCount,
+    rawEvents,
     pendingPosts,
     recentPosts,
-    upcomingEvents,
   ] = await Promise.all([
     countSupabaseRows("cms_posts", visiblePublishedPostsQuery),
     countSupabaseRows("cms_posts", "select=id&status=eq.rascunho"),
     countSupabaseRows("cms_posts", "select=id&status=eq.revisao"),
     countSupabaseRows("cms_videos", "select=id&ativo=eq.true"),
     countSupabaseRows("cms_media_assets", "select=id"),
-    countSupabaseRows("eventos", "select=id&status=eq.programado"),
+    selectSupabaseRows<UpcomingEvent>(
+      "eventos",
+      "select=id,nome,slug,data_inicio,data_fim,local,cidade,status,inscricoes_abertas&status=neq.cancelado&order=data_inicio.asc",
+    ),
     selectSupabaseRows<RecentPost>(
       "cms_posts",
       "select=id,titulo,slug,status,publicado_em,updated_at&status=in.(rascunho,revisao,agendado)&order=updated_at.desc&limit=5",
@@ -70,11 +73,14 @@ export default async function AdminDashboardPage() {
       "cms_posts",
       "select=id,titulo,slug,status,publicado_em,updated_at&status=eq.publicado&order=updated_at.desc&limit=5",
     ),
-    selectSupabaseRows<UpcomingEvent>(
-      "eventos",
-      "select=id,nome,slug,data_inicio,data_fim,local,cidade,status&status=eq.programado&order=data_inicio.asc&limit=4",
-    ),
   ]);
+
+  // Filter only upcoming events (data_fim >= today in Brazil timezone and not cancelled/closed)
+  const todayBrazil = getTodayBrazilDate();
+  const validUpcomingEvents = (rawEvents || []).filter((event) => isUpcomingEvent(event, todayBrazil));
+  const upcomingEvents = validUpcomingEvents.slice(0, 4);
+  const openEventsCount = validUpcomingEvents.length;
+  const openRegistrationsCount = validUpcomingEvents.filter((event) => Boolean(event.inscricoes_abertas)).length;
 
   // Permissions for Quick Actions and Module Links
   const canAccessNews = canAccessAdminPath("/admin/noticias", role);
@@ -113,7 +119,10 @@ export default async function AdminDashboardPage() {
     {
       label: "Eventos",
       value: String(openEventsCount),
-      detail: "Eventos na agenda oficial",
+      detail:
+        openRegistrationsCount > 0
+          ? `${openRegistrationsCount} com inscrições abertas`
+          : "Eventos na agenda oficial",
       icon: Calendar,
       href: "",
       canAccess: false,
@@ -373,7 +382,7 @@ export default async function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* 6. Próximos Eventos (Somente Leitura) */}
+        {/* 6. Próximos Eventos (Somente Leitura - data_fim >= hoje) */}
         <div className="border border-[#d8c38b] bg-[#171006] p-6 text-white shadow-[0_18px_50px_rgba(23,16,6,.14)]">
           <div className="flex items-center justify-between gap-4">
             <div>
@@ -387,10 +396,18 @@ export default async function AdminDashboardPage() {
             {upcomingEvents.map((event) => (
               <div key={event.id} className="border border-white/10 bg-white/[0.055] p-3.5">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-bold text-[#f4cf6a]">{formatDate(event.data_inicio)}</span>
-                  <span className="bg-emerald-500/20 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.12em] text-emerald-300">
-                    Programado
+                  <span className="text-xs font-bold text-[#f4cf6a]">
+                    {formatEventPeriod(event.data_inicio, event.data_fim)}
                   </span>
+                  {event.inscricoes_abertas ? (
+                    <span className="bg-emerald-500/20 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.12em] text-emerald-300">
+                      Inscrições Abertas
+                    </span>
+                  ) : (
+                    <span className="bg-white/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.12em] text-white/70">
+                      Programado
+                    </span>
+                  )}
                 </div>
                 <h3 className="mt-1.5 font-serif text-base font-bold text-white line-clamp-1">{event.nome}</h3>
                 {event.cidade || event.local ? (
@@ -403,8 +420,8 @@ export default async function AdminDashboardPage() {
             ))}
             {upcomingEvents.length === 0 ? (
               <AdminEmptyState
-                title="Nenhum evento programado"
-                description="Nenhum evento ativo retornado pelo sistema oficial de eventos."
+                title="Nenhum evento futuro programado"
+                description="Não há eventos com data de término futura sincronizados do sistema oficial."
               />
             ) : null}
           </div>
@@ -414,17 +431,62 @@ export default async function AdminDashboardPage() {
   );
 }
 
+function getTodayBrazilDate(): string {
+  const formatter = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  const parts = formatter.formatToParts(new Date());
+  const year = parts.find((p) => p.type === "year")?.value ?? "1970";
+  const month = parts.find((p) => p.type === "month")?.value ?? "01";
+  const day = parts.find((p) => p.type === "day")?.value ?? "01";
+  return `${year}-${month}-${day}`;
+}
+
+function isUpcomingEvent(event: UpcomingEvent, todayBrazil: string): boolean {
+  const normalizedStatus = (event.status || "").trim().toLowerCase();
+  if (["cancelado", "encerrado", "finalizado", "rascunho"].includes(normalizedStatus)) {
+    return false;
+  }
+  const rawDate = event.data_fim || event.data_inicio || "";
+  const endDate = rawDate.substring(0, 10);
+  if (!endDate || !/^\d{4}-\d{2}-\d{2}$/.test(endDate)) {
+    return false;
+  }
+  return endDate >= todayBrazil;
+}
+
+function formatEventPeriod(inicio: string, fim: string | null): string {
+  const formattedInicio = formatDate(inicio);
+  if (!fim || fim.substring(0, 10) === inicio.substring(0, 10)) {
+    return formattedInicio;
+  }
+  return `${formattedInicio} a ${formatDate(fim)}`;
+}
+
 function formatDate(value: string | null | undefined): string {
   if (!value) return "-";
   try {
+    const datePart = value.substring(0, 10);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(datePart)) {
+      const [year, month, day] = datePart.split("-").map(Number);
+      return new Intl.DateTimeFormat("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      }).format(new Date(year, month - 1, day));
+    }
     return new Intl.DateTimeFormat("pt-BR", {
       day: "2-digit",
       month: "2-digit",
-      year: "2-digit",
+      year: "numeric",
     }).format(new Date(value));
   } catch {
     return value;
   }
 }
+
 
 
