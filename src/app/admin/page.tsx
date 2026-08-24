@@ -143,7 +143,7 @@ export default async function AdminDashboardPage() {
             {canCreateNews ? (
               <Link
                 href="/admin/noticias"
-                className="inline-flex items-center gap-1.5 bg-[#171006] px-3.5 py-2 text-xs font-black uppercase tracking-[0.12em] text-[#f4cf6a] transition hover:bg-[#2c2212]"
+                className="inline-flex items-center gap-1.5 bg-[#8b2f2b] px-3.5 py-2 text-xs font-black uppercase tracking-[0.12em] text-white shadow-sm transition hover:bg-[#6e2421]"
               >
                 <Plus size={14} />
                 Nova notícia

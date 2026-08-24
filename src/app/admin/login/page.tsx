@@ -1,4 +1,5 @@
 import { LockKeyhole } from "lucide-react";
+import Link from "next/link";
 import { StatusMessage } from "../status-message";
 
 export default async function AdminLoginPage({
@@ -42,12 +43,21 @@ export default async function AdminLoginPage({
                 placeholder="Sua senha"
               />
             </label>
-            <button
-              type="submit"
-              className="inline-flex w-fit items-center gap-3 bg-[#171006] px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-white"
-            >
-              Entrar no painel
-            </button>
+
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
+              <button
+                type="submit"
+                className="inline-flex items-center gap-3 bg-[#8b2f2b] px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-white shadow-sm transition hover:bg-[#6e2421]"
+              >
+                Entrar no painel
+              </button>
+              <Link
+                href="/admin/definir-senha"
+                className="text-xs font-bold text-[#8b2f2b] underline underline-offset-4 hover:opacity-80"
+              >
+                Primeiro acesso / Definir senha
+              </Link>
+            </div>
           </form>
         </section>
 

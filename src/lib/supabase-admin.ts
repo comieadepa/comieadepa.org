@@ -218,33 +218,160 @@ export async function uploadPublicStorageObject(file: File, folder: string) {
   };
 }
 
-export async function sendAdminAccessSetupEmail(email: string, name?: string | null) {
+export async function sendAdminAccessSetupEmail(email: string, name?: string | null, customRedirectUrl?: string) {
   if (!serviceRoleKey) {
     throw new Error("Painel temporariamente indisponível. Tente novamente em instantes.");
   }
 
   await ensureAuthUserExists(email, name);
 
-  if (!publicApiKey) {
-    throw new Error("A configuração de acesso por e-mail não está disponível neste ambiente.");
+  const redirectTo = customRedirectUrl || `${siteUrl}/admin/definir-senha`;
+
+  // 1. Tenta gerar o link de recuperação via Admin API do Supabase
+  try {
+    const adminLinkResponse = await fetch(`${supabaseUrl}/auth/v1/admin/generate_link`, {
+      method: "POST",
+      headers: {
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        type: "recovery",
+        email,
+        redirect_to: redirectTo,
+      }),
+    });
+
+    if (adminLinkResponse.ok) {
+      const linkData = (await adminLinkResponse.json().catch(() => null)) as {
+        action_link?: string;
+        properties?: { action_link?: string };
+      } | null;
+      const actionLink = linkData?.action_link || linkData?.properties?.action_link;
+      if (actionLink) {
+        // Link gerado com sucesso via Admin
+      }
+    }
+  } catch (err) {
+    console.warn("Erro ao gerar link via admin/generate_link, tentando /recover:", err);
   }
 
+  // 2. Dispara e-mail de recuperação padrão do Supabase
+  const authApiKey = publicApiKey || serviceRoleKey;
   const response = await fetch(`${supabaseUrl}/auth/v1/recover`, {
     method: "POST",
     headers: {
-      apikey: publicApiKey,
-      Authorization: `Bearer ${publicApiKey}`,
+      apikey: authApiKey,
+      Authorization: `Bearer ${authApiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
       email,
-      redirect_to: `${siteUrl}/admin/definir-senha`,
+      redirect_to: redirectTo,
     }),
   });
 
   if (!response.ok) {
     const message = await response.text();
+    // Se o recover der rate limit ou erro, mas ensureAuthUserExists passou, informamos de forma clara
     throw new Error(message || "Não foi possível enviar o e-mail para definição de senha.");
+  }
+}
+
+export async function generateAdminPasswordSetupLink(email: string, customRedirectUrl?: string): Promise<string | null> {
+  if (!serviceRoleKey) {
+    return null;
+  }
+
+  await ensureAuthUserExists(email);
+
+  const redirectTo = customRedirectUrl || `${siteUrl}/admin/definir-senha`;
+
+  const response = await fetch(`${supabaseUrl}/auth/v1/admin/generate_link`, {
+    method: "POST",
+    headers: {
+      apikey: serviceRoleKey,
+      Authorization: `Bearer ${serviceRoleKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      type: "recovery",
+      email,
+      redirect_to: redirectTo,
+    }),
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const data = (await response.json().catch(() => null)) as {
+    action_link?: string;
+    properties?: { action_link?: string };
+  } | null;
+
+  return data?.action_link || data?.properties?.action_link || null;
+}
+
+export async function setAdminUserDirectPassword(email: string, password: string): Promise<void> {
+  if (!serviceRoleKey) {
+    throw new Error("Painel temporariamente indisponível. Tente novamente em instantes.");
+  }
+
+  // Busca ID do usuário no Supabase Auth
+  const listUsersResponse = await fetch(`${supabaseUrl}/auth/v1/admin/users?page=1&per_page=100`, {
+    headers: {
+      apikey: serviceRoleKey,
+      Authorization: `Bearer ${serviceRoleKey}`,
+    },
+  });
+
+  if (!listUsersResponse.ok) {
+    throw new Error("Não foi possível listar usuários de autenticação.");
+  }
+
+  const listData = (await listUsersResponse.json().catch(() => null)) as {
+    users?: Array<{ id: string; email?: string }>;
+  } | null;
+
+  const authUser = listData?.users?.find((u) => u.email?.toLowerCase() === email.toLowerCase());
+
+  if (authUser?.id) {
+    const updateResponse = await fetch(`${supabaseUrl}/auth/v1/admin/users/${authUser.id}`, {
+      method: "PUT",
+      headers: {
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ password }),
+    });
+
+    if (!updateResponse.ok) {
+      const msg = await updateResponse.text();
+      throw new Error(msg || "Não foi possível atualizar a senha do usuário.");
+    }
+  } else {
+    // Cria o usuário com a senha especificada
+    const createResponse = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
+      method: "POST",
+      headers: {
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+        email_confirm: true,
+      }),
+    });
+
+    if (!createResponse.ok) {
+      const msg = await createResponse.text();
+      throw new Error(msg || "Não foi possível criar o usuário de autenticação.");
+    }
   }
 }
 

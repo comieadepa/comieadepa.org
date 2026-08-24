@@ -70,10 +70,10 @@ export function AdminStatusBadge({
     revisao: { label: "Em revisão", className: "bg-blue-600/90 text-white" },
     agendado: { label: "Agendado", className: "bg-purple-600/90 text-white" },
     arquivado: { label: "Arquivado", className: "bg-slate-500 text-white" },
-    inativo: { label: "Inativo", className: "bg-white/10 text-white/50 border border-white/10" },
+    inativo: { label: "Inativo", className: "bg-stone-200 text-stone-700 border border-stone-300" },
   };
 
-  const current = map[status] ?? { label: status, className: "bg-white/10 text-white/70" };
+  const current = map[status] ?? { label: status, className: "bg-stone-200 text-stone-700 border border-stone-300" };
 
   return (
     <span className={`inline-block px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] ${current.className}`}>
@@ -109,8 +109,8 @@ export function AdminFilterPills({
               onClick={() => onSelect?.(option.value)}
               className={`px-3 py-2 text-[11px] font-black uppercase tracking-[0.12em] transition ${
                 isActive
-                  ? "bg-[#f4cf6a] text-[#171006]"
-                  : "border border-white/10 text-white/54 hover:border-[#f4cf6a] hover:text-[#f4cf6a]"
+                  ? "bg-[#171006] text-[#f4cf6a]"
+                  : "border border-[#d8c38b] bg-[#fffaf0] text-[#5a472c] hover:bg-[#f7efd6]"
               }`}
             >
               {option.label}
@@ -125,8 +125,8 @@ export function AdminFilterPills({
             href={href}
             className={`px-3 py-2 text-[11px] font-black uppercase tracking-[0.12em] transition ${
               isActive
-                ? "bg-[#f4cf6a] text-[#171006]"
-                : "border border-white/10 text-white/54 hover:border-[#f4cf6a] hover:text-[#f4cf6a]"
+                ? "bg-[#171006] text-[#f4cf6a]"
+                : "border border-[#d8c38b] bg-[#fffaf0] text-[#5a472c] hover:bg-[#f7efd6]"
             }`}
           >
             {option.label}
