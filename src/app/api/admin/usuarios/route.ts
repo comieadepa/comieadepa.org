@@ -8,6 +8,7 @@ import {
   requiredString,
   sendAdminAccessSetupEmail,
   setAdminUserDirectPassword,
+  setAdminUserStatusInAuth,
   updateSupabaseRows,
 } from "@/lib/supabase-admin";
 import { canPerformAdminAction, resolveAdminRoleFromHeaders } from "@/lib/admin-permissions";
@@ -38,6 +39,11 @@ export async function POST(request: Request) {
         ativo: action === "activate",
         updated_at: new Date().toISOString(),
       });
+
+      if (email) {
+        await setAdminUserStatusInAuth(email, action === "activate");
+      }
+
       await createAuditLog({
         request,
         action,
@@ -46,9 +52,9 @@ export async function POST(request: Request) {
         metadata: { ativo: action === "activate" },
       });
 
-      return redirectWithStatus(request.url, "/admin/usuarios", "success");
+      return redirectWithStatus(request.url, "/admin/usuarios", "success", action === "activate" ? "Usuário ativado com sucesso." : "Usuário desativado com sucesso.");
     } catch (error) {
-      return redirectWithStatus(request.url, "/admin/usuarios", "error", error instanceof Error ? error.message : "Erro ao atualizar usuário.");
+      return redirectWithStatus(request.url, "/admin/usuarios", "error", error instanceof Error ? error.message : "Erro ao atualizar status do usuário.");
     }
   }
 
@@ -76,7 +82,7 @@ export async function POST(request: Request) {
     }
 
     try {
-      await setAdminUserDirectPassword(email, password);
+      await setAdminUserDirectPassword(email, password, name);
       await createAuditLog({
         request,
         action: "set_password",
@@ -86,14 +92,14 @@ export async function POST(request: Request) {
         metadata: { email },
       });
 
-      return redirectWithStatus(request.url, "/admin/usuarios", "success", `Senha definida com sucesso para ${email}.`);
+      return redirectWithStatus(request.url, "/admin/usuarios", "success", `Senha atualizada com sucesso para ${email}.`);
     } catch (error) {
       return redirectWithStatus(request.url, "/admin/usuarios", "error", error instanceof Error ? error.message : "Erro ao definir senha.");
     }
   }
 
   if (!name || !email) {
-    return redirectWithStatus(request.url, "/admin/usuarios", "error", "Informe nome e e-mail do usuário.");
+    return redirectWithStatus(request.url, "/admin/usuarios", "error", "Informe o nome e o e-mail do usuário.");
   }
 
   try {
@@ -108,7 +114,17 @@ export async function POST(request: Request) {
     };
 
     if (id) {
+      // 1. Atualiza na tabela administrativa
       await updateSupabaseRows("cms_admin_users", `id=eq.${encodeURIComponent(id)}`, payload);
+
+      // 2. Se informou nova senha, atualiza no Supabase Auth
+      if (password) {
+        if (password.length < 8) {
+          return redirectWithStatus(request.url, "/admin/usuarios", "error", "A nova senha precisa ter pelo menos 8 caracteres.");
+        }
+        await setAdminUserDirectPassword(email, password, name);
+      }
+
       await createAuditLog({
         request,
         action: "update",
@@ -120,22 +136,27 @@ export async function POST(request: Request) {
 
       return redirectWithStatus(request.url, "/admin/usuarios", "success", "Usuário atualizado com sucesso.");
     } else {
-      const inserted = (await insertSupabaseRow("cms_admin_users", payload)) as Array<{ id?: string }>;
-      try {
-        await sendAdminAccessSetupEmail(email, name, redirectUrl);
-      } catch (emailErr) {
-        console.warn("Usuário inserido no banco, mas erro no disparo de e-mail:", emailErr);
+      // Criação de novo usuário: senha obrigatória para liberação direta
+      if (!password || password.length < 8) {
+        return redirectWithStatus(request.url, "/admin/usuarios", "error", "Defina uma senha de acesso com no mínimo 8 caracteres para liberar o usuário.");
       }
+
+      // 1. Cria ou atualiza o usuário diretamente no Supabase Auth (confirmado e pronto para login)
+      await setAdminUserDirectPassword(email, password, name);
+
+      // 2. Insere na tabela de governança do CMS
+      const inserted = (await insertSupabaseRow("cms_admin_users", payload)) as Array<{ id?: string }>;
+
       await createAuditLog({
         request,
         action: "create",
         entity: "usuario",
         entityId: inserted[0]?.id,
         entityTitle: name,
-        metadata: { email, role: payload.role, access_email_sent: true },
+        metadata: { email, role: payload.role, direct_access_created: true },
       });
 
-      return redirectWithStatus(request.url, "/admin/usuarios", "success", "Usuário cadastrado com sucesso.");
+      return redirectWithStatus(request.url, "/admin/usuarios", "success", "Usuário cadastrado e liberado para login no painel.");
     }
   } catch (error) {
     return redirectWithStatus(request.url, "/admin/usuarios", "error", error instanceof Error ? error.message : "Erro ao salvar usuário.");
@@ -149,4 +170,3 @@ function normalizeRole(value: string) {
 
   return "editor";
 }
-

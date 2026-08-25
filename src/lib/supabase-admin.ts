@@ -314,12 +314,12 @@ export async function generateAdminPasswordSetupLink(email: string, customRedire
   return data?.action_link || data?.properties?.action_link || null;
 }
 
-export async function setAdminUserDirectPassword(email: string, password: string): Promise<void> {
+export async function setAdminUserDirectPassword(email: string, password: string, name?: string | null): Promise<void> {
   if (!serviceRoleKey) {
     throw new Error("Painel temporariamente indisponível. Tente novamente em instantes.");
   }
 
-  // Busca ID do usuário no Supabase Auth
+  // Busca usuário existente no Supabase Auth
   const listUsersResponse = await fetch(`${supabaseUrl}/auth/v1/admin/users?page=1&per_page=100`, {
     headers: {
       apikey: serviceRoleKey,
@@ -328,7 +328,8 @@ export async function setAdminUserDirectPassword(email: string, password: string
   });
 
   if (!listUsersResponse.ok) {
-    throw new Error("Não foi possível listar usuários de autenticação.");
+    const msg = await listUsersResponse.text();
+    throw new Error(msg || "Não foi possível consultar usuários no Supabase Auth.");
   }
 
   const listData = (await listUsersResponse.json().catch(() => null)) as {
@@ -345,7 +346,11 @@ export async function setAdminUserDirectPassword(email: string, password: string
         Authorization: `Bearer ${serviceRoleKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({
+        password,
+        email_confirm: true,
+        user_metadata: name ? { name } : undefined,
+      }),
     });
 
     if (!updateResponse.ok) {
@@ -353,7 +358,7 @@ export async function setAdminUserDirectPassword(email: string, password: string
       throw new Error(msg || "Não foi possível atualizar a senha do usuário.");
     }
   } else {
-    // Cria o usuário com a senha especificada
+    // Cria o usuário com confirmação de e-mail imediata
     const createResponse = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
       method: "POST",
       headers: {
@@ -365,13 +370,50 @@ export async function setAdminUserDirectPassword(email: string, password: string
         email,
         password,
         email_confirm: true,
+        user_metadata: name ? { name } : undefined,
       }),
     });
 
     if (!createResponse.ok) {
       const msg = await createResponse.text();
-      throw new Error(msg || "Não foi possível criar o usuário de autenticação.");
+      throw new Error(msg || "Não foi possível criar o usuário no Supabase Auth.");
     }
+  }
+}
+
+export async function setAdminUserStatusInAuth(email: string, active: boolean): Promise<void> {
+  if (!serviceRoleKey) return;
+
+  try {
+    const listUsersResponse = await fetch(`${supabaseUrl}/auth/v1/admin/users?page=1&per_page=100`, {
+      headers: {
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
+      },
+    });
+
+    if (!listUsersResponse.ok) return;
+
+    const listData = (await listUsersResponse.json().catch(() => null)) as {
+      users?: Array<{ id: string; email?: string }>;
+    } | null;
+
+    const authUser = listData?.users?.find((u) => u.email?.toLowerCase() === email.toLowerCase());
+    if (authUser?.id) {
+      await fetch(`${supabaseUrl}/auth/v1/admin/users/${authUser.id}`, {
+        method: "PUT",
+        headers: {
+          apikey: serviceRoleKey,
+          Authorization: `Bearer ${serviceRoleKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ban_duration: active ? "none" : "876000h",
+        }),
+      });
+    }
+  } catch (err) {
+    console.warn("Erro ao sincronizar status do usuário no Supabase Auth:", err);
   }
 }
 
@@ -394,7 +436,9 @@ async function ensurePublicStorageBucket(bucket: string) {
 
   if (existingBucket.status !== 404) {
     const message = await existingBucket.text();
-    throw new Error(message || `Não foi possível verificar o bucket ${bucket}.`);
+    if (!message.includes("NoSuchBucket") && !message.includes("not found")) {
+      throw new Error(message || `Não foi possível verificar o bucket ${bucket}.`);
+    }
   }
 
   const createBucket = await fetch(`${supabaseUrl}/storage/v1/bucket`, {

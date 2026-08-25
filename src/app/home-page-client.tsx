@@ -4,6 +4,8 @@ import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion"
 import {
   ArrowRight,
   CalendarDays,
+  ChevronLeft,
+  ChevronRight,
   Clock,
   Eye,
   Landmark,
@@ -377,9 +379,6 @@ export function HomePageClient({ initialSlides }: HomePageClientProps) {
   const [portalHomeContent, setPortalHomeContent] = useState<PortalHomeContent>(defaultPortalHomeContent);
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
   const { scrollY } = useScroll();
-  const heroImageY = useTransform(scrollY, [0, 900], [0, 150]);
-  const heroCopyY = useTransform(scrollY, [0, 900], [0, 42]);
-  const heroVisualY = useTransform(scrollY, [0, 900], [0, -72]);
   const sedeParallaxY = useTransform(scrollY, [260, 1450], [-70, 92]);
   const newsParallaxY = useTransform(scrollY, [1500, 2600], [-90, 70]);
 
@@ -482,32 +481,32 @@ export function HomePageClient({ initialSlides }: HomePageClientProps) {
     };
   }, []);
 
-  const heroSlides: HomeHeroSlideView[] =
-    initialSlides.length > 0
-      ? initialSlides.map((slide) => ({
-          id: slide.id,
-          dataLabel: slide.data_label?.trim() || portalHomeContent.heroBadge,
-          title: slide.titulo,
-          subtitle: slide.subtitulo?.trim() || portalHomeContent.heroSubtitle,
-          description: slide.descricao?.trim() || portalHomeContent.heroText,
-          imageUrl: slide.imagem_url,
-          buttonText: slide.botao_texto?.trim() || portalHomeContent.heroPrimaryLabel,
-          buttonUrl: slide.botao_url?.trim() || portalHomeContent.heroPrimaryUrl,
-          openInNewTab: slide.abrir_nova_aba,
-        }))
-      : [
-          {
-            id: "fallback-hero",
-            dataLabel: portalHomeContent.heroBadge,
-            title: portalHomeContent.heroTitle,
-            subtitle: portalHomeContent.heroSubtitle,
-            description: portalHomeContent.heroText,
-            imageUrl: "/assets/congresso-comieadepa.jpg",
-            buttonText: portalHomeContent.heroPrimaryLabel,
-            buttonUrl: portalHomeContent.heroPrimaryUrl,
-            openInNewTab: false,
-          },
-        ];
+  const hasCmsSlides = initialSlides.length > 0;
+  const heroSlides: HomeHeroSlideView[] = hasCmsSlides
+    ? initialSlides.map((slide) => ({
+        id: slide.id,
+        dataLabel: slide.data_label?.trim() || null,
+        title: slide.titulo,
+        subtitle: slide.subtitulo?.trim() || null,
+        description: slide.descricao?.trim() || null,
+        imageUrl: slide.imagem_url,
+        buttonText: slide.botao_texto?.trim() || null,
+        buttonUrl: slide.botao_url?.trim() || null,
+        openInNewTab: slide.abrir_nova_aba,
+      }))
+    : [
+        {
+          id: "fallback-hero",
+          dataLabel: portalHomeContent.heroBadge || "COMIEADEPA",
+          title: portalHomeContent.heroTitle || "Convenção Estadual dos Ministros Evangélicos das Assembleias de Deus no Pará",
+          subtitle: portalHomeContent.heroSubtitle || "Unidade, Doutrina e Expansão Missionária",
+          description: portalHomeContent.heroText || "Cuidando de ministros, fortalecendo igrejas e expandindo o Reino de Deus.",
+          imageUrl: "/assets/congresso-comieadepa.jpg",
+          buttonText: portalHomeContent.heroPrimaryLabel || "Saiba Mais",
+          buttonUrl: portalHomeContent.heroPrimaryUrl || "/quem-somos",
+          openInNewTab: false,
+        },
+      ];
 
   const currentHeroSlide = heroSlides[currentHeroIndex] ?? heroSlides[0];
   const heroRotationMs = Math.max(3, Math.min(30, portalHomeContent.heroRotationSeconds || 7)) * 1000;
@@ -531,103 +530,133 @@ export function HomePageClient({ initialSlides }: HomePageClientProps) {
   return (
     <PublicLayout>
       <main className="min-h-screen overflow-hidden bg-white text-[#1F2937]">
-      <section className="relative min-h-screen overflow-hidden pt-20">
-        <motion.div style={{ y: heroImageY }} className="absolute -inset-x-8 -inset-y-16">
+      <section className="relative min-h-[620px] sm:min-h-[700px] md:min-h-[760px] lg:min-h-[820px] xl:min-h-[880px] overflow-hidden pt-20 flex items-center">
+        {/* Background Banners dos Slides com crossfade */}
+        <div className="absolute inset-0">
           {heroSlides.map((slide, index) => (
-            <div key={slide.id} className={`absolute inset-0 transition-opacity duration-[1600ms] ease-in-out ${index === currentHeroIndex ? "opacity-100" : "opacity-0"}`}>
-              <Image src={slide.imageUrl} alt={slide.title} fill priority={index === 0} className="object-cover object-center" />
+            <div
+              key={slide.id}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                index === currentHeroIndex ? "opacity-100 z-0" : "opacity-0 pointer-events-none -z-10"
+              }`}
+            >
+              <Image
+                src={slide.imageUrl}
+                alt={slide.title}
+                fill
+                priority={index === 0}
+                className="object-cover object-center"
+                unoptimized
+              />
             </div>
           ))}
-        </motion.div>
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(15,59,99,.95)_0%,rgba(15,59,99,.76)_44%,rgba(15,59,99,.18)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_56%_24%,rgba(212,162,76,.24),transparent_31%),radial-gradient(circle_at_88%_62%,rgba(29,90,140,.22),transparent_28%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-60 bg-[linear-gradient(0deg,#ffffff_0%,rgba(255,255,255,.72)_36%,rgba(255,255,255,0)_100%)]" />
-        <div className="absolute inset-0 opacity-[0.065] [background-image:linear-gradient(135deg,#fff_1px,transparent_1px)] [background-size:38px_38px]" />
-        <motion.div style={{ y: heroVisualY }} className="absolute -right-24 top-14 hidden h-[92vh] w-[44vw] skew-x-[-16deg] bg-[#D4A24C]/18 backdrop-blur-[1px] lg:block" />
-        <motion.div style={{ y: heroCopyY }} className="absolute right-[18vw] top-0 hidden h-[62vh] w-24 skew-x-[-16deg] bg-[#1D5A8C]/40 lg:block" />
+        </div>
 
-        <div className="relative z-10 mx-auto grid min-h-[calc(100vh-5rem)] max-w-7xl items-center gap-8 px-5 py-14 sm:px-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(360px,0.72fr)] xl:grid-cols-[minmax(0,0.98fr)_minmax(420px,0.76fr)]">
-          <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} style={{ y: heroCopyY }} className="relative z-20 max-w-3xl min-w-0">
+        {/* Gradientes e Overlays Oficiais focados na legibilidade à esquerda, sem lavar o banner */}
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,59,99,0.90)_0%,rgba(15,59,99,0.70)_50%,rgba(15,59,99,0.25)_100%)] sm:bg-[linear-gradient(90deg,rgba(15,59,99,0.94)_0%,rgba(15,59,99,0.72)_40%,rgba(15,59,99,0.18)_70%,transparent_100%)]" />
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+
+        {/* Conteúdo Editorial do Slide */}
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-5 py-14 sm:px-8 sm:py-20 lg:py-24">
+          <div className="max-w-3xl min-w-0">
             <AnimatePresence mode="wait">
-              <motion.div key={currentHeroSlide.id} initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -18 }} transition={{ duration: 0.75, ease: "easeOut" }}>
-                <div className="mb-6 inline-flex items-center gap-3 rounded-lg border border-[#D4A24C]/50 bg-white/12 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-[#F8D77B] shadow-[0_16px_40px_rgba(0,0,0,.18)] backdrop-blur-md">
-                  <Sparkles size={16} />
-                  {currentHeroSlide.dataLabel}
-                </div>
-                <h1 className="max-w-full font-serif text-[clamp(3.05rem,15.5vw,7.4rem)] font-black leading-[0.86] text-white drop-shadow-[0_14px_38px_rgba(0,0,0,.45)] sm:text-[clamp(4.3rem,8vw,7.4rem)]">
+              <motion.div
+                key={currentHeroSlide.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+              >
+                {currentHeroSlide.dataLabel ? (
+                  <div className="mb-4 sm:mb-5 inline-flex items-center gap-2.5 rounded-lg border border-[#D4A24C]/60 bg-white/12 px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-black uppercase tracking-[0.22em] text-[#F8D77B] shadow-sm backdrop-blur-md">
+                    <Sparkles size={15} />
+                    <span>{currentHeroSlide.dataLabel}</span>
+                  </div>
+                ) : null}
+
+                <h1 className="font-serif text-[clamp(2.1rem,6vw,5.2rem)] font-black leading-[0.94] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.65)]">
                   {currentHeroSlide.title}
                 </h1>
-                <p className="mt-6 max-w-3xl text-2xl font-semibold leading-tight text-[#F8D77B] sm:text-4xl">
-                  {currentHeroSlide.subtitle}
-                </p>
-                <p className="mt-6 max-w-2xl text-lg leading-8 text-white/76">
-                  {currentHeroSlide.description}
-                </p>
-                <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+
+                {currentHeroSlide.subtitle ? (
+                  <p className="mt-3.5 sm:mt-5 text-lg sm:text-2xl md:text-3xl font-semibold leading-tight text-[#F8D77B] drop-shadow-md">
+                    {currentHeroSlide.subtitle}
+                  </p>
+                ) : null}
+
+                {currentHeroSlide.description ? (
+                  <p className="mt-3.5 sm:mt-4 max-w-2xl text-sm sm:text-base md:text-lg leading-relaxed text-white/85 drop-shadow-sm">
+                    {currentHeroSlide.description}
+                  </p>
+                ) : null}
+
+                <div className="mt-7 sm:mt-10 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 sm:gap-3.5">
                   {currentHeroSlide.buttonText && currentHeroSlide.buttonUrl ? (
-                    <a href={currentHeroSlide.buttonUrl} target={currentHeroSlide.openInNewTab ? "_blank" : undefined} rel={currentHeroSlide.openInNewTab ? "noreferrer" : undefined} className="group inline-flex items-center justify-center gap-3 rounded-lg bg-[#D4A24C] px-7 py-4 text-sm font-black uppercase tracking-[0.14em] text-white shadow-[0_18px_38px_rgba(212,162,76,.28)] transition hover:-translate-y-1 hover:bg-[#B8872D]">
-                      {currentHeroSlide.buttonText}
+                    <a
+                      href={currentHeroSlide.buttonUrl}
+                      target={currentHeroSlide.openInNewTab ? "_blank" : undefined}
+                      rel={currentHeroSlide.openInNewTab ? "noreferrer" : undefined}
+                      className="group inline-flex items-center justify-center gap-3 rounded-lg bg-[#D4A24C] px-6 sm:px-7 py-3.5 sm:py-4 text-sm font-black uppercase tracking-[0.14em] text-white shadow-[0_8px_24px_rgba(212,162,76,0.35)] transition hover:-translate-y-0.5 hover:bg-[#B8872D]"
+                    >
+                      <span>{currentHeroSlide.buttonText}</span>
                       <ArrowRight size={18} className="transition group-hover:translate-x-1" />
                     </a>
                   ) : null}
-                  <a href={portalConfig.eventsPortalUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-lg border border-white/28 bg-[#0F3B63]/72 px-7 py-4 text-sm font-black uppercase tracking-[0.14em] !text-white backdrop-blur transition hover:-translate-y-1 hover:border-[#D4A24C] hover:bg-[#4A86B8] hover:!text-white">
-                    {portalHomeContent.heroSecondaryLabel}
+                  <a
+                    href={portalConfig.eventsPortalUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center rounded-lg border border-white/28 bg-[#0F3B63]/70 px-6 sm:px-7 py-3.5 sm:py-4 text-sm font-black uppercase tracking-[0.14em] !text-white backdrop-blur transition hover:-translate-y-0.5 hover:border-[#D4A24C] hover:bg-[#1D5A8C]"
+                  >
+                    {portalHomeContent.heroSecondaryLabel || "Eventos Oficiais"}
                   </a>
                 </div>
               </motion.div>
             </AnimatePresence>
-            <motion.div
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
-              className="mt-7 flex max-w-full items-center gap-3 rounded-xl border border-white/20 bg-white/12 p-4 shadow-[0_18px_44px_rgba(0,0,0,.18)] backdrop-blur-xl sm:max-w-xl sm:gap-4"
-            >
-              <Image src="/assets/selo-125-ago.png" alt="Selo da 125ª AGO" width={82} height={82} className="h-16 w-16 shrink-0 object-contain drop-shadow-[0_0_18px_rgba(244,207,106,.28)] sm:h-20 sm:w-20" />
-              <div className="min-w-0">
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-[#F8D77B]">{portalHomeContent.agoBadge}</p>
-                <p className="mt-1 font-serif text-xl font-black leading-tight text-white sm:text-2xl">{portalHomeContent.agoTitle}</p>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          <motion.div initial={{ opacity: 0, x: 36 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15, duration: 0.85 }} style={{ y: heroVisualY }} className="relative z-10 hidden min-h-[640px] lg:block">
-            <motion.div
-              animate={{ x: [0, 16, 0], opacity: [0.26, 0.42, 0.26] }}
-              transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute right-2 top-4 h-[600px] w-24 skew-x-[-16deg] bg-[#D4A24C]/26"
-            />
-            <motion.div
-              animate={{ x: [0, -12, 0], opacity: [0.18, 0.32, 0.18] }}
-              transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute right-32 top-24 h-[470px] w-16 skew-x-[-16deg] bg-[#1D5A8C]/34"
-            />
-            <motion.div
-              animate={{ y: [0, -14, 0], rotate: [-1.5, 1, -1.5] }}
-              transition={{ duration: 7.5, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute right-10 top-0 grid h-[360px] w-[360px] place-items-center"
-            >
-              <Image
-                src="/assets/selo-125-ago.png"
-                alt="Selo da 125ª AGO"
-                width={360}
-                height={360}
-                className="relative h-[330px] w-[330px] object-contain drop-shadow-[0_28px_44px_rgba(0,0,0,.38)]"
-              />
-            </motion.div>
-            <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -bottom-16 right-0 w-[430px]"
-            >
-              <Image
-                src={portalHomeContent.heroSideImageUrl}
-                alt="Imagem lateral do hero"
-                width={860}
-                height={700}
-                className="h-auto w-full drop-shadow-[0_38px_46px_rgba(0,0,0,.58)]"
-              />
-            </motion.div>
-          </motion.div>
+          </div>
         </div>
+
+        {/* Controles de Navegação e Paginação do Slider */}
+        {heroSlides.length > 1 && (
+          <>
+            {/* Botões Laterais Anterior / Próximo (ocultos em telas muito pequenas para não cobrir texto) */}
+            <button
+              type="button"
+              onClick={() => setCurrentHeroIndex((prev) => (prev - 1 + heroSlides.length) % heroSlides.length)}
+              className="hidden sm:grid absolute left-4 top-1/2 z-20 -translate-y-1/2 h-12 w-12 place-items-center rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-md transition hover:bg-[#0F3B63] hover:border-[#D4A24C] hover:scale-105"
+              title="Slide anterior"
+              aria-label="Slide anterior"
+            >
+              <ChevronLeft size={24} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentHeroIndex((prev) => (prev + 1) % heroSlides.length)}
+              className="hidden sm:grid absolute right-4 top-1/2 z-20 -translate-y-1/2 h-12 w-12 place-items-center rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-md transition hover:bg-[#0F3B63] hover:border-[#D4A24C] hover:scale-105"
+              title="Próximo slide"
+              aria-label="Próximo slide"
+            >
+              <ChevronRight size={24} />
+            </button>
+
+            {/* Indicadores / Paginação dos Slides no Rodapé do Hero */}
+            <div className="absolute bottom-5 sm:bottom-6 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/15 bg-black/35 px-3 py-1.5 backdrop-blur-md">
+              {heroSlides.map((slide, idx) => (
+                <button
+                  key={slide.id}
+                  type="button"
+                  onClick={() => setCurrentHeroIndex(idx)}
+                  className={`h-2.5 rounded-full transition-all duration-300 ${
+                    idx === currentHeroIndex ? "w-8 bg-[#D4A24C]" : "w-2.5 bg-white/40 hover:bg-white/70"
+                  }`}
+                  title={`Ir para slide ${idx + 1}`}
+                  aria-label={`Slide ${idx + 1}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </section>
 
       <section className="relative bg-white px-5 sm:px-8" aria-label="Números institucionais">

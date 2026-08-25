@@ -1,6 +1,6 @@
 import { adminNavGroups } from "@/lib/cms";
 import { filterAdminNavGroupsByRole, normalizeAdminRole } from "@/lib/admin-permissions";
-import { ArrowLeft, Bell, Search } from "lucide-react";
+import { ArrowLeft, Bell, Lock, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { headers } from "next/headers";
@@ -52,48 +52,46 @@ export default async function AdminLayout({
 
                 <div className="grid gap-1">
                   {group.items.map((item) => {
-                    const isItemActive =
-                      currentPath === item.href ||
-                      (item.href !== "/admin" && currentPath.startsWith(item.href)) ||
-                      item.subItems?.some((sub) => currentPath === sub.href);
+                    const isUnlocked = item.href === "/admin/home";
+                    const isItemActive = currentPath === item.href || (item.href !== "/admin" && currentPath.startsWith(item.href));
+
+                    if (!isUnlocked) {
+                      return (
+                        <div
+                          key={item.href}
+                          title="Módulo bloqueado temporariamente para etapa de validação"
+                          className="flex items-center justify-between rounded-sm px-3.5 py-2.5 text-sm font-semibold text-white/28 cursor-not-allowed select-none transition hover:bg-white/[0.02]"
+                        >
+                          <div className="flex items-center gap-3">
+                            <item.icon size={18} className="text-white/20" />
+                            <span>{item.label}</span>
+                          </div>
+                          <Lock size={12} className="text-white/20" />
+                        </div>
+                      );
+                    }
 
                     return (
                       <div key={item.href} className="space-y-1">
                         <Link
                           href={item.href}
-                          className={`group flex items-center gap-3 rounded-sm border px-3.5 py-2.5 text-sm font-bold transition ${
+                          className={`group flex items-center justify-between rounded-sm border px-3.5 py-2.5 text-sm font-bold transition ${
                             isItemActive
                               ? "border-[#f4cf6a]/60 bg-[#f4cf6a]/15 text-white shadow-sm"
-                              : "border-transparent text-white/76 hover:border-[#f4cf6a]/35 hover:bg-[#f4cf6a]/10 hover:text-white"
+                              : "border-[#f4cf6a]/30 bg-[#f4cf6a]/5 text-white/90 hover:border-[#f4cf6a] hover:bg-[#f4cf6a]/10 hover:text-white"
                           }`}
                         >
-                          <item.icon
-                            size={18}
-                            className={isItemActive ? "text-[#f4cf6a]" : "text-[#f4cf6a]/80 group-hover:text-[#f4cf6a]"}
-                          />
-                          <span className="flex-1">{item.label}</span>
-                        </Link>
-
-                        {item.subItems && item.subItems.length > 0 && isItemActive ? (
-                          <div className="ml-6 grid gap-1 border-l border-white/12 pl-3 py-1">
-                            {item.subItems.map((sub) => {
-                              const isSubActive = currentPath === sub.href;
-                              return (
-                                <Link
-                                  key={sub.href}
-                                  href={sub.href}
-                                  className={`rounded-sm px-3 py-1.5 text-xs font-semibold transition ${
-                                    isSubActive
-                                      ? "bg-[#f4cf6a] text-[#171006] font-bold"
-                                      : "text-white/60 hover:bg-white/[0.07] hover:text-white"
-                                  }`}
-                                >
-                                  {sub.label}
-                                </Link>
-                              );
-                            })}
+                          <div className="flex items-center gap-3">
+                            <item.icon
+                              size={18}
+                              className={isItemActive ? "text-[#f4cf6a]" : "text-[#f4cf6a]"}
+                            />
+                            <span className="flex-1">{item.label}</span>
                           </div>
-                        ) : null}
+                          <span className="rounded bg-[#f4cf6a] px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#171006]">
+                            Ativo
+                          </span>
+                        </Link>
                       </div>
                     );
                   })}

@@ -45,12 +45,35 @@ export async function POST(request: Request) {
     return redirectWithStatus(request.url, "/admin/midia", "error", "Selecione um arquivo para enviar.");
   }
 
+  const isSlideUpload = folder === "slides" || folder === "hero";
+  const maxSizeBytes = isSlideUpload ? 5 * 1024 * 1024 : 10 * 1024 * 1024;
+  const maxSizeLabel = isSlideUpload ? "5 MB" : "10 MB";
+
   for (const file of files) {
-    if (file.size > 10 * 1024 * 1024) {
+    // Validação estrita de tamanho no servidor
+    if (file.size > maxSizeBytes) {
+      const errorMsg = isSlideUpload
+        ? "A imagem excede o limite de 5 MB. Reduza o tamanho do arquivo e tente novamente."
+        : `O arquivo ${file.name} ultrapassa o limite de ${maxSizeLabel}.`;
       if (acceptsJson) {
-        return Response.json({ error: `O arquivo ${file.name} ultrapassa o limite de 10 MB.` }, { status: 400 });
+        return Response.json({ error: errorMsg }, { status: 400 });
       }
-      return redirectWithStatus(request.url, "/admin/midia", "error", "Envie arquivos com no máximo 10 MB.");
+      return redirectWithStatus(request.url, "/admin/midia", "error", errorMsg);
+    }
+
+    // Validação de formato para imagens do Hero / Slides (MIME type e extensão real)
+    if (isSlideUpload) {
+      const allowedImageMimes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+      const ext = file.name.split(".").pop()?.toLowerCase() || "";
+      const allowedExtensions = ["jpg", "jpeg", "png", "webp"];
+
+      if (!allowedImageMimes.includes(file.type.toLowerCase()) || !allowedExtensions.includes(ext)) {
+        const errorMsg = "Formato não suportado. Utilize apenas imagens em formato JPG, PNG ou WebP.";
+        if (acceptsJson) {
+          return Response.json({ error: errorMsg }, { status: 400 });
+        }
+        return redirectWithStatus(request.url, "/admin/midia", "error", errorMsg);
+      }
     }
   }
 

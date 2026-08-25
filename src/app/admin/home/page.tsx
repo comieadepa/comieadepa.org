@@ -1,18 +1,12 @@
-import { Home } from "lucide-react";
+import { ImageIcon } from "lucide-react";
 import { headers } from "next/headers";
 import { canPerformAdminAction, normalizeAdminRole } from "@/lib/admin-permissions";
-import { homeFallbackSettings, homeSettingKeys } from "@/lib/home-settings";
 import { CmsHomeSlide } from "@/lib/home-slides";
 import { selectSupabaseRows } from "@/lib/supabase-admin";
 import { AdminPageHeader } from "../admin-ui";
 import { MediaPickerAsset } from "../media-url-field";
 import { StatusMessage } from "../status-message";
-import { HomeSettingsForm } from "./home-settings-form";
-
-type CmsSetting = {
-  chave: string;
-  valor: unknown;
-};
+import { HomeSlidesManager } from "./home-slides-manager";
 
 export default async function AdminHomePage({
   searchParams,
@@ -20,58 +14,45 @@ export default async function AdminHomePage({
   searchParams?: Promise<{ success?: string; error?: string; message?: string }>;
 }) {
   const params = await searchParams;
-  const [settings, mediaAssets, slides] = await Promise.all([
-    selectSupabaseRows<CmsSetting>("cms_configuracoes", "select=chave,valor&grupo=eq.home&order=chave.asc"),
-    selectSupabaseRows<MediaPickerAsset>("cms_media_assets", "select=id,titulo,arquivo_url,tipo,pasta&order=created_at.desc&limit=40"),
+  const [mediaAssets, slides] = await Promise.all([
+    selectSupabaseRows<MediaPickerAsset>(
+      "cms_media_assets",
+      "select=id,titulo,arquivo_url,tipo,pasta&order=created_at.desc&limit=60",
+    ),
     selectSupabaseRows<CmsHomeSlide>(
       "cms_home_slides",
       "select=id,titulo,subtitulo,descricao,data_label,imagem_url,botao_texto,botao_url,ordem,status,abrir_nova_aba,created_at,updated_at,created_by&order=ordem.asc,updated_at.desc&limit=100",
     ),
   ]);
-  const settingMap = new Map(settings.map((setting) => [setting.chave, stringifySettingValue(setting.valor)]));
-  const values = Object.fromEntries(homeSettingKeys.map((key) => [key, settingMap.get(key) ?? homeFallbackSettings[key] ?? ""]));
+
   const headerList = await headers();
   const role = normalizeAdminRole(headerList.get("x-admin-role"));
-  const canEdit = canPerformAdminAction(role, "home", "update");
   const canCreate = canPerformAdminAction(role, "home", "create");
+  const canUpdate = canPerformAdminAction(role, "home", "update");
   const canPublish = canPerformAdminAction(role, "home", "publish");
   const canArchive = canPerformAdminAction(role, "home", "archive");
   const canDelete = canPerformAdminAction(role, "home", "delete");
 
   return (
-    <div className="mx-auto max-w-7xl">
+    <div className="mx-auto max-w-7xl space-y-6">
       <StatusMessage success={params?.success} error={params?.message ?? params?.error} />
 
       <AdminPageHeader
-        icon={Home}
-        eyebrow="Configurações da Home"
-        title="Ajustes Gerais da Página Inicial"
-        description="Gerencie os blocos institucionais, chamadas editoriais e a composição visual do hero principal e slides do portal."
+        icon={ImageIcon}
+        eyebrow="Primeira Dobra"
+        title="Destaques da Home"
+        description="Gerencie os banners que aparecem no destaque principal da página inicial."
       />
 
-      <HomeSettingsForm
-        role={role}
-        values={values}
-        assets={mediaAssets}
-        canEdit={canEdit}
+      <HomeSlidesManager
         slides={slides}
-        canCreateSlide={canCreate}
-        canPublishSlide={canPublish}
-        canArchiveSlide={canArchive}
-        canDeleteSlide={canDelete}
+        assets={mediaAssets}
+        canCreate={canCreate}
+        canUpdate={canUpdate}
+        canPublish={canPublish}
+        canArchive={canArchive}
+        canDelete={canDelete}
       />
     </div>
   );
-}
-
-function stringifySettingValue(value: unknown) {
-  if (typeof value === "string") {
-    return value;
-  }
-
-  if (typeof value === "number" || typeof value === "boolean") {
-    return String(value);
-  }
-
-  return "";
 }

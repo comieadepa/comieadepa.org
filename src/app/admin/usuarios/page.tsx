@@ -76,7 +76,7 @@ export default async function AdminUsersPage({
         icon={UserCog}
         eyebrow="Equipe e Acessos"
         title="Usuários e Perfis Administrativos"
-        description="Gerencie os membros da equipe editorial e de comunicação. Defina os perfis de acesso (Administrador, Editor, Mídia e Leitura), envie links de ativação ou redefina senhas."
+        description="Gerencie os membros da equipe editorial e de comunicação. Cadastre e libere usuários diretamente com perfil de acesso e senha sincronizados no Supabase."
       />
 
       <div className="grid gap-8 lg:grid-cols-[400px_1fr]">
@@ -102,8 +102,8 @@ export default async function AdminUsersPage({
 
           <p className="mt-2 text-xs leading-5 text-[#5a472c]">
             {editingUser
-              ? "Atualize o nome, departamento e nível de permissão deste operador."
-              : "Cadastre um novo operador. O link de definição de senha é enviado por e-mail."}
+              ? "Atualize o nome, departamento, permissões ou senha deste operador."
+              : "Cadastre um novo operador. O acesso é liberado imediatamente para login com a senha definida."}
           </p>
 
           <form action="/api/admin/usuarios" method="post" className="mt-5 grid gap-4">
@@ -130,6 +130,25 @@ export default async function AdminUsersPage({
                 className="border border-[#d8c38b] bg-[#fffaf0] px-3.5 py-2.5 text-sm outline-none focus:border-[#8b2f2b]"
                 placeholder="usuario@comieadepa.org"
               />
+            </label>
+
+            <label className="grid gap-1.5">
+              <span className="text-xs font-black uppercase tracking-[0.12em] text-[#5a472c]">
+                {editingUser ? "Nova senha (opcional)" : "Senha de acesso"}
+              </span>
+              <input
+                name="password"
+                type="password"
+                minLength={8}
+                required={!editingUser}
+                className="border border-[#d8c38b] bg-[#fffaf0] px-3.5 py-2.5 text-sm outline-none focus:border-[#8b2f2b]"
+                placeholder={editingUser ? "Deixar em branco para manter atual" : "Mínimo 8 caracteres"}
+              />
+              <span className="text-[11px] text-[#5a472c]/70">
+                {editingUser
+                  ? "Preencha apenas se desejar redefinir a senha do usuário."
+                  : "O usuário é liberado imediatamente no Supabase Auth para login com esta senha."}
+              </span>
             </label>
 
             <div className="grid gap-4 sm:grid-cols-2">
@@ -181,7 +200,7 @@ export default async function AdminUsersPage({
               className="mt-2 inline-flex items-center justify-center gap-2 bg-[#8b2f2b] px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-white shadow-sm transition hover:bg-[#6e2421]"
             >
               <Save size={16} />
-              {editingUser ? "Atualizar Usuário" : "Salvar e Enviar Acesso"}
+              {editingUser ? "Atualizar Usuário" : "Salvar e Liberar Acesso"}
             </button>
           </form>
         </section>

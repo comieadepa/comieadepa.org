@@ -1,7 +1,13 @@
--- ==========================================
--- HOME SLIDER PRINCIPAL
--- ==========================================
+-- ==============================================================================
+-- ESTRUTURA: DESTAQUES DA HOME (HERO SLIDER)
+-- Schema: site
+-- Tabela: cms_home_slides
+-- ==============================================================================
 
+-- 1. Garante que o schema site exista
+create schema if not exists site;
+
+-- 2. Criação da tabela de slides
 create table if not exists site.cms_home_slides (
   id uuid primary key default gen_random_uuid(),
   titulo text not null,
@@ -20,6 +26,11 @@ create table if not exists site.cms_home_slides (
   created_by uuid
 );
 
+-- 3. Índice composto de alta performance para a Home pública
+create index if not exists idx_cms_home_slides_status_ordem 
+on site.cms_home_slides (status, ordem asc, updated_at desc);
+
+-- 4. Função e trigger para atualização automática de updated_at
 create or replace function public.set_updated_at()
 returns trigger as $$
 begin
@@ -33,14 +44,16 @@ create trigger set_updated_at
 before update on site.cms_home_slides
 for each row execute function public.set_updated_at();
 
+-- 5. Habilitação de Segurança por Linha (RLS)
 alter table site.cms_home_slides enable row level security;
 
-drop policy if exists "Site home slides publicados podem ser lidos"
-on site.cms_home_slides;
-
+-- 6. Política de leitura pública (somente registros publicados)
+drop policy if exists "Site home slides publicados podem ser lidos" on site.cms_home_slides;
 create policy "Site home slides publicados podem ser lidos"
 on site.cms_home_slides
-for select to anon
+for select to anon, authenticated
 using (status = 'publicado');
 
+-- 7. Concessão de permissões de leitura (escrita restrita a service_role)
+grant usage on schema site to anon, authenticated;
 grant select on site.cms_home_slides to anon, authenticated;

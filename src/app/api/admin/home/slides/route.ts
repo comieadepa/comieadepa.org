@@ -183,6 +183,94 @@ export async function PUT(request: Request) {
   }
 }
 
+export async function PATCH(request: Request) {
+  if (!hasSupabaseAdminConfig()) {
+    return missingSupabaseAdminResponse();
+  }
+
+  const role = resolveAdminRoleFromHeaders(request.headers);
+  if (!canPerformAdminAction(role, "home", "update")) {
+    return Response.json({ error: "Sem permissão para atualizar slides." }, { status: 403 });
+  }
+
+  try {
+    const body = (await request.json().catch(() => null)) as {
+      id?: string;
+      action?: string;
+      status?: string;
+      ordem?: number;
+      reorder?: Array<{ id: string; ordem: number }>;
+    } | null;
+
+    if (!body) {
+      return Response.json({ error: "Dados inválidos." }, { status: 400 });
+    }
+
+    // 1. Reordenação em lote
+    if (body.action === "reorder" && Array.isArray(body.reorder)) {
+      await Promise.all(
+        body.reorder.map((item) =>
+          updateSupabaseRows("cms_home_slides", `id=eq.${encodeURIComponent(item.id)}`, {
+            ordem: item.ordem,
+            updated_at: new Date().toISOString(),
+          }),
+        ),
+      );
+
+      await createAuditLog({
+        request,
+        action: "reorder",
+        entity: "home_slide",
+        metadata: { items: body.reorder },
+      });
+
+      return Response.json({ ok: true, message: "Ordem dos slides atualizada!" });
+    }
+
+    // 2. Troca rápida de status
+    if (body.id && body.status) {
+      const normalizedStatus = normalizeHomeSlideStatus(body.status);
+
+      if (normalizedStatus === "publicado" && !canPerformAdminAction(role, "home", "publish")) {
+        return Response.json({ error: "Sem permissão para publicar slides." }, { status: 403 });
+      }
+
+      if (normalizedStatus === "arquivado" && !canPerformAdminAction(role, "home", "archive")) {
+        return Response.json({ error: "Sem permissão para arquivar slides." }, { status: 403 });
+      }
+
+      await updateSupabaseRows("cms_home_slides", `id=eq.${encodeURIComponent(body.id)}`, {
+        status: normalizedStatus,
+        updated_at: new Date().toISOString(),
+      });
+
+      await createAuditLog({
+        request,
+        action: "update_status",
+        entity: "home_slide",
+        entityId: body.id,
+        metadata: { status: normalizedStatus },
+      });
+
+      return Response.json({ ok: true, message: `Status alterado para ${normalizedStatus}!` });
+    }
+
+    // 3. Atualização de ordem individual
+    if (body.id && typeof body.ordem === "number") {
+      await updateSupabaseRows("cms_home_slides", `id=eq.${encodeURIComponent(body.id)}`, {
+        ordem: body.ordem,
+        updated_at: new Date().toISOString(),
+      });
+
+      return Response.json({ ok: true });
+    }
+
+    return Response.json({ error: "Ação não suportada." }, { status: 400 });
+  } catch (error) {
+    return Response.json({ error: error instanceof Error ? error.message : "Erro ao processar alteração." }, { status: 500 });
+  }
+}
+
 export async function DELETE(request: Request) {
   if (!hasSupabaseAdminConfig()) {
     return missingSupabaseAdminResponse();

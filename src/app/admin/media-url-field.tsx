@@ -2,7 +2,7 @@
 
 import { Check, ImagePlus, Loader2, Search, UploadCloud, X } from "lucide-react";
 import Image from "next/image";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export type MediaPickerAsset = {
   id: string;
@@ -16,28 +16,73 @@ type MediaUrlFieldProps = {
   name: string;
   label: string;
   defaultValue?: string | null;
+  value?: string;
+  onChange?: (value: string) => void;
   placeholder?: string;
   helper?: string;
   assets: MediaPickerAsset[];
   disabled?: boolean;
+  required?: boolean;
+  folder?: string;
+  maxSizeInMb?: number;
+  allowedMimeTypes?: string[];
 };
 
 export function MediaUrlField({
   name,
   label,
   defaultValue,
+  value: controlledValue,
+  onChange,
   placeholder = "https://...",
   helper,
   assets: initialAssets,
   disabled,
+  required,
+  folder = "geral",
+  maxSizeInMb = 5,
+  allowedMimeTypes = ["image/jpeg", "image/png", "image/webp"],
 }: MediaUrlFieldProps) {
-  const [value, setValue] = useState(defaultValue ?? "");
+  const [internalValue, setInternalValue] = useState(defaultValue ?? "");
+  const value = controlledValue !== undefined ? controlledValue : internalValue;
+
+  function updateValue(newVal: string) {
+    if (controlledValue === undefined) {
+      setInternalValue(newVal);
+    }
+    onChange?.(newVal);
+  }
+
   const [assets, setAssets] = useState<MediaPickerAsset[]>(initialAssets);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [imageMeta, setImageMeta] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const isImageValue = Boolean(
+    value &&
+      (value.startsWith("http://") ||
+        value.startsWith("https://") ||
+        value.startsWith("/") ||
+        /\.(png|jpe?g|webp|gif|svg)/i.test(value)),
+  );
+
+  useEffect(() => {
+    if (!value || !isImageValue) {
+      setImageMeta(null);
+      return;
+    }
+    const img = new window.Image();
+    img.onload = () => {
+      setImageMeta(`${img.naturalWidth} × ${img.naturalHeight} px`);
+    };
+    img.onerror = () => {
+      setImageMeta(null);
+    };
+    img.src = value;
+  }, [value, isImageValue]);
 
   const imageAssets = useMemo(
     () =>
@@ -53,12 +98,30 @@ export function MediaUrlField({
 
   async function handleFileUpload(file: File) {
     if (disabled || isUploading) return;
-    setIsUploading(true);
     setUploadError(null);
+
+    // Validação de Tamanho Máximo (ex.: 5 MB)
+    const maxBytes = maxSizeInMb * 1024 * 1024;
+    if (file.size > maxBytes) {
+      setUploadError(`A imagem excede o limite de ${maxSizeInMb} MB. Reduza o tamanho do arquivo e tente novamente.`);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    // Validação de Formato / MIME Type
+    const normalizedAllowed = allowedMimeTypes.map((t) => t.toLowerCase());
+    const fileMime = file.type.toLowerCase();
+    if (!normalizedAllowed.includes(fileMime)) {
+      setUploadError("Formato não suportado. Utilize apenas imagens em formato JPG, PNG ou WebP.");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    setIsUploading(true);
 
     const formData = new FormData();
     formData.append("arquivo", file);
-    formData.append("pasta", "noticias");
+    formData.append("pasta", folder);
     formData.append("titulo", file.name.replace(/\.[^/.]+$/, ""));
 
     try {
@@ -81,11 +144,11 @@ export function MediaUrlField({
         titulo: data.titulo || file.name,
         arquivo_url: data.url,
         tipo: file.type,
-        pasta: "noticias",
+        pasta: folder,
       };
 
       setAssets((prev) => [newAsset, ...prev]);
-      setValue(data.url);
+      updateValue(data.url);
       setOpen(false);
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "Falha no upload.");
@@ -97,33 +160,26 @@ export function MediaUrlField({
     }
   }
 
-  const isImageValue = Boolean(
-    value &&
-      (value.startsWith("http://") ||
-        value.startsWith("https://") ||
-        value.startsWith("/") ||
-        /\.(png|jpe?g|webp|gif|svg)/i.test(value)),
-  );
-
   return (
-    <div className="grid min-w-0 gap-2">
+    <div className="grid w-full min-w-0 gap-2">
       <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">{label}</span>
-      <div className="grid gap-3 border border-dashed border-[#b98e3b] bg-[#f7efd6] p-4 text-sm font-semibold text-[#8b2f2b]">
+      <div className="grid w-full min-w-0 gap-3 border border-dashed border-[#b98e3b] bg-[#f7efd6] p-4 text-sm font-semibold text-[#8b2f2b]">
         <div className="flex w-full min-w-0 items-center gap-3">
           <ImagePlus size={20} className="shrink-0" />
           <input
             name={name}
             value={value}
-            onChange={(event) => setValue(event.target.value)}
-            className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-[#8b2f2b]/52 disabled:cursor-not-allowed disabled:opacity-60"
+            required={required}
+            onChange={(event) => updateValue(event.target.value)}
+            className="w-full min-w-0 flex-1 bg-transparent outline-none placeholder:text-[#8b2f2b]/52 disabled:cursor-not-allowed disabled:opacity-60"
             placeholder={placeholder}
             disabled={disabled}
           />
           {value ? (
             <button
               type="button"
-              onClick={() => setValue("")}
-              className="text-xs text-[#8b2f2b]/70 transition hover:text-[#8b2f2b]"
+              onClick={() => updateValue("")}
+              className="shrink-0 text-xs text-[#8b2f2b]/70 transition hover:text-[#8b2f2b]"
               title="Limpar imagem"
             >
               <X size={16} />
@@ -133,28 +189,35 @@ export function MediaUrlField({
 
         {/* Thumbnail preview */}
         {isImageValue ? (
-          <div className="relative mt-1 flex items-center gap-3 rounded border border-[#d8c38b] bg-white/80 p-2">
+          <div className="relative mt-1 flex w-full min-w-0 items-center gap-3 rounded border border-[#d8c38b] bg-white/80 p-2.5">
             <div className="relative h-14 w-20 shrink-0 overflow-hidden bg-[#171006]/10">
               <Image src={value} alt="Preview da capa" fill className="object-cover" unoptimized />
             </div>
-            <div className="min-w-0 flex-1 text-xs">
-              <span className="font-bold text-[#171006]">Imagem selecionada</span>
-              <p className="truncate text-white/50 text-[#5a472c]">{value}</p>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-2">
+                <span className="block text-xs font-bold text-[#171006]">Imagem selecionada</span>
+                {imageMeta && (
+                  <span className="rounded bg-[#8b2f2b]/10 px-1.5 py-0.5 text-[10px] font-bold text-[#8b2f2b]">
+                    {imageMeta}
+                  </span>
+                )}
+              </div>
+              <p className="block w-full min-w-0 truncate text-xs text-[#5a472c]" title={value}>{value}</p>
             </div>
           </div>
         ) : null}
 
-        <div className="flex flex-wrap items-center gap-3 pt-1">
+        <div className="flex w-full min-w-0 flex-wrap items-center gap-x-3 gap-y-2 pt-1">
           <button
             type="button"
             onClick={() => (!disabled ? setOpen(true) : undefined)}
-            className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-[0.12em] text-[#8b2f2b] underline underline-offset-4 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex min-w-0 items-center gap-1.5 text-xs font-black uppercase tracking-[0.12em] text-[#8b2f2b] underline underline-offset-4 disabled:cursor-not-allowed disabled:opacity-50"
             disabled={disabled}
           >
             Selecionar da biblioteca
           </button>
           <span className="text-xs text-[#5a472c]/40">•</span>
-          <label className="inline-flex cursor-pointer items-center gap-1.5 text-xs font-black uppercase tracking-[0.12em] text-[#8b2f2b] underline underline-offset-4">
+          <label className="inline-flex min-w-0 cursor-pointer items-center gap-1.5 text-xs font-black uppercase tracking-[0.12em] text-[#8b2f2b] underline underline-offset-4">
             {isUploading ? (
               <>
                 <Loader2 size={13} className="animate-spin" />
@@ -244,7 +307,7 @@ export function MediaUrlField({
                     key={asset.id}
                     type="button"
                     onClick={() => {
-                      setValue(asset.arquivo_url);
+                      updateValue(asset.arquivo_url);
                       setOpen(false);
                     }}
                     className={`group relative overflow-hidden border text-left transition hover:-translate-y-1 ${
