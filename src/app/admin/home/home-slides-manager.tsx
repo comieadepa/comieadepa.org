@@ -2,7 +2,6 @@
 
 import {
   ArrowDown,
-  ArrowRight,
   ArrowUp,
   CheckCircle2,
   ExternalLink,
@@ -12,7 +11,6 @@ import {
   Loader2,
   Plus,
   Save,
-  Sparkles,
   Trash2,
   X,
 } from "lucide-react";
@@ -20,6 +18,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { CmsHomeSlide, HomeSlideStatus } from "@/lib/home-slides";
+import { HeroSlideCanvas } from "@/components/site/HeroSlideCanvas";
 import { AdminFilterPills, AdminStatusBadge } from "../admin-ui";
 import { MediaPickerAsset, MediaUrlField } from "../media-url-field";
 
@@ -411,80 +410,26 @@ export function HomeSlidesManager({
                 </div>
               </div>
 
-              {/* Canvas Panorâmico 16:9 em Largura Total */}
-              <div className="relative w-full aspect-[16/9] min-h-[240px] sm:min-h-[320px] md:min-h-[380px] lg:min-h-[440px] overflow-hidden rounded-xl border border-[#0F3B63]/30 bg-[#0F3B63] shadow-2xl">
-                {/* Imagem de Fundo real do slide com object-cover centralizado */}
-                {formImage ? (
-                  <Image
-                    src={formImage}
-                    alt="Banner Preview"
-                    fill
-                    className="object-cover object-center transition duration-500"
-                    unoptimized
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-white/30">
-                    <ImageIcon size={56} className="stroke-1" />
-                    <span className="mt-2 text-xs font-bold uppercase tracking-wider">Aguardando banner (16:9)...</span>
-                  </div>
-                )}
-
-                {/* Overlays e Gradientes Oficiais do Hero */}
-                <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(15,59,99,.95)_0%,rgba(15,59,99,.76)_44%,rgba(15,59,99,.18)_100%)]" />
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_56%_24%,rgba(212,162,76,.24),transparent_31%),radial-gradient(circle_at_88%_62%,rgba(29,90,140,.22),transparent_28%)]" />
-                <div className="absolute inset-x-0 bottom-0 h-32 bg-[linear-gradient(0deg,#ffffff_0%,rgba(255,255,255,.60)_28%,rgba(255,255,255,0)_100%)] opacity-25" />
-                <div className="absolute inset-0 opacity-[0.06] [background-image:linear-gradient(135deg,#fff_1px,transparent_1px)] [background-size:28px_28px]" />
-
-                {/* Elemento angular decorativo característico do Hero */}
-                <div className="absolute -right-8 top-4 hidden h-[90%] w-28 skew-x-[-16deg] bg-[#D4A24C]/15 backdrop-blur-[1px] md:block" />
-
-                {/* Conteúdo Renderizado Proporcional */}
-                <div className="relative z-10 flex h-full flex-col justify-between p-5 sm:p-8 md:p-10 lg:p-12">
-                  {/* Selo e Textos */}
-                  <div className="max-w-[85%] space-y-2.5 sm:space-y-3.5">
-                    {formDataLabel ? (
-                      <div className="inline-flex items-center gap-1.5 rounded-md border border-[#D4A24C]/50 bg-white/12 px-3 py-1 text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-[#F8D77B] shadow-sm backdrop-blur-md">
-                        <Sparkles size={13} />
-                        <span className="truncate">{formDataLabel}</span>
-                      </div>
-                    ) : null}
-
-                    <h4 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[0.9] text-white drop-shadow-[0_4px_16px_rgba(0,0,0,.65)] line-clamp-2">
-                      {formTitle || "Título do Slide no Hero"}
-                    </h4>
-
-                    {formSubtitle ? (
-                      <p className="font-semibold leading-tight text-[#F8D77B] text-sm sm:text-base md:text-lg lg:text-xl drop-shadow-sm line-clamp-1">
-                        {formSubtitle}
-                      </p>
-                    ) : null}
-
-                    {formDescription ? (
-                      <p className="hidden sm:block text-xs md:text-sm leading-relaxed text-white/80 line-clamp-2 max-w-2xl">
-                        {formDescription}
-                      </p>
-                    ) : null}
-                  </div>
-
-                  {/* Botões CTA */}
-                  <div className="flex items-center gap-3 pt-2">
-                    {formButtonText ? (
-                      <div className="inline-flex items-center gap-2 rounded-lg bg-[#D4A24C] px-5 py-2.5 text-xs sm:text-sm font-black uppercase tracking-[0.14em] text-white shadow-[0_6px_18px_rgba(212,162,76,.35)]">
-                        <span>{formButtonText}</span>
-                        <ArrowRight size={15} />
-                        {formOpenNewTab && <ExternalLink size={12} className="opacity-75" />}
-                      </div>
-                    ) : null}
-                    <div className="hidden sm:inline-flex items-center rounded-lg border border-white/20 bg-[#0F3B63]/60 px-4 py-2.5 text-xs font-black uppercase tracking-[0.12em] text-white/80 backdrop-blur-sm">
-                      Eventos Oficiais
-                    </div>
-                  </div>
-                </div>
+              {/* Canvas Panorâmico 16:9 em Largura Total (Componente Compartilhado com o Site) */}
+              <div className="w-full overflow-hidden rounded-xl border border-[#0F3B63]/30 shadow-2xl">
+                <HeroSlideCanvas
+                  slide={{
+                    dataLabel: formDataLabel,
+                    title: formTitle,
+                    subtitle: formSubtitle,
+                    description: formDescription,
+                    imageUrl: formImage,
+                    buttonText: formButtonText,
+                    buttonUrl: formButtonUrl,
+                    openInNewTab: formOpenNewTab,
+                  }}
+                  isPreview={true}
+                />
               </div>
 
               <div className="flex items-center justify-between px-1 text-[11px] text-[#5a472c]/70">
-                <span>Enquadramento: <strong>16:9 Widescreen (Centralizado)</strong></span>
-                <span>Gradiente: <strong>Oficial COMIEADEPA</strong></span>
+                <span>Enquadramento: <strong>16:9 Widescreen (1920×1080)</strong></span>
+                <span>Renderizador: <strong>HeroSlideCanvas (1:1 com o Portal)</strong></span>
               </div>
             </div>
 

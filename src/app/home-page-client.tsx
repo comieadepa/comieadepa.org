@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import {
   ArrowRight,
   CalendarDays,
@@ -13,7 +13,6 @@ import {
   Play,
   Quote,
   ShieldCheck,
-  Sparkles,
   Users,
   Youtube,
 } from "lucide-react";
@@ -26,6 +25,7 @@ import {
   PublicLayout,
   type PublicSiteConfig,
 } from "@/components/site/PublicLayout";
+import { HeroSlideCanvas } from "@/components/site/HeroSlideCanvas";
 import { CmsHomeSlide } from "@/lib/home-slides";
 
 const eventsPortalUrl = "https://eventos.siscomieadepa.org/eventos-publicos";
@@ -508,7 +508,6 @@ export function HomePageClient({ initialSlides }: HomePageClientProps) {
         },
       ];
 
-  const currentHeroSlide = heroSlides[currentHeroIndex] ?? heroSlides[0];
   const heroRotationMs = Math.max(3, Math.min(30, portalHomeContent.heroRotationSeconds || 7)) * 1000;
 
   useEffect(() => {
@@ -530,9 +529,8 @@ export function HomePageClient({ initialSlides }: HomePageClientProps) {
   return (
     <PublicLayout>
       <main className="min-h-screen overflow-hidden bg-white text-[#1F2937]">
-      <section className="relative min-h-[620px] sm:min-h-[700px] md:min-h-[760px] lg:min-h-[820px] xl:min-h-[880px] overflow-hidden pt-20 flex items-center">
-        {/* Background Banners dos Slides com crossfade */}
-        <div className="absolute inset-0">
+      <section className="relative w-full overflow-hidden bg-[#071c30] pt-20">
+        <div className="relative w-full aspect-[16/9] min-h-[340px] sm:min-h-[440px] md:min-h-[520px] lg:min-h-[600px] xl:min-h-[700px]">
           {heroSlides.map((slide, index) => (
             <div
               key={slide.id}
@@ -540,127 +538,59 @@ export function HomePageClient({ initialSlides }: HomePageClientProps) {
                 index === currentHeroIndex ? "opacity-100 z-0" : "opacity-0 pointer-events-none -z-10"
               }`}
             >
-              <Image
-                src={slide.imageUrl}
-                alt={slide.title}
-                fill
-                priority={index === 0}
-                className="object-cover object-center"
-                unoptimized
+              <HeroSlideCanvas
+                slide={slide}
+                secondaryButtonUrl={portalConfig.eventsPortalUrl}
+                secondaryButtonLabel={portalHomeContent.heroSecondaryLabel || "Eventos Oficiais"}
               />
             </div>
           ))}
-        </div>
 
-        {/* Gradientes e Overlays Oficiais focados na legibilidade à esquerda, sem lavar o banner */}
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,59,99,0.90)_0%,rgba(15,59,99,0.70)_50%,rgba(15,59,99,0.25)_100%)] sm:bg-[linear-gradient(90deg,rgba(15,59,99,0.94)_0%,rgba(15,59,99,0.72)_40%,rgba(15,59,99,0.18)_70%,transparent_100%)]" />
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-
-        {/* Conteúdo Editorial do Slide */}
-        <div className="relative z-10 mx-auto w-full max-w-7xl px-5 py-14 sm:px-8 sm:py-20 lg:py-24">
-          <div className="max-w-3xl min-w-0">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentHeroSlide.id}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -16 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
+          {/* Controles de Navegação e Paginação do Slider */}
+          {heroSlides.length > 1 && (
+            <>
+              {/* Botões Laterais Anterior / Próximo */}
+              <button
+                type="button"
+                onClick={() => setCurrentHeroIndex((prev) => (prev - 1 + heroSlides.length) % heroSlides.length)}
+                className="hidden sm:grid absolute left-4 top-1/2 z-20 -translate-y-1/2 h-10 w-10 md:h-12 md:w-12 place-items-center rounded-full border border-white/20 bg-black/35 text-white backdrop-blur-md transition hover:bg-[#0F3B63] hover:border-[#D4A24C] hover:scale-105"
+                title="Slide anterior"
+                aria-label="Slide anterior"
               >
-                {currentHeroSlide.dataLabel ? (
-                  <div className="mb-4 sm:mb-5 inline-flex items-center gap-2.5 rounded-lg border border-[#D4A24C]/60 bg-white/12 px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-black uppercase tracking-[0.22em] text-[#F8D77B] shadow-sm backdrop-blur-md">
-                    <Sparkles size={15} />
-                    <span>{currentHeroSlide.dataLabel}</span>
-                  </div>
-                ) : null}
+                <ChevronLeft size={22} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setCurrentHeroIndex((prev) => (prev + 1) % heroSlides.length)}
+                className="hidden sm:grid absolute right-4 top-1/2 z-20 -translate-y-1/2 h-10 w-10 md:h-12 md:w-12 place-items-center rounded-full border border-white/20 bg-black/35 text-white backdrop-blur-md transition hover:bg-[#0F3B63] hover:border-[#D4A24C] hover:scale-105"
+                title="Próximo slide"
+                aria-label="Próximo slide"
+              >
+                <ChevronRight size={22} />
+              </button>
 
-                <h1 className="font-serif text-[clamp(2.1rem,6vw,5.2rem)] font-black leading-[0.94] text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.65)]">
-                  {currentHeroSlide.title}
-                </h1>
-
-                {currentHeroSlide.subtitle ? (
-                  <p className="mt-3.5 sm:mt-5 text-lg sm:text-2xl md:text-3xl font-semibold leading-tight text-[#F8D77B] drop-shadow-md">
-                    {currentHeroSlide.subtitle}
-                  </p>
-                ) : null}
-
-                {currentHeroSlide.description ? (
-                  <p className="mt-3.5 sm:mt-4 max-w-2xl text-sm sm:text-base md:text-lg leading-relaxed text-white/85 drop-shadow-sm">
-                    {currentHeroSlide.description}
-                  </p>
-                ) : null}
-
-                <div className="mt-7 sm:mt-10 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 sm:gap-3.5">
-                  {currentHeroSlide.buttonText && currentHeroSlide.buttonUrl ? (
-                    <a
-                      href={currentHeroSlide.buttonUrl}
-                      target={currentHeroSlide.openInNewTab ? "_blank" : undefined}
-                      rel={currentHeroSlide.openInNewTab ? "noreferrer" : undefined}
-                      className="group inline-flex items-center justify-center gap-3 rounded-lg bg-[#D4A24C] px-6 sm:px-7 py-3.5 sm:py-4 text-sm font-black uppercase tracking-[0.14em] text-white shadow-[0_8px_24px_rgba(212,162,76,0.35)] transition hover:-translate-y-0.5 hover:bg-[#B8872D]"
-                    >
-                      <span>{currentHeroSlide.buttonText}</span>
-                      <ArrowRight size={18} className="transition group-hover:translate-x-1" />
-                    </a>
-                  ) : null}
-                  <a
-                    href={portalConfig.eventsPortalUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center justify-center rounded-lg border border-white/28 bg-[#0F3B63]/70 px-6 sm:px-7 py-3.5 sm:py-4 text-sm font-black uppercase tracking-[0.14em] !text-white backdrop-blur transition hover:-translate-y-0.5 hover:border-[#D4A24C] hover:bg-[#1D5A8C]"
-                  >
-                    {portalHomeContent.heroSecondaryLabel || "Eventos Oficiais"}
-                  </a>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
+              {/* Indicadores / Paginação dos Slides no Rodapé do Hero */}
+              <div className="absolute bottom-4 sm:bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/15 bg-black/60 px-3 py-1 backdrop-blur-md">
+                {heroSlides.map((slide, idx) => (
+                  <button
+                    key={slide.id}
+                    type="button"
+                    onClick={() => setCurrentHeroIndex(idx)}
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      idx === currentHeroIndex ? "w-7 bg-[#D4A24C]" : "w-2 bg-white/40 hover:bg-white/70"
+                    }`}
+                    title={`Ir para slide ${idx + 1}`}
+                    aria-label={`Slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </div>
-
-        {/* Controles de Navegação e Paginação do Slider */}
-        {heroSlides.length > 1 && (
-          <>
-            {/* Botões Laterais Anterior / Próximo (ocultos em telas muito pequenas para não cobrir texto) */}
-            <button
-              type="button"
-              onClick={() => setCurrentHeroIndex((prev) => (prev - 1 + heroSlides.length) % heroSlides.length)}
-              className="hidden sm:grid absolute left-4 top-1/2 z-20 -translate-y-1/2 h-12 w-12 place-items-center rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-md transition hover:bg-[#0F3B63] hover:border-[#D4A24C] hover:scale-105"
-              title="Slide anterior"
-              aria-label="Slide anterior"
-            >
-              <ChevronLeft size={24} />
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrentHeroIndex((prev) => (prev + 1) % heroSlides.length)}
-              className="hidden sm:grid absolute right-4 top-1/2 z-20 -translate-y-1/2 h-12 w-12 place-items-center rounded-full border border-white/20 bg-black/30 text-white backdrop-blur-md transition hover:bg-[#0F3B63] hover:border-[#D4A24C] hover:scale-105"
-              title="Próximo slide"
-              aria-label="Próximo slide"
-            >
-              <ChevronRight size={24} />
-            </button>
-
-            {/* Indicadores / Paginação dos Slides no Rodapé do Hero */}
-            <div className="absolute bottom-5 sm:bottom-6 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/15 bg-black/35 px-3 py-1.5 backdrop-blur-md">
-              {heroSlides.map((slide, idx) => (
-                <button
-                  key={slide.id}
-                  type="button"
-                  onClick={() => setCurrentHeroIndex(idx)}
-                  className={`h-2.5 rounded-full transition-all duration-300 ${
-                    idx === currentHeroIndex ? "w-8 bg-[#D4A24C]" : "w-2.5 bg-white/40 hover:bg-white/70"
-                  }`}
-                  title={`Ir para slide ${idx + 1}`}
-                  aria-label={`Slide ${idx + 1}`}
-                />
-              ))}
-            </div>
-          </>
-        )}
       </section>
 
-      <section className="relative bg-white px-5 sm:px-8" aria-label="Números institucionais">
-        <div className="mx-auto -mt-16 grid max-w-7xl overflow-hidden rounded-xl border border-[#0F3B63]/10 bg-white shadow-[0_28px_70px_rgba(15,59,99,.14)] backdrop-blur-xl md:grid-cols-4">
+      <section className="relative bg-white px-5 sm:px-8 py-10 md:py-14" aria-label="Números institucionais">
+        <div className="mx-auto grid max-w-7xl overflow-hidden rounded-xl border border-[#0F3B63]/10 bg-white shadow-[0_20px_50px_rgba(15,59,99,.10)] backdrop-blur-xl md:grid-cols-4">
           {stats.map((stat, index) => (
             <div key={stat.label} className={`relative overflow-hidden border-b border-[#0F3B63]/10 p-7 md:border-b-0 md:border-r ${index > 1 ? "hidden md:block" : ""}`}>
               <p className="font-serif text-5xl font-black text-[#0F3B63]">{stat.value}</p>
