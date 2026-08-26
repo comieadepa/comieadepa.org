@@ -486,7 +486,7 @@ export function HomePageClient({ initialSlides }: HomePageClientProps) {
   return (
     <PublicLayout>
       <main className="min-h-screen overflow-hidden bg-white text-[#1F2937]">
-      <section className="relative w-full overflow-hidden bg-[#071c30] pt-20">
+      <section className="relative w-full overflow-hidden">
         <div className="relative w-full aspect-[1920/900] min-h-[300px] sm:min-h-[380px] md:min-h-[460px] lg:min-h-[540px] xl:min-h-[620px]">
           {heroSlides.map((slide, index) => (
             <div
