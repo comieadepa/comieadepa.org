@@ -88,11 +88,19 @@ export function PublicLayout({ children }: { children: ReactNode }) {
   );
 }
 
+function normalizeMinisterPortalUrl(url?: string): string {
+  const trimmed = url?.trim();
+  if (!trimmed || trimmed === "https://www.siscomieadepa.org/login" || trimmed === "https://www.siscomieadepa.org" || trimmed === "https://siscomieadepa.org/login") {
+    return "https://www.siscomieadepa.org/portal-ministro/login";
+  }
+  return trimmed;
+}
+
 export function mapPublicSiteSettings(settings: CmsSetting[]): PublicSiteConfig {
   const values = new Map(settings.map((setting) => [setting.chave, stringifySettingValue(setting.valor)]));
 
   return {
-    ministerPortalUrl: values.get("url_area_ministro") || defaultPublicSiteConfig.ministerPortalUrl,
+    ministerPortalUrl: normalizeMinisterPortalUrl(values.get("url_area_ministro")),
     eventsPortalUrl: values.get("url_eventos") || defaultPublicSiteConfig.eventsPortalUrl,
     youtubeChannelUrl: values.get("youtube_channel_url") || defaultPublicSiteConfig.youtubeChannelUrl,
     facebookUrl: values.get("facebook_url") || defaultPublicSiteConfig.facebookUrl,
