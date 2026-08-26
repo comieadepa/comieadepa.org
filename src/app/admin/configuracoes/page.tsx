@@ -17,7 +17,7 @@ const settingFields = [
     description: "Eventos e Área do Ministro continuam em sistemas externos. Aqui guardamos apenas os links usados pelo portal.",
     fields: [
       { name: "url_eventos", label: "Sistema oficial de eventos", placeholder: "https://eventos.siscomieadepa.org/eventos-publicos" },
-      { name: "url_area_ministro", label: "Área do Ministro", placeholder: "Cole aqui quando o sistema de gestão liberar o link" },
+      { name: "url_area_ministro", label: "Área do Ministro", placeholder: "https://www.siscomieadepa.org/portal-ministro/login" },
     ],
   },
   {
@@ -128,7 +128,7 @@ const settingFields = [
 
 const fallbackSettings: Record<string, string> = {
   url_eventos: "https://eventos.siscomieadepa.org/eventos-publicos",
-  url_area_ministro: "https://www.siscomieadepa.org/login",
+  url_area_ministro: "https://www.siscomieadepa.org/portal-ministro/login",
   youtube_channel_url: "https://www.youtube.com/@comieadepa",
   facebook_url: "",
   instagram_url: "",

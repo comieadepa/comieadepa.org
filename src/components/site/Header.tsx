@@ -18,6 +18,7 @@ export function Header({ eventsPortalUrl, ministerPortalUrl }: HeaderProps) {
   const [institutionalMenuOpen, setInstitutionalMenuOpen] = useState(false);
   const pathname = usePathname();
   const contactHref = pathname === "/" ? "#contato" : "/#contato";
+  const targetMinisterUrl = ministerPortalUrl || "https://www.siscomieadepa.org/portal-ministro/login";
 
   return (
     <>
@@ -36,7 +37,9 @@ export function Header({ eventsPortalUrl, ministerPortalUrl }: HeaderProps) {
           <Navigation onOpenInstitutionalMenu={() => setInstitutionalMenuOpen(true)} />
 
           <a
-            href={ministerPortalUrl}
+            href={targetMinisterUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             className="hidden rounded-lg bg-[#0F3B63] px-5 py-3 text-sm font-black uppercase tracking-[0.14em] !text-white shadow-[0_16px_34px_rgba(15,59,99,.20)] transition hover:-translate-y-0.5 hover:bg-[#4A86B8] hover:!text-white lg:inline-flex"
           >
             Área do Ministro
@@ -64,7 +67,12 @@ export function Header({ eventsPortalUrl, ministerPortalUrl }: HeaderProps) {
               }}
             />
             <div className="mx-auto mt-4 max-w-7xl">
-              <a href={ministerPortalUrl} className="block rounded-lg bg-[#0F3B63] px-4 py-3 text-center text-sm font-black uppercase !text-white hover:!text-white">
+              <a
+                href={targetMinisterUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block rounded-lg bg-[#0F3B63] px-4 py-3 text-center text-sm font-black uppercase !text-white hover:!text-white"
+              >
                 Área do Ministro
               </a>
             </div>
@@ -75,7 +83,7 @@ export function Header({ eventsPortalUrl, ministerPortalUrl }: HeaderProps) {
       <InstitutionalMegaMenu
         open={institutionalMenuOpen}
         onClose={() => setInstitutionalMenuOpen(false)}
-        ministerPortalUrl={ministerPortalUrl}
+        ministerPortalUrl={targetMinisterUrl}
         eventsPortalUrl={eventsPortalUrl}
         contactHref={contactHref}
       />

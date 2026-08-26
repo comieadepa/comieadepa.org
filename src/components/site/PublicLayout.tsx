@@ -27,7 +27,7 @@ type CmsSetting = {
 };
 
 export const defaultPublicSiteConfig: PublicSiteConfig = {
-  ministerPortalUrl: "https://www.siscomieadepa.org/login",
+  ministerPortalUrl: "https://www.siscomieadepa.org/portal-ministro/login",
   eventsPortalUrl: "https://eventos.siscomieadepa.org/eventos-publicos",
   youtubeChannelUrl: "https://www.youtube.com/@comieadepa",
   facebookUrl: "",
