@@ -1,5 +1,7 @@
 import {
   createAuditLog,
+  deleteAdminUserFromAuth,
+  deleteSupabaseRows,
   hasSupabaseAdminConfig,
   insertSupabaseRow,
   missingSupabaseAdminResponse,
@@ -32,6 +34,31 @@ export async function POST(request: Request) {
   const name = requiredString(formData, "nome");
   const email = requiredString(formData, "email").toLowerCase();
   const password = optionalString(formData, "password");
+
+  if (action === "delete" && id) {
+    try {
+      // 1. Exclui definitivamente da tabela de usuários do CMS
+      await deleteSupabaseRows("cms_admin_users", `id=eq.${encodeURIComponent(id)}`);
+
+      // 2. Se houver e-mail associado, remove do Supabase Auth
+      if (email) {
+        await deleteAdminUserFromAuth(email);
+      }
+
+      await createAuditLog({
+        request,
+        action: "delete",
+        entity: "usuario",
+        entityId: id,
+        entityTitle: name || email,
+        metadata: { email },
+      });
+
+      return redirectWithStatus(request.url, "/admin/usuarios", "success", "Usuário excluído definitivamente com sucesso.");
+    } catch (error) {
+      return redirectWithStatus(request.url, "/admin/usuarios", "error", error instanceof Error ? error.message : "Erro ao excluir usuário permanentemente.");
+    }
+  }
 
   if ((action === "activate" || action === "deactivate") && id) {
     try {

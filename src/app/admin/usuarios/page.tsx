@@ -1,4 +1,4 @@
-import { Building2, Edit2, KeyRound, Power, Save, Search, Send, UserCog, UserX, X } from "lucide-react";
+import { Building2, Edit2, KeyRound, Power, Save, Search, Trash2, UserCog, UserX, X } from "lucide-react";
 import Link from "next/link";
 import { selectSupabaseRows } from "@/lib/supabase-admin";
 import { StatusMessage } from "../status-message";
@@ -76,7 +76,7 @@ export default async function AdminUsersPage({
         icon={UserCog}
         eyebrow="Equipe e Acessos"
         title="Usuários e Perfis Administrativos"
-        description="Gerencie os membros da equipe editorial e de comunicação. Cadastre e libere usuários diretamente com perfil de acesso e senha sincronizados no Supabase."
+        description="Gerencie os membros da equipe editorial e de comunicação. Cadastre e libere usuários com perfil de acesso e credenciais sincronizadas no portal."
       />
 
       <div className="grid gap-8 lg:grid-cols-[400px_1fr]">
@@ -147,7 +147,7 @@ export default async function AdminUsersPage({
               <span className="text-[11px] text-[#5a472c]/70">
                 {editingUser
                   ? "Preencha apenas se desejar redefinir a senha do usuário."
-                  : "O usuário é liberado imediatamente no Supabase Auth para login com esta senha."}
+                  : "O usuário é liberado imediatamente no portal para login com esta senha."}
               </span>
             </label>
 
@@ -325,22 +325,6 @@ export default async function AdminUsersPage({
                       Editar
                     </Link>
 
-                    {/* Enviar Acesso / Recuperação */}
-                    <form action="/api/admin/usuarios" method="post" className="inline">
-                      <input type="hidden" name="id" value={user.id} />
-                      <input type="hidden" name="nome" value={user.nome} />
-                      <input type="hidden" name="email" value={user.email} />
-                      <input type="hidden" name="action" value="send_access" />
-                      <button
-                        type="submit"
-                        title="Enviar e-mail para definição ou recuperação de senha"
-                        className="inline-flex items-center gap-1 border border-[#d8c38b] bg-white px-2.5 py-1.5 text-xs font-bold text-[#5a472c] transition hover:border-[#8b2f2b] hover:text-[#8b2f2b]"
-                      >
-                        <Send size={12} />
-                        Enviar Acesso
-                      </button>
-                    </form>
-
                     {/* Definir Senha Direta */}
                     <Link
                       href={`/admin/usuarios?reset=${user.id}${activeFilter !== "todos" ? `&ativo=${activeFilter}` : ""}`}
@@ -360,7 +344,7 @@ export default async function AdminUsersPage({
                         title={user.ativo ? "Desativar usuário" : "Ativar usuário"}
                         className={`inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold transition ${
                           user.ativo
-                            ? "text-red-700 hover:bg-red-50"
+                            ? "text-amber-700 hover:bg-amber-50"
                             : "text-emerald-700 hover:bg-emerald-50"
                         }`}
                       >
@@ -368,6 +352,24 @@ export default async function AdminUsersPage({
                         {user.ativo ? "Desativar" : "Ativar"}
                       </button>
                     </form>
+
+                    {/* Excluir Definitivamente (Habilitado exclusivamente para Inativos) */}
+                    {!user.ativo && (
+                      <form action="/api/admin/usuarios" method="post" className="inline">
+                        <input type="hidden" name="id" value={user.id} />
+                        <input type="hidden" name="nome" value={user.nome} />
+                        <input type="hidden" name="email" value={user.email} />
+                        <input type="hidden" name="action" value="delete" />
+                        <button
+                          type="submit"
+                          title="Excluir permanentemente este usuário inativo"
+                          className="inline-flex items-center gap-1 border border-[#8b2f2b]/40 bg-[#8b2f2b]/10 px-2.5 py-1.5 text-xs font-bold text-[#8b2f2b] transition hover:bg-[#8b2f2b] hover:text-white shadow-xs"
+                        >
+                          <Trash2 size={12} />
+                          Excluir
+                        </button>
+                      </form>
+                    )}
                   </div>
                 </div>
               );

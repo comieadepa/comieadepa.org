@@ -30,8 +30,8 @@ export function HeroSlideCanvas({
   const hasImage = Boolean(slide.imageUrl && slide.imageUrl.trim().length > 0);
 
   return (
-    <div className="relative w-full aspect-[16/9] overflow-hidden bg-[#071c30]">
-      {/* 1. Imagem de Fundo (100% no canvas 16:9, sem corte da arte 1920x1080) */}
+    <div className="relative w-full h-full aspect-[1920/900] overflow-hidden bg-[#071c30]">
+      {/* 1. Imagem de Fundo (100% no canvas 1920x900, proporcao panoramica) */}
       {hasImage ? (
         <Image
           src={slide.imageUrl!}
@@ -44,17 +44,17 @@ export function HeroSlideCanvas({
       ) : (
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white/30">
           <ImageIcon size={48} className="stroke-1" />
-          <span className="mt-2 text-xs font-bold uppercase tracking-wider">Aguardando banner (16:9)...</span>
+          <span className="mt-2 text-xs font-bold uppercase tracking-wider">Aguardando banner (1920×900)...</span>
         </div>
       )}
 
-      {/* 2. Gradiente Vertical no Rodapé: Preserva 50–60% superiores da foto limpos e cria faixa escura profunda de alto contraste (#030c17) na base */}
-      <div className="absolute inset-x-0 bottom-0 h-[68%] sm:h-[58%] lg:h-[52%] bg-[linear-gradient(0deg,#030c17_0%,rgba(4,14,26,0.98)_25%,rgba(7,28,48,0.85)_48%,rgba(15,59,99,0.38)_72%,rgba(15,59,99,0.06)_88%,transparent_100%)] pointer-events-none z-10" />
-      <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#030c17] to-transparent pointer-events-none z-10" />
+      {/* 2. Gradiente Vertical no Rodapé: Topo limpo e rodapé escuro institucional profundo (#030c17 / rgba(7,28,48,0.98)) */}
+      <div className="absolute inset-x-0 bottom-0 h-[72%] sm:h-[62%] lg:h-[55%] bg-[linear-gradient(0deg,#030c17_0%,rgba(5,20,35,0.98)_22%,rgba(7,28,48,0.85)_46%,rgba(15,59,99,0.36)_70%,rgba(15,59,99,0.06)_86%,transparent_100%)] pointer-events-none z-10" />
+      <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#030c17] to-transparent pointer-events-none z-10" />
       <div className="absolute inset-0 opacity-[0.03] [background-image:linear-gradient(135deg,#fff_1px,transparent_1px)] [background-size:32px_32px] pointer-events-none" />
 
       {/* 3. Faixa Editorial Inferior Ancorada na Base com Z-Index Alto (z-30) e Espaçamento Seguro */}
-      <div className="absolute inset-x-0 bottom-0 z-30 w-full min-w-0 px-5 sm:px-8 md:px-10 lg:px-14 pb-6 sm:pb-8 md:pb-10 lg:pb-12 pt-12">
+      <div className="absolute inset-x-0 bottom-0 z-30 w-full min-w-0 px-5 sm:px-8 md:px-10 lg:px-14 pb-8 sm:pb-10 md:pb-12 lg:pb-14 pt-12">
         <div className="w-full min-w-0 max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-5 lg:gap-8">
           {/* Bloco Textual */}
           <div className="w-full min-w-0 flex-1 space-y-1.5 sm:space-y-2 lg:space-y-2.5">

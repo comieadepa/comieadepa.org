@@ -36,6 +36,7 @@ export type AdminNavGroup = {
 export const adminNavGroups: AdminNavGroup[] = [
   {
     id: "principal",
+    title: "Geral",
     items: [
       { href: "/admin", label: "Visão Geral", icon: Home },
     ],
@@ -44,6 +45,7 @@ export const adminNavGroups: AdminNavGroup[] = [
     id: "editorial",
     title: "Conteúdo & Mídia",
     items: [
+      { href: "/admin/home", label: "Destaques da Home", icon: Settings },
       {
         href: "/admin/noticias",
         label: "Notícias",
@@ -56,7 +58,6 @@ export const adminNavGroups: AdminNavGroup[] = [
       { href: "/admin/galerias", label: "Galeria de Fotos", icon: ImageIcon },
       { href: "/admin/videos", label: "Vídeos & YouTube", icon: Youtube },
       { href: "/admin/midia", label: "Biblioteca de Mídia", icon: Images },
-      { href: "/admin/home", label: "Destaques da Home", icon: Settings },
     ],
   },
   {
@@ -87,7 +88,7 @@ export const adminNavGroups: AdminNavGroup[] = [
   },
   {
     id: "sistema",
-    title: "Sistema & Governança",
+    title: "Administração",
     items: [
       { href: "/admin/usuarios", label: "Usuários", icon: UserCog },
       { href: "/admin/permissoes", label: "Permissões (RBAC)", icon: ShieldCheck },

@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { CmsHomeSlide, HomeSlideStatus } from "@/lib/home-slides";
 import { HeroSlideCanvas } from "@/components/site/HeroSlideCanvas";
-import { AdminFilterPills, AdminStatusBadge } from "../admin-ui";
+import { AdminConfirmModal, AdminFilterPills, AdminStatusBadge } from "../admin-ui";
 import { MediaPickerAsset, MediaUrlField } from "../media-url-field";
 
 type HomeSlidesManagerProps = {
@@ -48,6 +48,7 @@ export function HomeSlidesManager({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState<"todos" | HomeSlideStatus>("todos");
+  const [slideIdToDelete, setSlideIdToDelete] = useState<string | null>(null);
 
   // Form states for Live Preview
   const [formImage, setFormImage] = useState("");
@@ -279,11 +280,17 @@ export function HomeSlidesManager({
     }
   }
 
-  async function handleDeleteSlide(slideId: string) {
-    if (!canDelete && !canArchive) return;
+  function promptDeleteSlide(slideId: string) {
+    if (!canDelete && !canArchive) {
+      setFeedback({ type: "error", message: "Permissão negada para excluir slides." });
+      return;
+    }
+    setSlideIdToDelete(slideId);
+  }
 
-    const confirmed = window.confirm("Tem certeza que deseja excluir este slide do destaque principal?");
-    if (!confirmed) return;
+  async function executeDeleteSlide() {
+    if (!slideIdToDelete) return;
+    const slideId = slideIdToDelete;
 
     setProcessingSlideId(slideId);
     try {
@@ -299,6 +306,8 @@ export function HomeSlidesManager({
 
       setSlides((prev) => prev.filter((s) => s.id !== slideId));
       if (editingId === slideId) closeForm();
+      setSlideIdToDelete(null);
+      setFeedback({ type: "success", message: "Slide excluído com sucesso." });
 
       startTransition(() => {
         router.refresh();
@@ -390,19 +399,19 @@ export function HomeSlidesManager({
             {editingId && <input type="hidden" name="id" value={editingId} />}
 
             {/* ========================================================================= */}
-            {/* 1. PRIMEIRA LINHA: LIVE PREVIEW WIDESCREEN 16:9 (LARGURA TOTAL 100%)       */}
+            {/* 1. PRIMEIRA LINHA: LIVE PREVIEW PANORÂMICA 1920×900 (LARGURA TOTAL 100%)  */}
             {/* ========================================================================= */}
             <div className="space-y-3">
               <div className="flex items-center justify-between px-1">
                 <div className="flex items-center gap-2">
                   <Eye size={16} className="text-[#8b2f2b]" />
                   <span className="text-xs font-black uppercase tracking-[0.18em] text-[#8b2f2b]">
-                    Prévia do Hero (Widescreen 16:9)
+                    Prévia do Hero (1920×900 Panorâmico)
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="rounded bg-[#0F3B63] px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-[#F8D77B]">
-                    Proporção Real 16:9
+                    Proporção Real 1920×900
                   </span>
                   <span className="hidden text-[11px] text-[#5a472c]/70 sm:inline">
                     Simulação fiel do Hero público
@@ -410,7 +419,7 @@ export function HomeSlidesManager({
                 </div>
               </div>
 
-              {/* Canvas Panorâmico 16:9 em Largura Total (Componente Compartilhado com o Site) */}
+              {/* Canvas Panorâmico 1920×900 em Largura Total (Componente Compartilhado com o Site) */}
               <div className="w-full overflow-hidden rounded-xl border border-[#0F3B63]/30 shadow-2xl">
                 <HeroSlideCanvas
                   slide={{
@@ -428,7 +437,7 @@ export function HomeSlidesManager({
               </div>
 
               <div className="flex items-center justify-between px-1 text-[11px] text-[#5a472c]/70">
-                <span>Enquadramento: <strong>16:9 Widescreen (1920×1080)</strong></span>
+                <span>Enquadramento: <strong>1920×900 Panorâmico (Centralizado)</strong></span>
                 <span>Renderizador: <strong>HeroSlideCanvas (1:1 com o Portal)</strong></span>
               </div>
             </div>
@@ -462,7 +471,7 @@ export function HomeSlidesManager({
                         <Info size={16} className="mt-0.5 shrink-0 text-[#8b2f2b]" />
                         <div className="min-w-0 space-y-0.5">
                           <p className="font-bold text-[#171006]">
-                            Formato recomendado: 1920 × 1080 px (16:9) • JPG, PNG ou WebP • tamanho máximo: 5 MB
+                            Formato recomendado: 1920 × 900 px (Panorâmico) • JPG, PNG ou WebP • tamanho máximo: 5 MB
                           </p>
                           <p className="text-[11px] text-[#5a472c]/80">
                             Imagens menores podem perder qualidade no Hero.
@@ -787,9 +796,9 @@ export function HomeSlidesManager({
                     <button
                       type="button"
                       disabled={isProcessing}
-                      onClick={() => handleDeleteSlide(slide.id)}
+                      onClick={() => promptDeleteSlide(slide.id)}
                       title="Excluir slide"
-                      className="grid h-8 w-8 place-items-center border border-[#8b2f2b]/30 text-[#8b2f2b] transition hover:bg-[#8b2f2b] hover:text-white disabled:opacity-30"
+                      className="grid h-8 w-8 place-items-center border border-[#8b2f2b]/30 text-[#8b2f2b] transition hover:bg-[#8b2f2b] hover:text-white disabled:opacity-30 cursor-pointer"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -800,6 +809,19 @@ export function HomeSlidesManager({
           })}
         </div>
       )}
+
+      {/* Modal Estilizado de Confirmação de Exclusão */}
+      <AdminConfirmModal
+        isOpen={Boolean(slideIdToDelete)}
+        title="Excluir Slide do Hero"
+        description="Tem certeza que deseja excluir definitivamente este slide do destaque principal da Home? Esta ação não poderá ser desfeita."
+        confirmText="Sim, Excluir"
+        cancelText="Cancelar"
+        variant="danger"
+        isLoading={processingSlideId === slideIdToDelete}
+        onConfirm={executeDeleteSlide}
+        onCancel={() => setSlideIdToDelete(null)}
+      />
     </div>
   );
 }

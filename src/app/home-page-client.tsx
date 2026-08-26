@@ -6,13 +6,12 @@ import {
   CalendarDays,
   ChevronLeft,
   ChevronRight,
-  Clock,
   Eye,
   Landmark,
-  MapPin,
   Play,
   Quote,
   ShieldCheck,
+  Smartphone,
   Users,
   Youtube,
 } from "lucide-react";
@@ -370,8 +369,6 @@ const eventVideos = [
 ];
 
 export function HomePageClient({ initialSlides }: HomePageClientProps) {
-  const [eventCards, setEventCards] = useState<EventCard[]>(supabaseAnonKey ? [] : fallbackEvents);
-  const [eventsLoading, setEventsLoading] = useState(Boolean(supabaseAnonKey));
   const [portalVideos, setPortalVideos] = useState<PortalVideo[]>(fallbackVideos);
   const [portalNews, setPortalNews] = useState<PortalNews[]>(fallbackNews);
   const [portalDepartments, setPortalDepartments] = useState<PortalDepartment[]>(fallbackDepartmentCards);
@@ -385,45 +382,6 @@ export function HomePageClient({ initialSlides }: HomePageClientProps) {
   useEffect(() => {
     let isMounted = true;
 
-    async function loadSupabaseEvents() {
-      if (!supabaseAnonKey) {
-        return;
-      }
-
-      try {
-        const params = new URLSearchParams({
-          select: "id,nome,slug,descricao,departamento,data_inicio,data_fim,local,cidade,banner_url,valor_inscricao,inscricoes_abertas,publico_alvo,status,usar_tipos_inscricao",
-          order: "data_inicio.asc",
-          limit: "4",
-        });
-
-        const data = await fetchSupabasePublic<SupabaseEvent>("v_eventos_publicos", params.toString());
-        const registrationTypes = await loadEventRegistrationTypes(data.map((event) => event.id));
-        const eventsWithTypes = data.map((event) => ({
-          ...event,
-          registrationTypes: registrationTypes.filter((type) => type.evento_id === event.id),
-        }));
-        const mappedEvents = eventsWithTypes
-          .filter((event) => isEventVisibleOnHome(event))
-          .sort((a, b) => getEventSortTimestamp(a) - getEventSortTimestamp(b))
-          .map(mapSupabaseEventToCard)
-          .slice(0, 4);
-
-        if (isMounted && mappedEvents.length > 0) {
-          setEventCards(mappedEvents);
-        }
-      } catch (error) {
-        console.warn("Não foi possível carregar eventos.", error);
-        if (isMounted) {
-          setEventCards(fallbackEvents);
-        }
-      } finally {
-        if (isMounted) {
-          setEventsLoading(false);
-        }
-      }
-    }
-
     async function loadCmsPublicContent() {
       if (!supabaseAnonKey) {
         return;
@@ -433,11 +391,11 @@ export function HomePageClient({ initialSlides }: HomePageClientProps) {
         const [videosResponse, postsResponse, categoriesResponse, departmentsResponse, settingsResponse] = await Promise.all([
           fetchSupabasePublic<CmsVideo>(
             "cms_videos",
-            "select=id,titulo,youtube_id,youtube_url,tipo,departamento_id&ativo=eq.true&destaque_home=eq.true&order=ordem.asc.nullslast,created_at.desc&limit=4",
+            "select=id,titulo,resumo,youtube_id,url,published_at,created_at,departamento_id,destaque,ordem,status&status=eq.publicado&order=destaque.desc,ordem.asc,published_at.desc,created_at.desc&limit=3",
           ),
           fetchSupabasePublic<CmsPost>(
             "cms_posts",
-            `select=id,titulo,slug,resumo,capa_url,categoria_id,departamento_id,publicado_em,created_at&status=eq.publicado&destaque_home=eq.true${getPublishedPostsPublicFilter()}&order=publicado_em.desc.nullslast,created_at.desc&limit=3`,
+            "select=id,slug,titulo,resumo,categoria_id,departamento_id,capa_url,destaque,data_publicacao,status,created_at&status=eq.publicado&order=destaque.desc,data_publicacao.desc,created_at.desc&limit=4",
           ),
           fetchSupabasePublic<CmsLookup>("cms_categorias", "select=id,nome&order=nome.asc"),
           fetchSupabasePublic<CmsDepartmentCard>("cms_departamentos", "select=id,slug,nome,titulo,resumo,logo_url&ativo=eq.true&order=ordem.asc,nome.asc"),
@@ -473,7 +431,6 @@ export function HomePageClient({ initialSlides }: HomePageClientProps) {
       }
     }
 
-    loadSupabaseEvents();
     loadCmsPublicContent();
 
     return () => {
@@ -530,7 +487,7 @@ export function HomePageClient({ initialSlides }: HomePageClientProps) {
     <PublicLayout>
       <main className="min-h-screen overflow-hidden bg-white text-[#1F2937]">
       <section className="relative w-full overflow-hidden bg-[#071c30] pt-20">
-        <div className="relative w-full aspect-[16/9] min-h-[340px] sm:min-h-[440px] md:min-h-[520px] lg:min-h-[600px] xl:min-h-[700px]">
+        <div className="relative w-full aspect-[1920/900] min-h-[300px] sm:min-h-[380px] md:min-h-[460px] lg:min-h-[540px] xl:min-h-[620px]">
           {heroSlides.map((slide, index) => (
             <div
               key={slide.id}
@@ -745,105 +702,116 @@ export function HomePageClient({ initialSlides }: HomePageClientProps) {
         </div>
       </section>
 
-      <section id="eventos" className="relative overflow-hidden bg-white px-5 py-28 sm:px-8">
-        <motion.div style={{ y: newsParallaxY }} className="absolute -right-40 top-0 h-[560px] w-[560px] opacity-20 [clip-path:polygon(14%_0,100%_0,86%_100%,0_100%)]">
-          <Image src="/assets/congresso-comieadepa.jpg" alt="" fill className="object-cover" />
-        </motion.div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_18%,rgba(212,162,76,.16),transparent_28%)]" />
+      {/* Seção Aplicativo COMIEADEPA para Smartphone */}
+      <section id="aplicativo" className="relative overflow-hidden bg-gradient-to-r from-[#061d33] via-[#0F3B63] to-[#082846] py-14 sm:py-16 text-white px-5 sm:px-8 border-y border-[#D4A24C]/25 shadow-2xl">
+        {/* Efeitos de Fundo Institucionais */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_50%,rgba(212,162,76,0.15),transparent_35%),radial-gradient(circle_at_85%_40%,rgba(29,90,140,0.30),transparent_40%)] pointer-events-none" />
+        <div className="absolute inset-0 opacity-[0.05] [background-image:linear-gradient(135deg,#fff_1px,transparent_1px)] [background-size:28px_28px] pointer-events-none" />
+
         <div className="relative mx-auto max-w-7xl">
-          <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
-            <div>
-              <p className="text-sm font-black uppercase tracking-[0.22em] text-[#B8872D]">{portalHomeContent.eventsBadge}</p>
-              <h2 className="mt-5 font-serif text-4xl font-black leading-[1.03] text-[#0F3B63] sm:text-5xl">{portalHomeContent.eventsTitle}</h2>
-            </div>
-            <p className="max-w-2xl text-lg leading-8 text-[#6B7280]">
-              {portalHomeContent.eventsText}
-            </p>
-          </div>
-          <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {eventsLoading &&
-              [0, 1].map((item) => (
-                <article
-                  key={item}
-                  className="flex h-full min-h-[560px] flex-col overflow-hidden rounded-xl bg-[#F4F6F8] text-[#1F2937] shadow-[0_18px_38px_rgba(15,59,99,.10)]"
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
+            {/* Bloco Esquerda: Ícone Google Play em destaque + Textos */}
+            <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6 sm:gap-8 flex-1 min-w-0">
+              {/* Ícone Estilizado Google Play */}
+              <div className="relative shrink-0 grid h-24 w-24 sm:h-28 sm:w-28 place-items-center rounded-2xl bg-white/10 border border-white/20 shadow-[0_12px_32px_rgba(0,0,0,0.35)] backdrop-blur-md transition hover:scale-105">
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#00b67a]/20 via-[#4A86B8]/20 to-[#D4A24C]/20" />
+                <svg
+                  viewBox="0 0 512 512"
+                  className="h-14 w-14 sm:h-16 sm:w-16 drop-shadow-md relative z-10"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <div className="relative h-48 overflow-hidden bg-[#0F3B63]">
-                    <div className="absolute inset-0 animate-pulse bg-[linear-gradient(110deg,#d8e2ec_0%,#f4f6f8_45%,#d8e2ec_90%)] opacity-90" />
-                    <span className="absolute right-4 top-4 h-7 w-32 rounded-md bg-[#00b67a]/30" />
-                    <div className="absolute bottom-5 left-5 h-[70px] w-20 rounded-lg bg-white/82 shadow-[0_10px_26px_rgba(0,0,0,.18)]" />
-                  </div>
-                  <div className="flex flex-1 flex-col p-6">
-                    <div className="h-7 w-4/5 rounded bg-[#0F3B63]/12" />
-                    <div className="mt-3 h-7 w-2/3 rounded bg-[#0F3B63]/12" />
-                    <div className="mt-5 h-4 w-28 rounded bg-[#0F3B63]/10" />
-                    <div className="mt-8 grid gap-4">
-                      <div className="h-4 w-3/5 rounded bg-[#0F3B63]/10" />
-                      <div className="h-4 w-4/5 rounded bg-[#0F3B63]/10" />
-                      <div className="h-4 w-2/3 rounded bg-[#0F3B63]/10" />
-                    </div>
-                    <div className="mt-auto h-12 w-full rounded-full bg-[#0F3B63]/18" />
-                  </div>
-                </article>
-              ))}
-            {eventCards.map((event, index) => (
-              <motion.article
-                key={event.title}
-                initial={{ opacity: 0, y: 28 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.55, delay: index * 0.08 }}
-                className="group flex h-full min-h-[560px] flex-col overflow-hidden rounded-xl bg-white text-[#1F2937] shadow-[0_18px_38px_rgba(15,59,99,.12)] ring-1 ring-[#0F3B63]/8 transition hover:-translate-y-2 hover:shadow-[0_26px_54px_rgba(15,59,99,.18)]"
+                  <path
+                    d="M68.5 28.5C64.9 32.4 63 38.3 63 46v420c0 7.7 1.9 13.6 5.5 17.5l1.6 1.5 235-235v-5.6l-235-235-1.6 1.6z"
+                    fill="url(#gp_grad1)"
+                  />
+                  <path
+                    d="M382.4 329.8l-77.3-77.3v-5.6l77.3-77.3 1.8 1 91.5 52c26.1 14.8 26.1 39.2 0 54.1l-91.5 52-1.8 1.1z"
+                    fill="url(#gp_grad2)"
+                  />
+                  <path
+                    d="M305.1 252.5L68.5 484.5c8.6 9.1 22.8 10.2 38.6 1.3l275.3-156-77.3-77.3z"
+                    fill="url(#gp_grad3)"
+                  />
+                  <path
+                    d="M305.1 252.5l77.3-77.3-275.3-156C91.3 10.3 77.1 11.4 68.5 20.5l236.6 232z"
+                    fill="url(#gp_grad4)"
+                  />
+                  <defs>
+                    <linearGradient id="gp_grad1" x1="285.3" y1="452.9" x2="11.4" y2="179" gradientUnits="userSpaceOnUse">
+                      <stop stopColor="#00A0FF" />
+                      <stop offset=".007" stopColor="#00A1FF" />
+                      <stop offset=".26" stopColor="#00BEFF" />
+                      <stop offset=".512" stopColor="#00D2FF" />
+                      <stop offset=".76" stopColor="#00DFFF" />
+                      <stop offset="1" stopColor="#00E3FF" />
+                    </linearGradient>
+                    <linearGradient id="gp_grad2" x1="407.5" y1="256" x2="2.7" y2="256" gradientUnits="userSpaceOnUse">
+                      <stop stopColor="#FFE000" />
+                      <stop offset=".409" stopColor="#FFBD00" />
+                      <stop offset=".775" stopColor="#FFA500" />
+                      <stop offset="1" stopColor="#FF9C00" />
+                    </linearGradient>
+                    <linearGradient id="gp_grad3" x1="337.5" y1="284.9" x2="153.8" y2="468.6" gradientUnits="userSpaceOnUse">
+                      <stop stopColor="#FF3A44" />
+                      <stop offset="1" stopColor="#C31162" />
+                    </linearGradient>
+                    <linearGradient id="gp_grad4" x1="153.8" y1="43.4" x2="337.5" y2="227.1" gradientUnits="userSpaceOnUse">
+                      <stop stopColor="#32A071" />
+                      <stop offset=".069" stopColor="#2DA771" />
+                      <stop offset=".476" stopColor="#15CF74" />
+                      <stop offset=".801" stopColor="#06E775" />
+                      <stop offset="1" stopColor="#00F076" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+
+              {/* Textos Editoriais */}
+              <div className="space-y-2">
+                <div className="inline-flex items-center gap-2 rounded-md bg-[#D4A24C]/20 border border-[#D4A24C]/40 px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-[#F8D77B]">
+                  <Smartphone size={13} />
+                  <span>Aplicativo Oficial</span>
+                </div>
+                <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-black leading-tight text-white drop-shadow-md">
+                  Aplicativo COMIEADEPA para Smartphone
+                </h2>
+                <p className="text-sm sm:text-base text-white/90 max-w-2xl leading-relaxed">
+                  Use o aplicativo para celulares Android. A secretaria da COMIEADEPA na palma da mão! Clique no ícone para instalar.
+                </p>
+              </div>
+            </div>
+
+            {/* Bloco Direita: Botões de Ação / Instalação */}
+            <div className="shrink-0 flex flex-col sm:flex-row items-center gap-3.5 w-full sm:w-auto">
+              <a
+                href="https://play.google.com/store/apps"
+                target="_blank"
+                rel="noreferrer"
+                className="group flex items-center justify-center gap-3.5 rounded-xl bg-black/55 hover:bg-black/80 border border-white/25 hover:border-[#D4A24C] px-6 py-3.5 shadow-lg transition hover:-translate-y-0.5 w-full sm:w-auto"
               >
-                <div className="relative h-48 overflow-hidden bg-[#0F3B63]">
-                  <Image src={event.image} alt={event.title} fill className="object-cover transition duration-700 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(18,15,10,.28),rgba(18,15,10,.02))]" />
-                  <span className={`absolute right-4 top-4 rounded-md px-3 py-1 text-xs font-black text-white ${event.status === "Em Breve" ? "bg-[#D4A24C]" : "bg-[#0F3B63]"}`}>
-                    {event.status}
-                  </span>
-                  <div className="absolute bottom-5 left-5 rounded-lg bg-white px-4 py-3 shadow-[0_10px_26px_rgba(0,0,0,.18)]">
-                    <p className="text-sm font-semibold text-[#B8872D]">{event.day}</p>
-                    <p className="text-xl font-black">{event.month}</p>
-                  </div>
+                <svg viewBox="0 0 512 512" className="h-7 w-7 shrink-0" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M68.5 28.5C64.9 32.4 63 38.3 63 46v420c0 7.7 1.9 13.6 5.5 17.5l1.6 1.5 235-235v-5.6l-235-235-1.6 1.6z" fill="#00E3FF"/>
+                  <path d="M382.4 329.8l-77.3-77.3v-5.6l77.3-77.3 1.8 1 91.5 52c26.1 14.8 26.1 39.2 0 54.1l-91.5 52-1.8 1.1z" fill="#FFC107"/>
+                  <path d="M305.1 252.5L68.5 484.5c8.6 9.1 22.8 10.2 38.6 1.3l275.3-156-77.3-77.3z" fill="#FF3A44"/>
+                  <path d="M305.1 252.5l77.3-77.3-275.3-156C91.3 10.3 77.1 11.4 68.5 20.5l236.6 232z" fill="#00F076"/>
+                </svg>
+                <div className="text-left">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-white/70">Disponível no</p>
+                  <p className="text-sm font-black text-white">Google Play</p>
                 </div>
+              </a>
 
-                <div className="flex flex-1 flex-col p-6">
-                  <h3 className={`text-xl font-black uppercase leading-tight ${event.title === "Treinamento EBD" ? "text-[#B8872D]" : "text-[#1F2937]"}`}>
-                    {event.title}
-                  </h3>
-                  <p className="mt-3 text-sm text-[#6B7280]">{event.category}</p>
-
-                  <div className="mt-5 grid gap-3 text-sm text-[#374151]">
-                    <span className="inline-flex items-center gap-3">
-                      <Clock size={16} className="text-[#D4A24C]" />
-                      {event.time}
-                    </span>
-                    <span className="inline-flex items-center gap-3">
-                      <MapPin size={16} className="text-[#D4A24C]" />
-                      {event.location}
-                    </span>
-                    <span className="inline-flex items-center gap-3">
-                      <Users size={16} className="text-[#D4A24C]" />
-                      {event.attendees}
-                    </span>
-                  </div>
-
-                  <a
-                    href={portalConfig.eventsPortalUrl || event.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={`${event.actionLabel} - ${event.title}`}
-                    className={`mt-auto inline-flex w-full items-center justify-center gap-3 rounded-full px-5 py-3 text-sm font-black transition ${
-                      event.status === "Em Breve"
-                        ? "border border-[#D4A24C]/45 bg-[#F4F6F8] !text-[#0F3B63] hover:bg-[#D4A24C] hover:!text-white"
-                        : "bg-[#0F3B63] !text-white hover:bg-[#4A86B8]"
-                    }`}
-                  >
-                    {event.actionLabel}
-                    <ArrowRight size={18} />
-                  </a>
-                </div>
-              </motion.article>
-            ))}
+              <a
+                href={portalConfig.eventsPortalUrl || "https://eventos.siscomieadepa.org"}
+                target="_blank"
+                rel="noreferrer"
+                className="group flex items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-[#D4A24C] via-[#DFB15B] to-[#C2903B] hover:from-[#DFB15B] hover:to-[#B8872D] px-6 py-3.5 text-xs sm:text-sm font-black uppercase tracking-[0.14em] text-[#051423] shadow-[0_6px_20px_rgba(212,162,76,0.4)] transition hover:-translate-y-0.5 w-full sm:w-auto"
+              >
+                <span>Acessar Portal Web</span>
+                <ArrowRight size={16} className="transition group-hover:translate-x-1" />
+              </a>
+            </div>
           </div>
         </div>
       </section>

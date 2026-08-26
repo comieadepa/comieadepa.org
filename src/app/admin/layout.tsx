@@ -52,14 +52,23 @@ export default async function AdminLayout({
 
                 <div className="grid gap-1">
                   {group.items.map((item) => {
-                    const isUnlocked = item.href === "/admin/home";
-                    const isItemActive = currentPath === item.href || (item.href !== "/admin" && currentPath.startsWith(item.href));
+                    const unlockedRoutes = new Set([
+                      "/admin",
+                      "/admin/home",
+                      "/admin/noticias",
+                      "/admin/usuarios",
+                    ]);
+                    const isUnlocked = unlockedRoutes.has(item.href);
+                    const isItemActive =
+                      item.href === "/admin"
+                        ? currentPath === "/admin" || currentPath === "/admin/"
+                        : currentPath === item.href || currentPath.startsWith(`${item.href}/`);
 
                     if (!isUnlocked) {
                       return (
                         <div
                           key={item.href}
-                          title="Módulo bloqueado temporariamente para etapa de validação"
+                          title="Módulo em fase de homologação"
                           className="flex items-center justify-between rounded-sm px-3.5 py-2.5 text-sm font-semibold text-white/28 cursor-not-allowed select-none transition hover:bg-white/[0.02]"
                         >
                           <div className="flex items-center gap-3">
@@ -78,19 +87,21 @@ export default async function AdminLayout({
                           className={`group flex items-center justify-between rounded-sm border px-3.5 py-2.5 text-sm font-bold transition ${
                             isItemActive
                               ? "border-[#f4cf6a]/60 bg-[#f4cf6a]/15 text-white shadow-sm"
-                              : "border-[#f4cf6a]/30 bg-[#f4cf6a]/5 text-white/90 hover:border-[#f4cf6a] hover:bg-[#f4cf6a]/10 hover:text-white"
+                              : "border-transparent text-white/80 hover:border-white/10 hover:bg-white/5 hover:text-white"
                           }`}
                         >
                           <div className="flex items-center gap-3">
                             <item.icon
                               size={18}
-                              className={isItemActive ? "text-[#f4cf6a]" : "text-[#f4cf6a]"}
+                              className={isItemActive ? "text-[#f4cf6a]" : "text-white/60 group-hover:text-[#f4cf6a]"}
                             />
                             <span className="flex-1">{item.label}</span>
                           </div>
-                          <span className="rounded bg-[#f4cf6a] px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#171006]">
-                            Ativo
-                          </span>
+                          {isItemActive && (
+                            <span className="rounded bg-[#f4cf6a] px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#171006]">
+                              Ativo
+                            </span>
+                          )}
                         </Link>
                       </div>
                     );

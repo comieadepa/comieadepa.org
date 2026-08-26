@@ -1,4 +1,4 @@
-import type { LucideIcon } from "lucide-react";
+import { AlertTriangle, Trash2, X, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
@@ -101,20 +101,22 @@ export function AdminFilterPills({
         const isActive = current === option.value;
         const href = baseUrl ? (option.value === "todos" ? baseUrl : `${baseUrl}?${paramName}=${option.value}`) : undefined;
 
+        const pillClass = `inline-flex items-center px-3.5 py-2 text-[11px] font-black uppercase tracking-[0.12em] transition border ${
+          isActive
+            ? "bg-[#171006] text-[#F8D77B] !text-[#F8D77B] border-[#171006] shadow-sm"
+            : "border-[#d8c38b] bg-[#fffaf0] text-[#5a472c] !text-[#5a472c] hover:bg-[#f7efd6]"
+        }`;
+
         if (onSelect || !href) {
           return (
             <button
               key={option.value}
               type="button"
               onClick={() => onSelect?.(option.value)}
-              className={`px-3 py-2 text-[11px] font-black uppercase tracking-[0.12em] transition ${
-                isActive
-                  ? "bg-[#171006] text-[#f4cf6a]"
-                  : "border border-[#d8c38b] bg-[#fffaf0] text-[#5a472c] hover:bg-[#f7efd6]"
-              }`}
+              className={pillClass}
             >
-              {option.label}
-              {typeof option.count === "number" ? <span className="ml-1.5 opacity-60">({option.count})</span> : null}
+              <span>{option.label}</span>
+              {typeof option.count === "number" ? <span className="ml-1.5 opacity-80">({option.count})</span> : null}
             </button>
           );
         }
@@ -123,14 +125,10 @@ export function AdminFilterPills({
           <Link
             key={option.value}
             href={href}
-            className={`px-3 py-2 text-[11px] font-black uppercase tracking-[0.12em] transition ${
-              isActive
-                ? "bg-[#171006] text-[#f4cf6a]"
-                : "border border-[#d8c38b] bg-[#fffaf0] text-[#5a472c] hover:bg-[#f7efd6]"
-            }`}
+            className={pillClass}
           >
-            {option.label}
-            {typeof option.count === "number" ? <span className="ml-1.5 opacity-60">({option.count})</span> : null}
+            <span>{option.label}</span>
+            {typeof option.count === "number" ? <span className="ml-1.5 opacity-80">({option.count})</span> : null}
           </Link>
         );
       })}
@@ -152,6 +150,101 @@ export function AdminEmptyState({
     <div className="mt-8 border border-white/10 bg-white/[0.055] p-8 text-center text-white/62">
       <p className="font-serif text-lg font-bold text-white/80">{displayTitle}</p>
       {description ? <p className="mt-2 text-sm text-white/50">{description}</p> : null}
+    </div>
+  );
+}
+
+export function AdminConfirmModal({
+  isOpen,
+  title,
+  description,
+  confirmText = "Confirmar",
+  cancelText = "Cancelar",
+  variant = "danger",
+  isLoading = false,
+  onConfirm,
+  onCancel,
+}: {
+  isOpen: boolean;
+  title: string;
+  description: string;
+  confirmText?: string;
+  cancelText?: string;
+  variant?: "danger" | "warning" | "primary";
+  isLoading?: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-xs animate-in fade-in duration-200">
+      <div
+        className="relative w-full max-w-md border border-[#d8c38b] bg-[#fffaf0] p-6 shadow-2xl animate-in zoom-in-95 duration-200"
+        role="dialog"
+        aria-modal="true"
+      >
+        <button
+          type="button"
+          onClick={onCancel}
+          className="absolute right-4 top-4 p-1 text-[#5a472c]/70 hover:text-[#8b2f2b] transition"
+          title="Fechar"
+        >
+          <X size={18} />
+        </button>
+
+        <div className="flex items-start gap-4">
+          <div
+            className={`grid h-12 w-12 shrink-0 place-items-center ${
+              variant === "danger"
+                ? "bg-[#8b2f2b]/10 text-[#8b2f2b] border border-[#8b2f2b]/30"
+                : variant === "warning"
+                ? "bg-amber-500/10 text-amber-700 border border-amber-500/30"
+                : "bg-[#0F3B63]/10 text-[#0F3B63] border border-[#0F3B63]/30"
+            }`}
+          >
+            {variant === "danger" ? (
+              <Trash2 size={22} />
+            ) : (
+              <AlertTriangle size={22} />
+            )}
+          </div>
+
+          <div className="min-w-0 flex-1 pt-0.5">
+            <h3 className="font-serif text-lg font-bold text-[#171006]">
+              {title}
+            </h3>
+            <p className="mt-2 text-xs leading-relaxed text-[#5a472c]">
+              {description}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-6 flex items-center justify-end gap-3 border-t border-[#d8c38b]/60 pt-4">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={isLoading}
+            className="border border-[#d8c38b] bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-[#5a472c] transition hover:bg-[#f7efd6] disabled:opacity-50"
+          >
+            {cancelText}
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={isLoading}
+            className={`px-5 py-2 text-xs font-black uppercase tracking-[0.14em] text-white shadow-sm transition disabled:opacity-50 ${
+              variant === "danger"
+                ? "bg-[#8b2f2b] hover:bg-[#6e2421]"
+                : variant === "warning"
+                ? "bg-amber-600 hover:bg-amber-700"
+                : "bg-[#0F3B63] hover:bg-[#1D5A8C]"
+            }`}
+          >
+            {isLoading ? "Processando..." : confirmText}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -417,6 +417,39 @@ export async function setAdminUserStatusInAuth(email: string, active: boolean): 
   }
 }
 
+export async function deleteAdminUserFromAuth(email: string): Promise<void> {
+  if (!serviceRoleKey) return;
+
+  try {
+    const listUsersResponse = await fetch(`${supabaseUrl}/auth/v1/admin/users?page=1&per_page=100`, {
+      headers: {
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
+      },
+    });
+
+    if (!listUsersResponse.ok) return;
+
+    const listData = (await listUsersResponse.json().catch(() => null)) as {
+      users?: Array<{ id: string; email?: string }>;
+    } | null;
+
+    const authUser = listData?.users?.find((u) => u.email?.toLowerCase() === email.toLowerCase());
+
+    if (authUser?.id) {
+      await fetch(`${supabaseUrl}/auth/v1/admin/users/${authUser.id}`, {
+        method: "DELETE",
+        headers: {
+          apikey: serviceRoleKey,
+          Authorization: `Bearer ${serviceRoleKey}`,
+        },
+      });
+    }
+  } catch (err) {
+    console.warn("Erro ao excluir usuário do Supabase Auth:", err);
+  }
+}
+
 async function ensurePublicStorageBucket(bucket: string) {
   if (!serviceRoleKey) {
     throw new Error("Painel temporariamente indisponível. Tente novamente em instantes.");
