@@ -1,10 +1,9 @@
-import { adminNavGroups } from "@/lib/cms";
-import { filterAdminNavGroupsByRole, normalizeAdminRole } from "@/lib/admin-permissions";
 import { ArrowLeft, Bell, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { headers } from "next/headers";
-import { AdminSidebarNav } from "./admin-ui";
+import { normalizeAdminRole } from "@/lib/admin-permissions";
+import { AdminSidebarNav } from "./admin-sidebar-nav";
 
 export default async function AdminLayout({
   children,
@@ -19,8 +18,6 @@ export default async function AdminLayout({
   if (currentPath.startsWith("/admin/login") || currentPath.startsWith("/admin/definir-senha")) {
     return <main className="min-h-screen bg-[#f4efe1] text-[#171006]">{children}</main>;
   }
-
-  const visibleNavGroups = filterAdminNavGroupsByRole(adminNavGroups, role);
 
   return (
     <main className="min-h-screen bg-[#f4efe1] text-[#171006]">
@@ -42,7 +39,7 @@ export default async function AdminLayout({
             Voltar ao portal
           </Link>
 
-          <AdminSidebarNav groups={visibleNavGroups} />
+          <AdminSidebarNav role={role} />
 
           <div className="mt-8 border-t border-white/10 pt-4 text-xs text-white/40 px-3 flex items-center justify-between">
             <span>Portal COMIEADEPA</span>
