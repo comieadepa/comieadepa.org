@@ -28,7 +28,7 @@ export function Footer({ config }: FooterProps) {
           <a href={pathname === "/" ? "#" : "/"} className="w-fit border-b-2 border-[#D4A24C] pb-1 text-[#F8D77B]">Home</a>
           <a href={`${homePrefix}#a-comieadepa`} className="transition hover:text-[#F8D77B]">Sobre Nós</a>
           <a href={`${homePrefix}#presidencia`} className="transition hover:text-[#F8D77B]">Institucional</a>
-          <a href={`${homePrefix}#eventos`} className="transition hover:text-[#F8D77B]">Mídias</a>
+          <a href="/galeria" className="transition hover:text-[#F8D77B]">Mídias</a>
           <a href={`${homePrefix}#noticias`} className="transition hover:text-[#F8D77B]">Notícias</a>
           <a href="#contato" className="transition hover:text-[#F8D77B]">Contatos</a>
           <a href="/privacidade" className="transition hover:text-[#F8D77B]">Privacidade</a>

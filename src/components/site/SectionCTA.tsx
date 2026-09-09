@@ -40,8 +40,8 @@ export function SectionCTA({
   };
 
   const variantStyles = {
-    primary: "bg-[#0F3B63] text-white hover:bg-[#1D5A8C] shadow-sm hover:shadow-md active:translate-y-[1px]",
-    secondary: "bg-[#D4A24C] text-white hover:bg-[#B8872D] shadow-sm hover:shadow-md active:translate-y-[1px]",
+    primary: "bg-[#0F3B63] !text-white hover:bg-[#1D5A8C] shadow-sm hover:shadow-md active:translate-y-[1px]",
+    secondary: "bg-[#D4A24C] !text-[#051423] hover:bg-[#B8872D] shadow-sm hover:shadow-md active:translate-y-[1px]",
     outline: "border-2 border-[#0F3B63] text-[#0F3B63] hover:bg-[#0F3B63] hover:text-white bg-transparent",
     text: "text-[#0F3B63] hover:text-[#1D5A8C] p-0 font-bold normal-case tracking-normal hover:translate-x-0.5 transition-transform duration-200",
   };

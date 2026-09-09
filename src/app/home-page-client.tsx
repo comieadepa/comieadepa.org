@@ -117,6 +117,7 @@ type CmsPost = {
   capa_url: string | null;
   categoria_id: string | null;
   departamento_id: string | null;
+  status?: string | null;
   publicado_em: string | null;
   created_at: string | null;
 };
@@ -379,7 +380,7 @@ export function HomePageClient({ initialSlides, initialPosts = [] }: HomePageCli
   );
 
   const [portalVideos, setPortalVideos] = useState<PortalVideo[]>(fallbackVideos);
-  const [portalNews, setPortalNews] = useState<PortalNews[]>(serverNews.length > 0 ? serverNews : fallbackNews);
+  const [portalNews, setPortalNews] = useState<PortalNews[]>(initialPosts ? serverNews : fallbackNews);
   const [portalDepartments, setPortalDepartments] = useState<PortalDepartment[]>(fallbackDepartmentCards);
   const [portalConfig, setPortalConfig] = useState<PublicSiteConfig>(defaultPublicSiteConfig);
   const [portalHomeContent, setPortalHomeContent] = useState<PortalHomeContent>(defaultPortalHomeContent);
@@ -422,14 +423,11 @@ export function HomePageClient({ initialSlides, initialPosts = [] }: HomePageCli
         if (isMounted) {
           setPortalConfig(mappedConfig);
           setPortalHomeContent(mappedHomeContent);
+          setPortalNews(mappedNews);
         }
 
         if (isMounted && mappedVideos.length > 0) {
           setPortalVideos(mappedVideos);
-        }
-
-        if (isMounted && mappedNews.length > 0) {
-          setPortalNews(mappedNews);
         }
 
         if (isMounted && mappedDepartments.length > 0) {
@@ -846,40 +844,46 @@ export function HomePageClient({ initialSlides, initialPosts = [] }: HomePageCli
             </Link>
           </div>
 
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-            {portalNews.map((post, index) => (
-              <motion.div
-                key={`${post.title}-${post.url}`}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.5, delay: index * 0.06 }}
-                className="group flex h-full flex-col overflow-hidden rounded-xl border border-[#0F3B63]/10 bg-white shadow-[0_18px_40px_rgba(15,59,99,.10)] transition hover:-translate-y-2 hover:border-[#D4A24C]/50 hover:shadow-[0_26px_60px_rgba(15,59,99,.18)]"
-              >
-                <Link href={post.url} className="flex h-full flex-col">
-                  <div className="relative aspect-[4/3] overflow-hidden bg-[#0F3B63]/10">
-                    <Image
-                      src={post.image}
-                      alt={post.title}
-                      fill
-                      className="object-cover transition duration-700 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,59,99,.05),rgba(15,59,99,.45))] opacity-0 transition group-hover:opacity-100" />
-                  </div>
-                  <div className="flex flex-1 flex-col px-5 pb-6 pt-5">
-                    <h3 className="font-serif text-2xl font-bold leading-tight text-[#0F3B63] transition group-hover:text-[#1D5A8C]">
-                      {post.title}
-                    </h3>
-                    <div className="mt-4 text-sm font-semibold text-[#6B7280]">
-                      <span>{post.date}</span>
-                      <span className="mx-2">•</span>
-                      <span className="uppercase tracking-[0.12em] text-[#B8872D]">{post.category}</span>
+          {portalNews.length > 0 ? (
+            <div className="mt-12 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+              {portalNews.map((post, index) => (
+                <motion.div
+                  key={`${post.title}-${post.url}`}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.5, delay: index * 0.06 }}
+                  className="group flex h-full flex-col overflow-hidden rounded-xl border border-[#0F3B63]/10 bg-white shadow-[0_18px_40px_rgba(15,59,99,.10)] transition hover:-translate-y-2 hover:border-[#D4A24C]/50 hover:shadow-[0_26px_60px_rgba(15,59,99,.18)]"
+                >
+                  <Link href={post.url} className="flex h-full flex-col">
+                    <div className="relative aspect-[4/3] overflow-hidden bg-[#0F3B63]/10">
+                      <Image
+                        src={post.image}
+                        alt={post.title}
+                        fill
+                        className="object-cover transition duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,59,99,.05),rgba(15,59,99,.45))] opacity-0 transition group-hover:opacity-100" />
                     </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
+                    <div className="flex flex-1 flex-col px-5 pb-6 pt-5">
+                      <h3 className="font-serif text-2xl font-bold leading-tight text-[#0F3B63] transition group-hover:text-[#1D5A8C]">
+                        {post.title}
+                      </h3>
+                      <div className="mt-4 text-sm font-semibold text-[#6B7280]">
+                        <span>{post.date}</span>
+                        <span className="mx-2">•</span>
+                        <span className="uppercase tracking-[0.12em] text-[#B8872D]">{post.category}</span>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-12 rounded-2xl border border-white/10 bg-white/5 p-8 text-center backdrop-blur-sm">
+              <p className="text-base text-white/80">Nenhuma notícia publicada no momento.</p>
+            </div>
+          )}
 
           <div className="mt-12 text-center">
             <Link
@@ -1152,7 +1156,7 @@ function mapCmsVideoToPortalVideo(video: CmsVideo, departmentMap: Map<string, st
 function mapCmsPostToPortalNews(post: CmsPost, categoryMap: Map<string, string>, departmentMap: Map<string, string>) {
   const title = post.titulo?.trim();
 
-  if (!title || !post.slug) {
+  if (!title || !post.slug || (post.status && post.status !== "publicado")) {
     return null;
   }
 

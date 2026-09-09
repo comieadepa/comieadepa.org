@@ -13,7 +13,7 @@ export async function selectPublicRows<TResult>(table: string, query: string) {
       Authorization: `Bearer ${supabaseAnonKey}`,
       ...getReadSchemaHeaders(table),
     },
-    next: { revalidate: 60 },
+    cache: "no-store",
   });
 
   if (!response.ok) {
@@ -37,7 +37,7 @@ export async function countPublicRows(table: string, query = "select=id") {
       Prefer: "count=exact",
       Range: "0-0",
     },
-    next: { revalidate: 60 },
+    cache: "no-store",
   });
 
   if (!response.ok) {

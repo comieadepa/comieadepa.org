@@ -89,6 +89,8 @@ export function NoticiasEditorClient({
   const [departmentId, setDepartmentId] = useState(initialEditingPost?.departamento_id ?? "");
   const [categoryId, setCategoryId] = useState(initialEditingPost?.categoria_id ?? "");
   const [resumo, setResumo] = useState(initialEditingPost?.resumo ?? "");
+  const [conteudo, setConteudo] = useState(initialEditingPost?.conteudo ?? "");
+  const [capaUrl, setCapaUrl] = useState(initialEditingPost?.capa_url ?? "");
   const [destaqueHome, setDestaqueHome] = useState(initialEditingPost?.destaque_home ?? false);
   const [publishDate, setPublishDate] = useState(formatDateTimeLocal(initialEditingPost?.publicado_em));
 
@@ -118,6 +120,8 @@ export function NoticiasEditorClient({
     setDepartmentId("");
     setCategoryId("");
     setResumo("");
+    setConteudo("");
+    setCapaUrl("");
     setDestaqueHome(false);
     setPublishDate("");
     setFeedback(null);
@@ -172,26 +176,27 @@ export function NoticiasEditorClient({
         message: data.message || (nextStatus === "publicado" ? "Notícia publicada com sucesso!" : "Rascunho salvo com sucesso!"),
       });
 
-      if (isNewPost) {
-        setTitle("");
-        setSlug("");
-        setStatus("rascunho");
-        setDepartmentId("");
-        setCategoryId("");
-        setResumo("");
-        setDestaqueHome(false);
-        setPublishDate("");
-        const formElement = document.getElementById("news-form") as HTMLFormElement | null;
-        if (formElement) formElement.reset();
-      } else {
-        setStatus(nextStatus);
+      // Limpa os campos do formulário para nova inserção
+      setEditingPost(null);
+      setTitle("");
+      setSlug("");
+      setStatus("rascunho");
+      setDepartmentId("");
+      setCategoryId("");
+      setResumo("");
+      setConteudo("");
+      setCapaUrl("");
+      setDestaqueHome(false);
+      setPublishDate("");
+
+      const formElement = document.getElementById("news-form") as HTMLFormElement | null;
+      if (formElement) {
+        formElement.reset();
       }
 
       startTransition(() => {
         router.refresh();
-        if (isNewPost) {
-          router.push("/admin/noticias");
-        }
+        router.push("/admin/noticias");
       });
     } catch (err) {
       setFeedback({
@@ -396,7 +401,8 @@ export function NoticiasEditorClient({
           <RichTextField
             name="conteudo"
             label="Conteúdo da Notícia"
-            defaultValue={editingPost?.conteudo}
+            value={conteudo}
+            onChange={(val) => setConteudo(val)}
             placeholder="Escreva o texto completo da notícia, comunicado ou cobertura institucional..."
             disabled={!canWrite}
             mediaAssets={mediaAssets}
@@ -407,7 +413,8 @@ export function NoticiasEditorClient({
             <MediaUrlField
               name="capa_url"
               label="Imagem de Capa (Destaque)"
-              defaultValue={editingPost?.capa_url}
+              value={capaUrl}
+              onChange={(val) => setCapaUrl(val)}
               assets={mediaAssets}
               helper="Recomendado: formato horizontal (16:9 ou 16:10) para cards e compartilhamentos."
               disabled={!canWrite}
@@ -546,6 +553,7 @@ export function NoticiasEditorClient({
           <AdminFilterPills
             current={currentStatus}
             baseUrl="/admin/noticias"
+            variant="dark"
             options={[
               { value: "todos", label: "Todos" },
               { value: "rascunho", label: "Rascunhos" },
@@ -556,83 +564,84 @@ export function NoticiasEditorClient({
           />
         </div>
 
-        {/* Post List */}
-        <div className="mt-6 grid gap-4">
+        {/* Post List Clean Vertical List */}
+        <div className="mt-5 max-h-[600px] overflow-y-auto divide-y divide-white/10 border-y border-white/10 text-white scrollbar-thin scrollbar-thumb-white/20">
           {posts.map((post) => {
             const isCurrent = editingPost?.id === post.id;
             return (
-              <article
+              <div
                 key={post.id}
-                className={`border p-4 transition ${
-                  isCurrent
-                    ? "border-[#f4cf6a] bg-white/15 shadow-md"
-                    : "border-white/10 bg-white/[0.055] hover:border-white/25"
+                className={`group py-3.5 px-2 transition ${
+                  isCurrent ? "bg-white/15 border-l-4 border-l-[#f4cf6a] pl-3" : "hover:bg-white/[0.04]"
                 }`}
               >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <AdminStatusBadge status={post.status} />
-                  {post.destaque_home ? (
-                    <span className="inline-flex bg-[#f4cf6a] px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.12em] text-[#171006]">
-                      Home
-                    </span>
-                  ) : null}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <AdminStatusBadge status={post.status} />
+                    {post.destaque_home ? (
+                      <span className="inline-flex bg-[#f4cf6a] px-1.5 py-0.5 text-[9px] font-black uppercase tracking-[0.12em] text-[#171006]">
+                        Fixa
+                      </span>
+                    ) : null}
+                  </div>
+                  <span className="text-[11px] font-mono text-white/45">{formatDate(post.created_at)}</span>
                 </div>
 
-                <h3 className="mt-3 font-serif text-lg font-black leading-snug text-white">
+                <h3 className="mt-2 font-serif text-sm font-bold leading-snug text-white/90 group-hover:text-white line-clamp-2">
                   {post.titulo}
                 </h3>
 
-                <div className="mt-3 flex items-center justify-between text-xs text-white/50 font-mono">
-                  <span className="truncate max-w-[160px]">{post.slug}</span>
-                  <span>{formatDate(post.created_at)}</span>
-                </div>
+                <div className="mt-2.5 flex items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-3">
+                    <a
+                      href={"/admin/noticias?edit=" + post.id}
+                      className="font-black uppercase tracking-[0.12em] text-[#f4cf6a] hover:underline"
+                    >
+                      Editar
+                    </a>
+                    <a
+                      href={"/admin/preview/noticias/" + post.id}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-semibold uppercase tracking-[0.12em] text-white/60 hover:text-white"
+                    >
+                      Prévia
+                    </a>
+                  </div>
 
-                <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-white/10 pt-3">
-                  <a
-                    href={"/admin/noticias?edit=" + post.id}
-                    className="inline-flex text-xs font-black uppercase tracking-[0.14em] text-[#f4cf6a] hover:underline"
-                  >
-                    Editar
-                  </a>
-                  <a
-                    href={"/admin/preview/noticias/" + post.id}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex text-xs font-black uppercase tracking-[0.14em] text-white/70 transition hover:text-white"
-                  >
-                    Prévia
-                  </a>
-                  {post.status !== "publicado" && canPublish ? (
-                    <form action="/api/admin/posts" method="post">
-                      <input type="hidden" name="id" value={post.id} />
-                      <input type="hidden" name="action" value="publish" />
-                      <button
-                        type="submit"
-                        className="text-xs font-black uppercase tracking-[0.14em] text-[#00b67a] hover:underline"
-                      >
-                        Publicar
-                      </button>
-                    </form>
-                  ) : null}
-                  {post.status !== "arquivado" && canArchive ? (
-                    <form action="/api/admin/posts" method="post">
-                      <input type="hidden" name="id" value={post.id} />
-                      <input type="hidden" name="action" value="archive" />
-                      <button
-                        type="submit"
-                        className="text-xs font-black uppercase tracking-[0.14em] text-white/40 hover:text-white"
-                      >
-                        Arquivar
-                      </button>
-                    </form>
-                  ) : null}
+                  <div className="flex items-center gap-2">
+                    {post.status !== "publicado" && canPublish ? (
+                      <form action="/api/admin/posts" method="post" className="inline">
+                        <input type="hidden" name="id" value={post.id} />
+                        <input type="hidden" name="action" value="publish" />
+                        <button
+                          type="submit"
+                          className="font-black uppercase tracking-[0.12em] text-[#00b67a] hover:underline"
+                        >
+                          Publicar
+                        </button>
+                      </form>
+                    ) : null}
+                    {post.status !== "arquivado" && canArchive ? (
+                      <form action="/api/admin/posts" method="post" className="inline">
+                        <input type="hidden" name="id" value={post.id} />
+                        <input type="hidden" name="action" value="archive" />
+                        <button
+                          type="submit"
+                          className="font-semibold uppercase tracking-[0.12em] text-white/35 hover:text-white"
+                        >
+                          Arquivar
+                        </button>
+                      </form>
+                    ) : null}
+                  </div>
                 </div>
-              </article>
+              </div>
             );
           })}
 
           {posts.length === 0 ? (
-            <div className="border border-white/10 bg-white/[0.055] p-6 text-center text-xs text-white/50">
+            <div className="py-8 text-center text-xs text-white/50">
               Nenhuma notícia encontrada com os filtros selecionados.
             </div>
           ) : null}

@@ -9,6 +9,8 @@ type RichTextFieldProps = {
   name: string;
   label: string;
   defaultValue?: string | null;
+  value?: string;
+  onChange?: (value: string) => void;
   placeholder?: string;
   disabled?: boolean;
   mediaAssets?: MediaPickerAsset[];
@@ -23,10 +25,28 @@ const toolbarActions = [
   { label: "Link", icon: LinkIcon, before: "[", after: "](https://)" },
 ];
 
-export function RichTextField({ name, label, defaultValue, placeholder, disabled, mediaAssets: initialAssets = [] }: RichTextFieldProps) {
+export function RichTextField({
+  name,
+  label,
+  defaultValue,
+  value: controlledValue,
+  onChange,
+  placeholder,
+  disabled,
+  mediaAssets: initialAssets = [],
+}: RichTextFieldProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [value, setValue] = useState(defaultValue ?? "");
+  const [internalValue, setInternalValue] = useState(defaultValue ?? "");
+  const value = controlledValue !== undefined ? controlledValue : internalValue;
+
+  function updateValue(newValue: string) {
+    if (controlledValue === undefined) {
+      setInternalValue(newValue);
+    }
+    onChange?.(newValue);
+  }
+
   const [tab, setTab] = useState<"write" | "preview">("write");
 
   // State for image picker modal
@@ -52,7 +72,7 @@ export function RichTextField({ name, label, defaultValue, placeholder, disabled
     const nextValue = `${value.slice(0, selectionStart)}${before}${selectedText}${after}${value.slice(selectionEnd)}`;
     const nextCursor = selectionStart + before.length + selectedText.length;
 
-    setValue(nextValue);
+    updateValue(nextValue);
 
     requestAnimationFrame(() => {
       textarea.focus();
@@ -193,7 +213,7 @@ export function RichTextField({ name, label, defaultValue, placeholder, disabled
               ref={textareaRef}
               name={name}
               value={value}
-              onChange={(event) => setValue(event.target.value)}
+              onChange={(event) => updateValue(event.target.value)}
               className="min-h-72 w-full bg-transparent px-4 py-3 leading-7 outline-none focus:bg-white/45 disabled:cursor-not-allowed disabled:opacity-60"
               placeholder={placeholder}
               disabled={disabled}

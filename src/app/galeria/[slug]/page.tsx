@@ -6,7 +6,10 @@ import { PublicLayout } from "@/components/site/PublicLayout";
 import { GalleryLightbox } from "../gallery-lightbox";
 import { absoluteUrl, buildSeoMetadata } from "@/lib/seo";
 import { CmsGallery, CmsGalleryPhoto, formatGalleryDate, stripGalleryText } from "@/lib/galerias";
-import { selectPublicRows } from "@/lib/supabase-public";
+import { selectSupabaseRows } from "@/lib/supabase-admin";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -14,7 +17,7 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const galleries = await selectPublicRows<CmsGallery>(
+  const galleries = await selectSupabaseRows<CmsGallery>(
     "cms_galerias",
     `select=id,titulo,slug,descricao,categoria,capa_url,status,destaque,ordem,data_evento,created_at,updated_at,created_by&status=eq.publicado&slug=eq.${encodeURIComponent(slug)}&limit=1`,
   );
@@ -39,7 +42,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function GalleryDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const galleries = await selectPublicRows<CmsGallery>(
+  const galleries = await selectSupabaseRows<CmsGallery>(
     "cms_galerias",
     `select=id,titulo,slug,descricao,categoria,capa_url,status,destaque,ordem,data_evento,created_at,updated_at,created_by&status=eq.publicado&slug=eq.${encodeURIComponent(slug)}&limit=1`,
   );
@@ -50,7 +53,7 @@ export default async function GalleryDetailPage({ params }: PageProps) {
   }
 
   const [photos, relatedGalleries] = await Promise.all([
-    selectPublicRows<CmsGalleryPhoto>(
+    selectSupabaseRows<CmsGalleryPhoto>(
       "cms_galeria_fotos",
       `select=id,galeria_id,imagem_url,legenda,credito,ordem,created_at&galeria_id=eq.${encodeURIComponent(gallery.id)}&order=ordem.asc,created_at.asc&limit=1000`,
     ),
@@ -152,7 +155,7 @@ export default async function GalleryDetailPage({ params }: PageProps) {
 
 async function selectRelatedGalleries(gallery: CmsGallery) {
   const categoryQuery = gallery.categoria ? `&categoria=eq.${encodeURIComponent(gallery.categoria)}` : "";
-  const related = await selectPublicRows<CmsGallery>(
+  const related = await selectSupabaseRows<CmsGallery>(
     "cms_galerias",
     `select=id,titulo,slug,descricao,categoria,capa_url,status,destaque,ordem,data_evento,created_at,updated_at,created_by&status=eq.publicado&id=neq.${encodeURIComponent(gallery.id)}${categoryQuery}&order=destaque.desc,data_evento.desc.nullslast,updated_at.desc&limit=3`,
   );
@@ -161,7 +164,7 @@ async function selectRelatedGalleries(gallery: CmsGallery) {
     return related;
   }
 
-  return selectPublicRows<CmsGallery>(
+  return selectSupabaseRows<CmsGallery>(
     "cms_galerias",
     `select=id,titulo,slug,descricao,categoria,capa_url,status,destaque,ordem,data_evento,created_at,updated_at,created_by&status=eq.publicado&id=neq.${encodeURIComponent(gallery.id)}&order=destaque.desc,data_evento.desc.nullslast,updated_at.desc&limit=3`,
   );

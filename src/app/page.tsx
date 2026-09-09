@@ -10,6 +10,7 @@ export type CmsPublicPost = {
   capa_url: string | null;
   categoria_id: string | null;
   departamento_id: string | null;
+  status?: string | null;
   publicado_em: string | null;
   created_at: string | null;
 };

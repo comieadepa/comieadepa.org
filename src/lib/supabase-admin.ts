@@ -54,8 +54,17 @@ export async function insertSupabaseRow<TPayload extends Record<string, unknown>
   });
 
   if (!response.ok) {
-    const message = await response.text();
-    throw new Error(message || "Não foi possível salvar o registro.");
+    const rawText = await response.text();
+    let errorMessage = rawText;
+    try {
+      const parsed = JSON.parse(rawText);
+      if (parsed && typeof parsed.message === "string") {
+        errorMessage = parsed.message;
+      }
+    } catch {
+      // keep rawText if not json
+    }
+    throw new Error(errorMessage || "Não foi possível salvar o registro.");
   }
 
   return response.json();
@@ -79,8 +88,17 @@ export async function updateSupabaseRows<TPayload extends Record<string, unknown
   });
 
   if (!response.ok) {
-    const message = await response.text();
-    throw new Error(message || "Não foi possível atualizar o registro.");
+    const rawText = await response.text();
+    let errorMessage = rawText;
+    try {
+      const parsed = JSON.parse(rawText);
+      if (parsed && typeof parsed.message === "string") {
+        errorMessage = parsed.message;
+      }
+    } catch {
+      // keep rawText if not json
+    }
+    throw new Error(errorMessage || "Não foi possível atualizar o registro.");
   }
 
   return response.json();

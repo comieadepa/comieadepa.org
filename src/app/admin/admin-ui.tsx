@@ -87,25 +87,34 @@ export function AdminFilterPills({
   options,
   baseUrl,
   paramName = "status",
+  variant = "default",
   onSelect,
 }: {
   current: string;
   options: Array<{ value: string; label: string; count?: number }>;
   baseUrl?: string;
   paramName?: string;
+  variant?: "default" | "dark";
   onSelect?: (value: string) => void;
 }) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-1.5">
       {options.map((option) => {
         const isActive = current === option.value;
         const href = baseUrl ? (option.value === "todos" ? baseUrl : `${baseUrl}?${paramName}=${option.value}`) : undefined;
 
-        const pillClass = `inline-flex items-center px-3.5 py-2 text-[11px] font-black uppercase tracking-[0.12em] transition border ${
-          isActive
-            ? "bg-[#171006] text-[#F8D77B] !text-[#F8D77B] border-[#171006] shadow-sm"
-            : "border-[#d8c38b] bg-[#fffaf0] text-[#5a472c] !text-[#5a472c] hover:bg-[#f7efd6]"
-        }`;
+        const pillClass =
+          variant === "dark"
+            ? `inline-flex items-center px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.12em] transition border ${
+                isActive
+                  ? "bg-[#f4cf6a] text-[#171006] !text-[#171006] border-[#f4cf6a] shadow-xs"
+                  : "border-white/15 bg-white/10 text-white/80 !text-white/80 hover:bg-white/20 hover:text-white"
+              }`
+            : `inline-flex items-center px-3.5 py-2 text-[11px] font-black uppercase tracking-[0.12em] transition border ${
+                isActive
+                  ? "bg-[#171006] text-[#F8D77B] !text-[#F8D77B] border-[#171006] shadow-sm"
+                  : "border-[#d8c38b] bg-[#fffaf0] text-[#5a472c] !text-[#5a472c] hover:bg-[#f7efd6]"
+              }`;
 
         if (onSelect || !href) {
           return (

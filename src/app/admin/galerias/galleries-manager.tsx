@@ -21,13 +21,14 @@ import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState, useTransition } from "react";
 import { CmsGallery, CmsGalleryPhoto, GalleryStatus, formatGalleryDate } from "@/lib/galerias";
 import { MediaPickerAsset, MediaUrlField } from "../media-url-field";
-import { AdminEmptyState, AdminFilterPills, AdminStatusBadge } from "../admin-ui";
+import { AdminConfirmModal, AdminEmptyState, AdminFilterPills, AdminStatusBadge } from "../admin-ui";
 
 type GalleriesManagerProps = {
   galleries: CmsGallery[];
   photos: CmsGalleryPhoto[];
   categories: string[];
   mediaAssets: MediaPickerAsset[];
+  activeTab?: "galerias" | "categorias";
   canCreate: boolean;
   canUpdate: boolean;
   canPublish: boolean;
@@ -40,6 +41,7 @@ export function GalleriesManager({
   photos: initialPhotos,
   categories,
   mediaAssets,
+  activeTab = "galerias",
   canCreate,
   canUpdate,
   canPublish,
@@ -55,6 +57,7 @@ export function GalleriesManager({
   const [statusFilter, setStatusFilter] = useState("todos");
   const [categoryFilter, setCategoryFilter] = useState("todas");
   const [search, setSearch] = useState("");
+  const [categoryModalInfo, setCategoryModalInfo] = useState<string | null>(null);
 
   // Form states
   const [titulo, setTitulo] = useState("");
@@ -198,9 +201,32 @@ export function GalleriesManager({
 
       const savedId = editingId || data.id;
 
-      if (!isEditing && savedId) {
-        setEditingId(savedId);
-      }
+      const newOrUpdatedGallery: CmsGallery = {
+        id: savedId || crypto.randomUUID(),
+        titulo,
+        slug: slug || titulo,
+        categoria: categoria || null,
+        status,
+        ordem,
+        data_evento: dataEvento || null,
+        destaque,
+        descricao: descricao || null,
+        capa_url: capaUrl || null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        created_by: null,
+      };
+
+      setGalleries((prev) => {
+        const exists = prev.some((g) => g.id === newOrUpdatedGallery.id);
+        if (exists) {
+          return prev.map((g) => (g.id === newOrUpdatedGallery.id ? newOrUpdatedGallery : g));
+        }
+        return [newOrUpdatedGallery, ...prev];
+      });
+
+      handleNewGallery();
+      form.reset();
 
       startTransition(() => {
         router.refresh();
@@ -406,6 +432,128 @@ export function GalleriesManager({
     }
   }
 
+  if (activeTab === "categorias") {
+    return (
+      <div className="grid gap-6 lg:grid-cols-[420px_1fr]">
+        <section className="h-fit border border-[#d8c38b] bg-white/76 p-6 shadow-[0_18px_50px_rgba(23,16,6,.08)]">
+          <p className="text-sm font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Categorias de Galerias</p>
+          <h2 className="mt-3 font-serif text-3xl font-black leading-tight">Nova Categoria</h2>
+          <p className="mt-4 leading-7 text-[#5a472c]">
+            Cadastre categorias para organizar os acervos fotográficos (ex.: Congressos, Reuniões, Eventos Especializados).
+          </p>
+
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const form = e.currentTarget;
+              const formData = new FormData(form);
+              const name = (formData.get("nome") as string)?.trim();
+              if (!name) return;
+
+              try {
+                const response = await fetch("/api/admin/categorias", {
+                  method: "POST",
+                  body: formData,
+                  headers: {
+                    Accept: "application/json",
+                  },
+                });
+
+                if (!response.ok) {
+                  const data = await response.json().catch(() => ({}));
+                  throw new Error(data.error || "Erro ao salvar categoria.");
+                }
+
+                setCategoria(name);
+                setCategoryModalInfo(name);
+                form.reset();
+                startTransition(() => {
+                  router.refresh();
+                });
+              } catch (err) {
+                alert(err instanceof Error ? err.message : "Erro ao salvar categoria.");
+              }
+            }}
+            className="mt-8 grid gap-5"
+          >
+            <label className="grid gap-2">
+              <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Nome da Categoria</span>
+              <input
+                name="nome"
+                required
+                className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]"
+                placeholder="Ex.: Reuniões de Pastores"
+              />
+            </label>
+            <label className="grid gap-2">
+              <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Descrição (Opcional)</span>
+              <textarea
+                name="descricao"
+                className="min-h-20 border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b]"
+                placeholder="Uso editorial desta categoria..."
+              />
+            </label>
+            <button
+              type="submit"
+              className="inline-flex w-fit items-center gap-3 bg-[#171006] px-6 py-3 text-sm font-black uppercase tracking-[0.14em] text-[#f4cf6a] hover:bg-[#2c2212]"
+            >
+              <Plus size={18} />
+              Salvar Categoria
+            </button>
+          </form>
+        </section>
+
+        <section className="border border-[#d8c38b] bg-[#171006] p-6 text-white shadow-[0_18px_50px_rgba(23,16,6,.14)]">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.18em] text-[#f4cf6a]">Categorias Cadastradas</p>
+              <h2 className="mt-2 font-serif text-3xl font-black">Categorias em uso</h2>
+            </div>
+            <span className="text-sm text-white/50">{categories.length} categoria(s)</span>
+          </div>
+
+          <div className="mt-8 grid gap-4 md:grid-cols-2">
+            {categories.map((cat) => (
+              <div key={cat} className="flex items-center justify-between border border-white/10 bg-white/[0.055] p-4">
+                <span className="font-serif text-xl font-bold text-[#f4cf6a]">{cat}</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCategoria(cat);
+                    router.push("/admin/galerias");
+                  }}
+                  className="text-xs font-black uppercase tracking-[0.12em] text-white/70 hover:text-white hover:underline"
+                >
+                  Usar em Nova Galeria →
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {categories.length === 0 ? (
+            <div className="mt-8 border border-white/10 bg-white/[0.055] p-6 text-white/60">
+              Nenhuma categoria cadastrada ainda nas galerias.
+            </div>
+          ) : null}
+        </section>
+
+        <AdminConfirmModal
+          isOpen={Boolean(categoryModalInfo)}
+          title="Categoria Cadastrada"
+          description={`A categoria "${categoryModalInfo}" foi definida e está pronta para uso no cadastro de galerias!`}
+          confirmText="Ir para Nova Galeria"
+          cancelText="Permanecer Aqui"
+          variant="primary"
+          onConfirm={() => {
+            setCategoryModalInfo(null);
+            router.push("/admin/galerias");
+          }}
+          onCancel={() => setCategoryModalInfo(null)}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="grid gap-6 xl:grid-cols-[1fr_420px]">
       {/* Main Form Section */}
@@ -516,17 +664,35 @@ export function GalleriesManager({
           </div>
 
           {/* Category, Status, Order */}
-          <div className="grid gap-5 md:grid-cols-4">
-            <label className="grid gap-2 md:col-span-2">
+          <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
+            <label className="grid gap-2 sm:col-span-2 md:col-span-2">
               <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Categoria</span>
-              <input
-                name="categoria"
-                disabled={!canWrite}
-                value={categoria}
-                onChange={(e) => setCategoria(e.target.value)}
-                className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
-                placeholder="Congressos, Reuniões, Eventos..."
-              />
+              <div className="flex items-center gap-2">
+                <select
+                  name="categoria"
+                  disabled={!canWrite}
+                  value={categoria}
+                  onChange={(e) => setCategoria(e.target.value)}
+                  className="w-full border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 font-semibold outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <option value="">Selecione uma categoria...</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                  {categoria && !categories.includes(categoria) ? (
+                    <option value={categoria}>{categoria}</option>
+                  ) : null}
+                </select>
+                <a
+                  href="/admin/galerias?tab=categorias"
+                  title="Gerenciar Categorias"
+                  className="inline-flex h-[50px] w-[50px] shrink-0 items-center justify-center border border-[#d8c38b] bg-[#fffaf0] text-[#8b2f2b] transition hover:bg-[#8b2f2b] hover:text-[#f4cf6a]"
+                >
+                  <Plus size={20} />
+                </a>
+              </div>
             </label>
 
             <label className="grid gap-2">
@@ -536,7 +702,7 @@ export function GalleriesManager({
                 disabled={!canWrite}
                 value={status}
                 onChange={(e) => setStatus(e.target.value as GalleryStatus)}
-                className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 font-bold outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 font-bold outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <option value="rascunho">Rascunho</option>
                 {canPublish ? <option value="publicado">Publicado</option> : null}
@@ -552,7 +718,7 @@ export function GalleriesManager({
                 disabled={!canWrite}
                 value={ordem}
                 onChange={(e) => setOrdem(Number(e.target.value) || 0)}
-                className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
               />
             </label>
           </div>
@@ -780,6 +946,7 @@ export function GalleriesManager({
         <div className="mt-4">
           <AdminFilterPills
             current={statusFilter}
+            variant="dark"
             onSelect={(val) => setStatusFilter(val)}
             options={[
               { value: "todos", label: "Todos" },
@@ -810,109 +977,110 @@ export function GalleriesManager({
           </div>
         ) : null}
 
-        {/* Galleries List */}
-        <div className="mt-6 grid gap-4">
+        {/* Galleries List Clean Vertical List */}
+        <div className="mt-5 max-h-[600px] overflow-y-auto divide-y divide-white/10 border-y border-white/10 text-white scrollbar-thin scrollbar-thumb-white/20">
           {filteredGalleries.map((gallery) => {
             const galleryPhotos = photosByGallery.get(gallery.id) ?? [];
             const isCurrent = editingId === gallery.id;
 
             return (
-              <article
+              <div
                 key={gallery.id}
-                className={`border p-4 transition ${
-                  isCurrent
-                    ? "border-[#f4cf6a] bg-white/15 shadow-md"
-                    : "border-white/10 bg-white/[0.055] hover:border-white/25"
+                className={`group py-3.5 px-2 transition ${
+                  isCurrent ? "bg-white/15 border-l-4 border-l-[#f4cf6a] pl-3" : "hover:bg-white/[0.04]"
                 }`}
               >
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <AdminStatusBadge status={gallery.status} />
                     {gallery.destaque ? (
-                      <span className="inline-flex bg-[#f4cf6a] px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.12em] text-[#171006]">
+                      <span className="inline-flex bg-[#f4cf6a] px-1.5 py-0.5 text-[9px] font-black uppercase tracking-[0.12em] text-[#171006]">
                         Home
                       </span>
                     ) : null}
                   </div>
-                  {gallery.destaque ? <Star size={16} className="shrink-0 text-[#f4cf6a]" /> : null}
+                  <span className="text-[11px] font-mono text-white/45">{formatGalleryDate(gallery.data_evento)}</span>
                 </div>
 
-                <h3 className="mt-3 font-serif text-lg font-black leading-snug text-white">{gallery.titulo}</h3>
+                <h3 className="mt-2 font-serif text-sm font-bold leading-snug text-white/90 group-hover:text-white line-clamp-2">
+                  {gallery.titulo}
+                </h3>
 
-                <p className="mt-1 font-mono text-xs text-white/50">/{gallery.slug}</p>
-
-                <div className="mt-3 flex flex-wrap items-center justify-between text-xs text-white/60">
+                <div className="mt-1 flex items-center justify-between text-[11px] text-white/50">
                   <span>{gallery.categoria || "Geral"}</span>
-                  <span>{formatGalleryDate(gallery.data_evento)}</span>
                   <span>{galleryPhotos.length} foto(s)</span>
                 </div>
 
-                <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-white/10 pt-3">
-                  <button
-                    type="button"
-                    onClick={() => handleStartEdit(gallery)}
-                    className="inline-flex text-xs font-black uppercase tracking-[0.14em] text-[#f4cf6a] hover:underline"
-                  >
-                    Editar
-                  </button>
-
-                  <a
-                    href={`/galeria/${gallery.slug}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-xs font-black uppercase tracking-[0.14em] text-white/70 transition hover:text-white"
-                  >
-                    <Eye size={12} />
-                    Prévia
-                  </a>
-
-                  {canPublish && gallery.status !== "publicado" ? (
+                <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <div className="flex items-center gap-3">
                     <button
                       type="button"
-                      onClick={() => handleQuickStatus(gallery, "publicado")}
-                      className="text-xs font-black uppercase tracking-[0.14em] text-[#00b67a] hover:underline"
+                      onClick={() => handleStartEdit(gallery)}
+                      className="font-black uppercase tracking-[0.12em] text-[#f4cf6a] hover:underline"
                     >
-                      Publicar
+                      Editar
                     </button>
-                  ) : null}
 
-                  {canPublish && gallery.status === "publicado" ? (
-                    <button
-                      type="button"
-                      onClick={() => handleQuickStatus(gallery, "rascunho")}
-                      className="text-xs font-black uppercase tracking-[0.14em] text-white/50 hover:text-white"
+                    <a
+                      href={`/galeria/${gallery.slug}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 font-semibold uppercase tracking-[0.12em] text-white/60 hover:text-white"
                     >
-                      Despublicar
-                    </button>
-                  ) : null}
+                      <Eye size={12} />
+                      Prévia
+                    </a>
+                  </div>
 
-                  {canArchive && gallery.status !== "arquivado" ? (
-                    <button
-                      type="button"
-                      onClick={() => handleArchive(gallery.id)}
-                      className="text-xs font-black uppercase tracking-[0.14em] text-white/40 hover:text-white"
-                    >
-                      Arquivar
-                    </button>
-                  ) : null}
+                  <div className="flex items-center gap-2.5">
+                    {canPublish && gallery.status !== "publicado" ? (
+                      <button
+                        type="button"
+                        onClick={() => handleQuickStatus(gallery, "publicado")}
+                        className="font-black uppercase tracking-[0.12em] text-[#00b67a] hover:underline"
+                      >
+                        Publicar
+                      </button>
+                    ) : null}
 
-                  {canDelete ? (
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(gallery.id)}
-                      className="inline-flex items-center gap-1 text-xs font-black uppercase tracking-[0.14em] text-red-400 hover:text-red-300"
-                    >
-                      <Trash2 size={12} />
-                      Excluir
-                    </button>
-                  ) : null}
+                    {canPublish && gallery.status === "publicado" ? (
+                      <button
+                        type="button"
+                        onClick={() => handleQuickStatus(gallery, "rascunho")}
+                        className="font-semibold uppercase tracking-[0.12em] text-white/50 hover:text-white"
+                      >
+                        Despublicar
+                      </button>
+                    ) : null}
+
+                    {canArchive && gallery.status !== "arquivado" ? (
+                      <button
+                        type="button"
+                        onClick={() => handleArchive(gallery.id)}
+                        className="font-semibold uppercase tracking-[0.12em] text-white/40 hover:text-white"
+                      >
+                        Arquivar
+                      </button>
+                    ) : null}
+
+                    {canDelete ? (
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(gallery.id)}
+                        className="inline-flex items-center gap-1 font-black uppercase tracking-[0.12em] text-red-400 hover:text-red-300"
+                      >
+                        <Trash2 size={12} />
+                        Excluir
+                      </button>
+                    ) : null}
+                  </div>
                 </div>
-              </article>
+              </div>
             );
           })}
 
           {filteredGalleries.length === 0 ? (
-            <div className="border border-white/10 bg-white/[0.055] p-6 text-center text-xs text-white/50">
+            <div className="py-6 text-center text-xs text-white/50">
               Nenhuma galeria encontrada com os filtros selecionados.
             </div>
           ) : null}
@@ -966,14 +1134,14 @@ function PhotoEditorCard({
           />
         </label>
 
-        <div className="grid grid-cols-2 gap-3">
-          <label className="grid gap-1">
+        <div className="grid grid-cols-1 sm:grid-cols-[1fr_100px] gap-3">
+          <label className="grid gap-1 min-w-0">
             <span className="text-xs font-black uppercase tracking-[0.12em] text-[#5a472c]">Crédito Fotográfico</span>
             <input
               value={credito}
               onChange={(event) => setCredito(event.target.value)}
               disabled={!canUpdate}
-              className="border border-[#d8c38b] bg-white px-3 py-2 text-xs outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full border border-[#d8c38b] bg-white px-3 py-2 text-xs outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
               placeholder="Ex.: Pr. João / COMIEADEPA"
             />
           </label>
@@ -985,7 +1153,7 @@ function PhotoEditorCard({
               onChange={(event) => setOrdem(Number(event.target.value) || 0)}
               type="number"
               disabled={!canUpdate}
-              className="border border-[#d8c38b] bg-white px-3 py-2 text-xs outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full border border-[#d8c38b] bg-white px-3 py-2 text-xs outline-none focus:border-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
             />
           </label>
         </div>

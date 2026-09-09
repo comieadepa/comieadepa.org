@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import {
   createAuditLog,
   deleteSupabaseRows,
@@ -167,6 +168,10 @@ export async function POST(request: Request) {
       metadata: { status, totalFotos: photos.length },
     });
 
+    revalidatePath("/galeria");
+    revalidatePath("/");
+    revalidatePath("/admin/galerias");
+
     if (acceptsJson) {
       return Response.json({ ok: true, id: galleryId, message: "Galeria criada com sucesso." });
     }
@@ -271,6 +276,10 @@ export async function PUT(request: Request) {
       entityTitle: title,
       metadata: { status, totalFotosAdicionadas: photos.length },
     });
+
+    revalidatePath("/galeria");
+    revalidatePath("/");
+    revalidatePath("/admin/galerias");
 
     return Response.json({ ok: true });
   } catch (error) {

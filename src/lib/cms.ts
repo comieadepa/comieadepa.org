@@ -55,7 +55,15 @@ export const adminNavGroups: AdminNavGroup[] = [
           { href: "/admin/categorias", label: "Categorias" },
         ],
       },
-      { href: "/admin/galerias", label: "Galeria de Fotos", icon: ImageIcon },
+      {
+        href: "/admin/galerias",
+        label: "Galeria de Fotos",
+        icon: ImageIcon,
+        subItems: [
+          { href: "/admin/galerias", label: "Todas as galerias" },
+          { href: "/admin/galerias?tab=categorias", label: "Categorias" },
+        ],
+      },
       { href: "/admin/videos", label: "Vídeos & YouTube", icon: Youtube },
       { href: "/admin/midia", label: "Biblioteca de Mídia", icon: Images },
     ],

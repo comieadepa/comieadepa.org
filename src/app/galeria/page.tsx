@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,9 +20,12 @@ import {
   sanitizeGallerySearchTerm,
   stripGalleryText,
 } from "@/lib/galerias";
-import { countPublicRows, selectPublicRows } from "@/lib/supabase-public";
+import { countSupabaseRows, selectSupabaseRows } from "@/lib/supabase-admin";
 
 const pageSize = 9;
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export const metadata: Metadata = buildSeoMetadata({
   title: "Galeria de Fotos | COMIEADEPA",
@@ -47,13 +50,13 @@ export default async function GalleryIndexPage({ searchParams }: { searchParams?
   const filters = buildGalleryFilters({ search, category, year, status: "publicado" });
 
   const [galleries, total, categoriesSource, yearsSource] = await Promise.all([
-    selectPublicRows<CmsGallery>(
+    selectSupabaseRows<CmsGallery>(
       "cms_galerias",
-      `select=id,titulo,slug,descricao,categoria,capa_url,status,destaque,ordem,data_evento,created_at,updated_at,created_by&status=eq.publicado${filters.replace("&status=eq.publicado", "")}&order=${buildGalleryOrder()}&limit=${pageSize}&offset=${offset}`,
+      `select=id,titulo,slug,descricao,categoria,capa_url,status,destaque,ordem,data_evento,created_at,updated_at,created_by${filters}&order=${buildGalleryOrder()}&limit=${pageSize}&offset=${offset}`,
     ),
-    countPublicRows("cms_galerias", `select=id&status=eq.publicado${filters.replace("&status=eq.publicado", "")}`),
-    selectPublicRows<Pick<CmsGallery, "categoria">>("cms_galerias", "select=categoria&status=eq.publicado&order=categoria.asc&limit=200"),
-    selectPublicRows<Pick<CmsGallery, "data_evento">>("cms_galerias", "select=data_evento&status=eq.publicado&order=data_evento.desc&limit=200"),
+    countSupabaseRows("cms_galerias", `select=id${filters}`),
+    selectSupabaseRows<Pick<CmsGallery, "categoria">>("cms_galerias", "select=categoria&status=eq.publicado&order=categoria.asc&limit=200"),
+    selectSupabaseRows<Pick<CmsGallery, "data_evento">>("cms_galerias", "select=data_evento&status=eq.publicado&order=data_evento.desc&limit=200"),
   ]);
 
   const photoCounts = await loadPhotoCounts(galleries);
@@ -163,7 +166,8 @@ export default async function GalleryIndexPage({ searchParams }: { searchParams?
                     <SectionCTA
                       href={`/galeria/${gallery.slug}`}
                       variant="primary"
-                      className="mt-6 w-full"
+                      className="mt-6 w-full shadow-md hover:shadow-lg transition-transform hover:-translate-y-0.5"
+                      icon={<ArrowRight size={16} />}
                     >
                       Ver galeria
                     </SectionCTA>
@@ -207,7 +211,7 @@ async function loadPhotoCounts(galleries: CmsGallery[]) {
     return new Map<string, number>();
   }
 
-  const photos = await selectPublicRows<Pick<CmsGalleryPhoto, "galeria_id">>(
+  const photos = await selectSupabaseRows<Pick<CmsGalleryPhoto, "galeria_id">>(
     "cms_galeria_fotos",
     `select=galeria_id&galeria_id=in.(${ids.map(encodeURIComponent).join(",")})&limit=1000`,
   );

@@ -10,6 +10,7 @@ const unlockedRoutes = new Set([
   "/admin",
   "/admin/home",
   "/admin/noticias",
+  "/admin/galerias",
   "/admin/usuarios",
 ]);
 

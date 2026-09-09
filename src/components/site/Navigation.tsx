@@ -6,7 +6,7 @@ const webmailUrl = "https://sh-pro126.hostgator.com.br:2096/";
 
 const primaryNavItems = [
   { label: "A COMIEADEPA", type: "mega-menu" as const },
-  { label: "Eventos", type: "anchor" as const },
+  { label: "Mídias", type: "link" as const, href: "/galeria" },
   { label: "Notícias", type: "anchor" as const },
   { label: "Departamentos", type: "anchor" as const },
 ];
@@ -36,6 +36,15 @@ export function Navigation({ mobile = false, onNavigate, onOpenInstitutionalMenu
           >
             {item.label}
           </button>
+        ) : item.type === "link" ? (
+          <a
+            key={item.label}
+            href={item.href}
+            onClick={onNavigate}
+            className={mobile ? undefined : "relative py-2 transition hover:text-[#1D5A8C]"}
+          >
+            {item.label}
+          </a>
         ) : (
           <a
             key={item.label}
