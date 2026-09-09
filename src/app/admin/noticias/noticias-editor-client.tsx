@@ -5,10 +5,13 @@ import { useRouter } from "next/navigation";
 import {
   Archive,
   CalendarDays,
+  Check,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
+  Copy,
   Eye,
+  Link as LinkIcon,
   Loader2,
   Plus,
   Save,
@@ -97,6 +100,20 @@ export function NoticiasEditorClient({
   const [isSaving, setIsSaving] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [search, setSearch] = useState(initialSearch);
+  const [copiedPostId, setCopiedPostId] = useState<string | null>(null);
+
+  async function handleCopyLink(post: CmsPost) {
+    const relativeUrl = post.status === "publicado" ? `/noticias/${post.slug}` : `/admin/preview/noticias/${post.id}`;
+    const fullUrl = `${window.location.origin}${relativeUrl}`;
+
+    try {
+      await navigator.clipboard.writeText(fullUrl);
+      setCopiedPostId(post.id);
+      setTimeout(() => setCopiedPostId(null), 2000);
+    } catch {
+      // Fallback
+    }
+  }
 
   const canWrite = editingPost ? canUpdate : canCreate;
   const totalPages = Math.max(1, Math.ceil(totalPosts / pageSize));
@@ -236,6 +253,14 @@ export function NoticiasEditorClient({
           <div className="flex flex-wrap items-center gap-2">
             {editingPost ? (
               <>
+                <button
+                  type="button"
+                  onClick={() => handleCopyLink(editingPost)}
+                  className="inline-flex items-center gap-2 border border-[#d8c38b] bg-white px-3.5 py-2 text-xs font-black uppercase tracking-[0.12em] text-[#171006] transition hover:bg-[#fffaf0]"
+                >
+                  {copiedPostId === editingPost.id ? <Check size={14} className="text-[#00b67a]" /> : <Copy size={14} />}
+                  {copiedPostId === editingPost.id ? "Link Copiado!" : "Copiar Link"}
+                </button>
                 <a
                   href={"/admin/preview/noticias/" + editingPost.id}
                   target="_blank"
@@ -592,7 +617,7 @@ export function NoticiasEditorClient({
                 </h3>
 
                 <div className="mt-2.5 flex items-center justify-between gap-3 text-xs">
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-3">
                     <a
                       href={"/admin/noticias?edit=" + post.id}
                       className="font-black uppercase tracking-[0.12em] text-[#f4cf6a] hover:underline"
@@ -607,6 +632,17 @@ export function NoticiasEditorClient({
                     >
                       Prévia
                     </a>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyLink(post)}
+                      className={`inline-flex items-center gap-1 font-semibold uppercase tracking-[0.12em] transition ${
+                        copiedPostId === post.id ? "text-[#00b67a]" : "text-white/60 hover:text-white"
+                      }`}
+                      title="Copiar link público ou da prévia"
+                    >
+                      {copiedPostId === post.id ? <Check size={13} /> : <LinkIcon size={13} />}
+                      {copiedPostId === post.id ? "Copiado!" : "Copiar Link"}
+                    </button>
                   </div>
 
                   <div className="flex items-center gap-2">
