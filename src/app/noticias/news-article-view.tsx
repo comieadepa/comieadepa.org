@@ -13,14 +13,25 @@ export type NewsArticleViewPost = {
   created_at: string;
 };
 
+export type LatestNewsItem = {
+  id: string;
+  titulo: string;
+  slug: string;
+  resumo: string | null;
+  publicado_em: string | null;
+  created_at: string;
+  capa_url: string | null;
+};
+
 type NewsArticleViewProps = {
   post: NewsArticleViewPost;
+  latestPosts?: LatestNewsItem[];
   backHref?: string;
   backLabel?: string;
   preview?: boolean;
 };
 
-export function NewsArticleView({ post, backHref = "/noticias", backLabel = "Notícias", preview = false }: NewsArticleViewProps) {
+export function NewsArticleView({ post, latestPosts = [], backHref = "/noticias", backLabel = "Notícias", preview = false }: NewsArticleViewProps) {
   return (
     <main className="min-h-screen bg-white text-[#1F2937]">
       {preview ? (
@@ -54,11 +65,64 @@ export function NewsArticleView({ post, backHref = "/noticias", backLabel = "Not
           </div>
         </header>
 
-        <div className="mx-auto max-w-4xl px-5 pb-20 sm:px-8">
+        <div className="mx-auto max-w-4xl px-5 pb-16 sm:px-8">
           <div className="max-w-none space-y-6 text-lg leading-8 text-[#374151]">
             {renderContent(post.conteudo ?? post.resumo ?? "")}
           </div>
         </div>
+
+        {/* Rodapé da notícia: Links Rápidos das Últimas Notícias */}
+        {latestPosts.length > 0 ? (
+          <footer className="border-t border-[#0F3B63]/10 bg-[#F4F6F8] px-5 py-14 sm:px-8">
+            <div className="mx-auto max-w-4xl">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <span className="text-xs font-black uppercase tracking-[0.18em] text-[#B8872D]">
+                    Links Rápidos
+                  </span>
+                  <h2 className="mt-1 font-serif text-3xl font-black text-[#0F3B63]">
+                    Últimas Notícias Criadas
+                  </h2>
+                </div>
+                <Link
+                  href="/noticias"
+                  className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-[#0F3B63] transition hover:text-[#4A86B8]"
+                >
+                  Ver todas as notícias →
+                </Link>
+              </div>
+
+              <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {latestPosts.map((item) => (
+                  <Link
+                    key={item.id}
+                    href={`/noticias/${item.slug}`}
+                    className="group flex flex-col justify-between rounded-lg border border-[#0F3B63]/10 bg-white p-5 shadow-xs transition hover:-translate-y-1 hover:border-[#D4A24C]/60 hover:shadow-md"
+                  >
+                    <div>
+                      <span className="inline-flex items-center gap-1.5 text-[0.7rem] font-bold text-[#B8872D]">
+                        <CalendarDays size={13} />
+                        {formatDate(item.publicado_em ?? item.created_at)}
+                      </span>
+                      <h3 className="mt-2 font-serif text-lg font-bold leading-snug text-[#0F3B63] group-hover:text-[#8b2f2b]">
+                        {item.titulo}
+                      </h3>
+                      {item.resumo ? (
+                        <p className="mt-2 text-xs leading-relaxed text-[#6B7280] line-clamp-2">
+                          {item.resumo}
+                        </p>
+                      ) : null}
+                    </div>
+
+                    <span className="mt-4 inline-flex items-center gap-1 text-xs font-black uppercase tracking-wider text-[#0F3B63] group-hover:underline">
+                      Ler matéria →
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </footer>
+        ) : null}
       </article>
     </main>
   );

@@ -1,7 +1,9 @@
 "use client";
 
-import { Bold, Eye, Heading2, ImageIcon, Italic, LinkIcon, List, PenLine, Quote } from "lucide-react";
-import { useRef, useState } from "react";
+import { Bold, Check, Eye, Heading2, ImageIcon, Italic, LinkIcon, List, Loader2, PenLine, Quote, Search, UploadCloud, X } from "lucide-react";
+import Image from "next/image";
+import { useMemo, useRef, useState } from "react";
+import { MediaPickerAsset } from "./media-url-field";
 
 type RichTextFieldProps = {
   name: string;
@@ -9,6 +11,7 @@ type RichTextFieldProps = {
   defaultValue?: string | null;
   placeholder?: string;
   disabled?: boolean;
+  mediaAssets?: MediaPickerAsset[];
 };
 
 const toolbarActions = [
@@ -18,13 +21,20 @@ const toolbarActions = [
   { label: "Lista", icon: List, before: "\n- ", after: "" },
   { label: "Citação", icon: Quote, before: "\n> ", after: "" },
   { label: "Link", icon: LinkIcon, before: "[", after: "](https://)" },
-  { label: "Imagem", icon: ImageIcon, before: "\n![Descrição da imagem](", after: ")\n" },
 ];
 
-export function RichTextField({ name, label, defaultValue, placeholder, disabled }: RichTextFieldProps) {
+export function RichTextField({ name, label, defaultValue, placeholder, disabled, mediaAssets: initialAssets = [] }: RichTextFieldProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState(defaultValue ?? "");
   const [tab, setTab] = useState<"write" | "preview">("write");
+
+  // State for image picker modal
+  const [assets, setAssets] = useState<MediaPickerAsset[]>(initialAssets);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   function insertMarkup(before: string, after: string) {
     if (disabled) {
@@ -48,6 +58,75 @@ export function RichTextField({ name, label, defaultValue, placeholder, disabled
       textarea.focus();
       textarea.setSelectionRange(nextCursor, nextCursor);
     });
+  }
+
+  function insertImageMarkup(url: string, altText?: string) {
+    const description = altText?.trim() || "Imagem da notícia";
+    insertMarkup(`\n![${description}](`, `${url})\n`);
+    setIsModalOpen(false);
+  }
+
+  const imageAssets = useMemo(
+    () =>
+      assets
+        .filter((asset) => asset.tipo?.startsWith("image/") || /\.(png|jpe?g|webp|gif|svg)$/i.test(asset.arquivo_url))
+        .filter((asset) => {
+          const term = query.trim().toLowerCase();
+          if (!term) return true;
+          return `${asset.titulo ?? ""} ${asset.pasta ?? ""}`.toLowerCase().includes(term);
+        }),
+    [assets, query],
+  );
+
+  async function handleFileUpload(file: File) {
+    if (disabled || isUploading) return;
+    setUploadError(null);
+
+    const maxBytes = 5 * 1024 * 1024;
+    if (file.size > maxBytes) {
+      setUploadError("A imagem excede o limite de 5 MB. Reduza o tamanho do arquivo.");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    setIsUploading(true);
+
+    const formData = new FormData();
+    formData.append("arquivo", file);
+    formData.append("pasta", "noticias");
+    formData.append("titulo", file.name.replace(/\.[^/.]+$/, ""));
+
+    try {
+      const response = await fetch("/api/admin/media", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "x-requested-with": "fetch",
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || "Erro ao realizar upload da imagem.");
+      }
+
+      const newAsset: MediaPickerAsset = {
+        id: data.id || crypto.randomUUID(),
+        titulo: data.titulo || file.name,
+        arquivo_url: data.url,
+        tipo: file.type,
+        pasta: "noticias",
+      };
+
+      setAssets((prev) => [newAsset, ...prev]);
+      insertImageMarkup(data.url, file.name.replace(/\.[^/.]+$/, ""));
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Falha no upload.");
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   }
 
   return (
@@ -98,6 +177,17 @@ export function RichTextField({ name, label, defaultValue, placeholder, disabled
                   </button>
                 );
               })}
+
+              <button
+                type="button"
+                onClick={() => (!disabled ? setIsModalOpen(true) : undefined)}
+                title="Inserir Imagem no Conteúdo"
+                disabled={disabled}
+                className="inline-flex h-9 items-center gap-1.5 border border-[#8b2f2b]/40 bg-[#8b2f2b]/10 px-2.5 text-xs font-black uppercase tracking-wider text-[#8b2f2b] transition hover:bg-[#8b2f2b] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <ImageIcon size={17} />
+                Inserir Imagem
+              </button>
             </div>
             <textarea
               ref={textareaRef}
@@ -141,6 +231,21 @@ export function RichTextField({ name, label, defaultValue, placeholder, disabled
                       </ul>
                     );
                   }
+                  const imageMatch = trimmed.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+                  if (imageMatch) {
+                    const altText = imageMatch[1] || "Imagem da notícia";
+                    const imageUrl = imageMatch[2];
+                    return (
+                      <figure key={idx} className="my-6 space-y-2 text-center">
+                        <div className="relative mx-auto max-h-[500px] w-full overflow-hidden rounded border border-[#d8c38b] bg-[#171006]">
+                          <img src={imageUrl} alt={altText} className="mx-auto max-h-[500px] w-auto object-contain" />
+                        </div>
+                        {altText && altText !== "Imagem da notícia" && (
+                          <figcaption className="text-xs font-semibold italic text-[#5a472c]/80">{altText}</figcaption>
+                        )}
+                      </figure>
+                    );
+                  }
                   return (
                     <p key={idx} className="leading-relaxed">
                       {trimmed}
@@ -151,14 +256,98 @@ export function RichTextField({ name, label, defaultValue, placeholder, disabled
             ) : (
               <p className="italic text-[#5a472c]/60">Nenhum conteúdo escrito ainda para visualizar.</p>
             )}
-            {/* hidden textarea to keep form name bound when in preview tab */}
             <textarea name={name} value={value} readOnly className="hidden" />
           </div>
         )}
       </div>
       <span className="text-xs leading-5 text-[#7a6543]">
-        Use as marcações de títulos (##), negrito (**), citações (&gt;) e listas. A página pública renderiza automaticamente com a tipografia oficial.
+        Use as marcações de títulos (##), negrito (**), citações (&gt;), imagens e listas. A página pública renderiza automaticamente com a tipografia oficial.
       </span>
+
+      {isModalOpen ? (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/62 p-4 backdrop-blur-sm">
+          <div className="flex max-h-[88vh] w-full max-w-5xl flex-col overflow-hidden border border-[#d8c38b] bg-[#f7efd6] text-[#171006] shadow-[0_28px_80px_rgba(0,0,0,.35)]">
+            <div className="flex flex-col gap-4 border-b border-[#d8c38b] p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Biblioteca de Mídia</p>
+                <h3 className="mt-1 font-serif text-3xl font-black">Inserir Imagem no Texto</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="grid h-11 w-11 place-items-center border border-[#d8c38b] bg-white/70 transition hover:bg-white"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-3 border-b border-[#d8c38b] p-4 sm:flex-row sm:items-center sm:justify-between">
+              <label className="flex flex-1 items-center gap-3 border border-[#d8c38b] bg-white/72 px-4 py-2.5 text-sm text-[#5a472c]">
+                <Search size={17} />
+                <input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  className="w-full bg-transparent outline-none"
+                  placeholder="Buscar imagem..."
+                />
+              </label>
+
+              <label className="inline-flex cursor-pointer items-center justify-center gap-2 bg-[#171006] px-4 py-2.5 text-xs font-black uppercase tracking-[0.12em] text-[#f4cf6a] transition hover:bg-[#2c2212]">
+                {isUploading ? <Loader2 size={15} className="animate-spin" /> : <UploadCloud size={15} />}
+                Enviar Imagem do Computador
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  disabled={isUploading}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleFileUpload(file);
+                  }}
+                />
+              </label>
+            </div>
+
+            {uploadError ? <div className="bg-red-100 p-3 text-xs font-bold text-red-700">{uploadError}</div> : null}
+
+            <div className="grid gap-4 overflow-y-auto p-5 sm:grid-cols-2 lg:grid-cols-3">
+              {imageAssets.map((asset) => (
+                <button
+                  key={asset.id}
+                  type="button"
+                  onClick={() => insertImageMarkup(asset.arquivo_url, asset.titulo ?? undefined)}
+                  className="group relative overflow-hidden border border-[#d8c38b] bg-white/76 text-left transition hover:-translate-y-1 hover:border-[#8b2f2b] hover:bg-white hover:shadow-md"
+                >
+                  <span className="relative block aspect-video bg-[#171006]/10">
+                    <Image
+                      src={asset.arquivo_url}
+                      alt={asset.titulo ?? "Imagem da biblioteca"}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  </span>
+                  <span className="block p-4">
+                    <span className="text-[11px] font-black uppercase tracking-[0.16em] text-[#8b2f2b]">
+                      {asset.pasta ?? "noticias"}
+                    </span>
+                    <span className="mt-1 block font-serif text-xl font-black leading-tight text-[#171006]">
+                      {asset.titulo ?? "Imagem sem título"}
+                    </span>
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {imageAssets.length === 0 ? (
+              <div className="p-10 text-center text-[#5a472c]">
+                Nenhuma imagem encontrada. Utilize o botão acima para enviar uma imagem.
+              </div>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

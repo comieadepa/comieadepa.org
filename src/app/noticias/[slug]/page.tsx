@@ -55,13 +55,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function NewsArticlePage({ params }: PageProps) {
   const { slug } = await params;
-  const [posts, categories, departments] = await Promise.all([
+  const [posts, categories, departments, latestPosts] = await Promise.all([
     selectPublicRows<CmsPost>(
       "cms_posts",
       `select=id,titulo,slug,resumo,conteudo,capa_url,autor_nome,categoria_id,departamento_id,publicado_em,created_at&status=eq.publicado&slug=eq.${encodeURIComponent(slug)}${getPublishedPostsPublicFilter()}&limit=1`,
     ),
     selectPublicRows<CmsLookup>("cms_categorias", "select=id,nome&order=nome.asc"),
     selectPublicRows<CmsLookup>("cms_departamentos", "select=id,nome&ativo=eq.true&order=ordem.asc,nome.asc"),
+    selectPublicRows<CmsPost>(
+      "cms_posts",
+      `select=id,titulo,slug,resumo,capa_url,publicado_em,created_at&status=eq.publicado&slug=neq.${encodeURIComponent(slug)}${getPublishedPostsPublicFilter()}&order=publicado_em.desc.nullslast,created_at.desc&limit=3`,
+    ),
   ]);
   const post = posts[0];
 
@@ -74,7 +78,10 @@ export default async function NewsArticlePage({ params }: PageProps) {
 
   return (
     <PublicLayout>
-      <NewsArticleView post={{ ...post, label: resolvePostLabel(post, categoryMap, departmentMap) }} />
+      <NewsArticleView
+        post={{ ...post, label: resolvePostLabel(post, categoryMap, departmentMap) }}
+        latestPosts={latestPosts}
+      />
     </PublicLayout>
   );
 }

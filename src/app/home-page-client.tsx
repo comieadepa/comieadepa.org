@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   defaultPublicSiteConfig,
   mapPublicSiteSettings,
@@ -188,6 +188,7 @@ type PortalHomeContent = {
 
 type HomePageClientProps = {
   initialSlides: CmsHomeSlide[];
+  initialPosts?: CmsPost[];
 };
 
 type HomeHeroSlideView = {
@@ -368,9 +369,17 @@ const eventVideos = [
   },
 ];
 
-export function HomePageClient({ initialSlides }: HomePageClientProps) {
+export function HomePageClient({ initialSlides, initialPosts = [] }: HomePageClientProps) {
+  const serverNews = useMemo(
+    () =>
+      initialPosts
+        .map((post) => mapCmsPostToPortalNews(post, new Map(), new Map()))
+        .filter(Boolean) as PortalNews[],
+    [initialPosts],
+  );
+
   const [portalVideos, setPortalVideos] = useState<PortalVideo[]>(fallbackVideos);
-  const [portalNews, setPortalNews] = useState<PortalNews[]>(fallbackNews);
+  const [portalNews, setPortalNews] = useState<PortalNews[]>(serverNews.length > 0 ? serverNews : fallbackNews);
   const [portalDepartments, setPortalDepartments] = useState<PortalDepartment[]>(fallbackDepartmentCards);
   const [portalConfig, setPortalConfig] = useState<PublicSiteConfig>(defaultPublicSiteConfig);
   const [portalHomeContent, setPortalHomeContent] = useState<PortalHomeContent>(defaultPortalHomeContent);
@@ -395,7 +404,7 @@ export function HomePageClient({ initialSlides }: HomePageClientProps) {
           ),
           fetchSupabasePublic<CmsPost>(
             "cms_posts",
-            "select=id,slug,titulo,resumo,categoria_id,departamento_id,capa_url,destaque,data_publicacao,status,created_at&status=eq.publicado&order=destaque.desc,data_publicacao.desc,created_at.desc&limit=4",
+            "select=id,slug,titulo,resumo,categoria_id,departamento_id,capa_url,destaque_home,publicado_em,status,created_at&status=eq.publicado&order=destaque_home.desc,publicado_em.desc,created_at.desc&limit=4",
           ),
           fetchSupabasePublic<CmsLookup>("cms_categorias", "select=id,nome&order=nome.asc"),
           fetchSupabasePublic<CmsDepartmentCard>("cms_departamentos", "select=id,slug,nome,titulo,resumo,logo_url&ativo=eq.true&order=ordem.asc,nome.asc"),

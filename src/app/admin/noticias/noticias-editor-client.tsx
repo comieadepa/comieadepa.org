@@ -165,17 +165,32 @@ export function NoticiasEditorClient({
         throw new Error(data.error || "Erro ao salvar notícia.");
       }
 
+      const isNewPost = !editingPost;
+
       setFeedback({
         type: "success",
         message: data.message || (nextStatus === "publicado" ? "Notícia publicada com sucesso!" : "Rascunho salvo com sucesso!"),
       });
 
-      setStatus(nextStatus);
+      if (isNewPost) {
+        setTitle("");
+        setSlug("");
+        setStatus("rascunho");
+        setDepartmentId("");
+        setCategoryId("");
+        setResumo("");
+        setDestaqueHome(false);
+        setPublishDate("");
+        const formElement = document.getElementById("news-form") as HTMLFormElement | null;
+        if (formElement) formElement.reset();
+      } else {
+        setStatus(nextStatus);
+      }
 
       startTransition(() => {
         router.refresh();
-        if (!editingPost && data.id) {
-          router.push("/admin/noticias?edit=" + data.id);
+        if (isNewPost) {
+          router.push("/admin/noticias");
         }
       });
     } catch (err) {
@@ -384,6 +399,7 @@ export function NoticiasEditorClient({
             defaultValue={editingPost?.conteudo}
             placeholder="Escreva o texto completo da notícia, comunicado ou cobertura institucional..."
             disabled={!canWrite}
+            mediaAssets={mediaAssets}
           />
 
           {/* Media and Publish Date */}
@@ -414,17 +430,22 @@ export function NoticiasEditorClient({
             </label>
           </div>
 
-          {/* Destaque na Home */}
-          <label className="flex items-center gap-3 border border-[#d8c38b] bg-[#f7efd6] p-4 font-semibold text-[#342411]">
+          {/* Destaque / Notícia Fixa na Home */}
+          <label className="flex items-[#171006] gap-3 border border-[#d8c38b] bg-[#f7efd6] p-4 font-semibold text-[#342411] cursor-pointer">
             <input
               name="destaque_home"
               type="checkbox"
               disabled={!canWrite}
               checked={destaqueHome}
               onChange={(e) => setDestaqueHome(e.target.checked)}
-              className="h-5 w-5 accent-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-0.5 h-5 w-5 shrink-0 accent-[#8b2f2b] disabled:cursor-not-allowed disabled:opacity-60"
             />
-            Destacar esta notícia na página inicial do portal
+            <div className="space-y-0.5">
+              <span className="block font-bold text-[#171006]">Fixar esta notícia na página inicial do portal</span>
+              <span className="block text-xs font-normal text-[#5a472c]">
+                Se marcado, esta notícia permanecerá fixa na Home. Notícias não marcadas entram no fluxo rotativo automático das mais recentes.
+              </span>
+            </div>
           </label>
 
           {/* Action Button Bar */}
