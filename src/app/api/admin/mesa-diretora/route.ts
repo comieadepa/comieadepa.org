@@ -89,6 +89,7 @@ export async function POST(request: Request) {
       nome: body.nome,
       cargo: body.cargo,
       grupo_id: body.grupo_id,
+      grupo: body.grupo ?? null,
       subgrupo: body.subgrupo,
       campo: body.campo,
       foto_url: body.foto_url,
@@ -108,7 +109,7 @@ export async function POST(request: Request) {
       entity: "mesa_diretora",
       entityId: inserted[0]?.id,
       entityTitle: body.nome,
-      metadata: { grupo_id: body.grupo_id, subgrupo: body.subgrupo, status: body.status },
+      metadata: { grupo_id: body.grupo_id, grupo: body.grupo, subgrupo: body.subgrupo, status: body.status },
     });
 
     const isHtmlRedirect = !(request.headers.get("content-type") ?? "").includes("application/json");
@@ -150,6 +151,7 @@ export async function PUT(request: Request) {
       nome: body.nome,
       cargo: body.cargo,
       grupo_id: body.grupo_id,
+      grupo: body.grupo ?? null,
       subgrupo: body.subgrupo,
       campo: body.campo,
       foto_url: body.foto_url,
@@ -168,7 +170,7 @@ export async function PUT(request: Request) {
       entity: "mesa_diretora",
       entityId: body.id,
       entityTitle: body.nome,
-      metadata: { grupo_id: body.grupo_id, subgrupo: body.subgrupo, status: body.status },
+      metadata: { grupo_id: body.grupo_id, grupo: body.grupo, subgrupo: body.subgrupo, status: body.status },
     });
 
     const isHtmlRedirect = !(request.headers.get("content-type") ?? "").includes("application/json");
@@ -246,6 +248,7 @@ async function parseBody(request: Request) {
       nome: json.nome,
       cargo: json.cargo,
       grupo_id: json.grupo_id ?? null,
+      grupo: json.grupo ?? null,
       subgrupo: normalizeSubgrupo(json.subgrupo),
       campo: json.campo ?? null,
       foto_url: json.foto_url ?? null,
@@ -261,6 +264,7 @@ async function parseBody(request: Request) {
       nome: requiredString(formData, "nome"),
       cargo: requiredString(formData, "cargo"),
       grupo_id: optionalString(formData, "grupo_id"),
+      grupo: optionalString(formData, "grupo"),
       subgrupo: normalizeSubgrupo(formData.get("subgrupo")),
       campo: optionalString(formData, "campo"),
       foto_url: optionalString(formData, "foto_url"),

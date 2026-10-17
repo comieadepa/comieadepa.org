@@ -85,48 +85,40 @@ function MemberPhoto({
 
 function CardPresidente({ member }: { member: BoardMember }) {
   return (
-    <div className="mx-auto flex w-full max-w-3xl overflow-hidden rounded-sm border border-[#C9993B]/30 bg-white shadow-[0_8px_40px_rgba(15,59,99,0.14)]">
-      {/* Foto lado esquerdo */}
-      <div className="relative hidden w-56 shrink-0 overflow-hidden bg-[#E8EDF2] sm:block lg:w-64">
-        {/* marca d'água discreta */}
+    <div className="mx-auto flex w-full max-w-xl flex-col sm:flex-row items-center overflow-hidden rounded-2xl border border-[#C9993B]/40 bg-[#FFFDF9] shadow-[0_6px_28px_rgba(201,153,59,0.12)] p-4 sm:p-5 gap-5 sm:gap-7">
+      {/* Moldura da Fotografia com Cantos Arredondados */}
+      <div className="relative aspect-[3/4] w-44 sm:w-48 lg:w-52 shrink-0 overflow-hidden rounded-xl bg-gradient-to-b from-[#E8EDF2] to-[#D0D8E2] border border-[#C9993B]/30 shadow-md">
+        {/* Marca-d'água discreta do brasão */}
         <div
-          className="absolute inset-0 opacity-[0.04] bg-center bg-no-repeat bg-contain pointer-events-none"
+          className="absolute inset-0 opacity-[0.04] bg-center bg-no-repeat bg-contain pointer-events-none z-10"
           style={{ backgroundImage: "url('/assets/logo-comieadepa.png')" }}
           aria-hidden
         />
-        <MemberPhoto src={member.foto} alt={member.nome} priority size="lg" />
-        {/* gradiente inferior */}
-        <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#0F3B63]/60 to-transparent" />
-      </div>
 
-      {/* Conteúdo lado direito */}
-      <div className="flex flex-1 flex-col justify-center px-6 py-7 sm:px-8">
-        {/* Badge de função */}
-        <span className="inline-block w-fit rounded-sm bg-[#FDF6E3] px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-[#C9993B] border border-[#C9993B]/30">
-          {member.cargo || "Presidente"}
-        </span>
-
-        {/* Foto mobile (aparece só em telas pequenas) */}
-        <div className="relative mx-auto mt-4 h-40 w-36 shrink-0 overflow-hidden rounded-sm border border-[#C9993B]/20 bg-[#E8EDF2] sm:hidden">
+        <div className="relative h-full w-full">
           <MemberPhoto src={member.foto} alt={member.nome} priority size="lg" />
         </div>
+      </div>
 
-        {/* Nome */}
-        <h3 className="mt-4 font-serif text-2xl font-black leading-tight text-[#0F3B63] sm:text-3xl lg:text-4xl">
+      {/* Conteúdo: Direto, Limpo e Fiel ao Mockup */}
+      <div className="flex flex-1 flex-col justify-center text-center sm:text-left py-1">
+        {/* Badge Sutil Superior */}
+        <span className="text-[10px] font-black uppercase tracking-[0.22em] text-[#C9993B]">
+          Ministro do Evangelho
+        </span>
+
+        {/* Nome do Presidente */}
+        <h3 className="mt-2 font-serif text-2xl sm:text-3xl font-black leading-tight text-[#0F3B63]">
           {member.nome}
         </h3>
 
-        {/* Cargo destaque */}
-        <div className="mt-4 flex items-center gap-4">
-          {member.campo && (
-            <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-[#6B7280]">
-              {member.campo}
-            </span>
-          )}
-        </div>
-
-        {/* Divisor decorativo */}
-        <div className="mt-5 h-[2px] w-16 rounded-full bg-gradient-to-r from-[#C9993B] to-[#F4CF6A]" />
+        {/* Informações Complementares */}
+        {member.campo && (
+          <div className="mt-3 flex items-center justify-center sm:justify-start gap-1.5 text-xs font-bold uppercase tracking-[0.14em] text-[#5a472c]">
+            <span className="text-[#C9993B]">CAMPO:</span>
+            <span>{member.campo}</span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -265,34 +257,32 @@ function MembersGrid({ members, layout }: { members: BoardMember[]; layout: Boar
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────────────────────
 // COMPONENTE: BANNER HERO INSTITUCIONAL
 // ──────────────────────────────────────────────────────────────────────────────
 
 function HeroBanner() {
   return (
-    <section className="relative overflow-hidden pt-20" aria-label="Mesa Diretora — Cabeçalho">
-      {/* Fundo: imagem da sede */}
+    <section className="relative overflow-hidden" aria-label="Mesa Diretora — Cabeçalho">
+      {/* Imagem de fundo oficial */}
       <div className="absolute inset-0">
         <Image
-          src="/assets/sede-aerea-comieadepa.jpg"
-          alt="Sede da COMIEADEPA"
+          src="/img/bg_mesa.png"
+          alt="Mesa Diretora COMIEADEPA"
           fill
           priority
           className="object-cover object-center"
           unoptimized
         />
-        {/* Overlay azul-marinho + dourado diagonal */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0A2744]/95 via-[#0F3B63]/88 to-[#0F3B63]/60" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#F8F4EC]/20" />
-        {/* Faixa dourada diagonal decorativa */}
-        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(201,153,59,0.15)_0%,transparent_50%,rgba(201,153,59,0.06)_100%)] pointer-events-none" />
+        {/* Realce translúcido muito suave e elegante no lado esquerdo */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/40 via-white/10 to-transparent pointer-events-none" />
       </div>
 
       {/* Conteúdo do banner */}
-      <div className="relative z-10 mx-auto flex min-h-[220px] max-w-7xl items-center gap-6 px-6 py-10 sm:min-h-[260px] sm:px-10 md:gap-10 md:px-14">
-        {/* Brasão */}
-        <div className="hidden shrink-0 sm:block">
-          <div className="relative h-28 w-28 drop-shadow-[0_4px_20px_rgba(201,153,59,0.5)] lg:h-36 lg:w-36">
+      <div className="relative z-10 mx-auto flex min-h-[260px] max-w-7xl items-center gap-6 px-6 py-10 sm:min-h-[300px] sm:px-10 md:gap-10 md:px-14">
+        {/* Brasão Oficial Ampliado */}
+        <div className="shrink-0">
+          <div className="relative h-32 w-32 drop-shadow-[0_8px_24px_rgba(15,59,99,0.25)] sm:h-40 sm:w-40 lg:h-48 lg:w-48 transition-all">
             <Image
               src="/assets/logo-comieadepa.png"
               alt="Brasão COMIEADEPA"
@@ -303,41 +293,33 @@ function HeroBanner() {
           </div>
         </div>
 
-        {/* Texto */}
+        {/* Texto em Azul-Marinho Nobre e Dourado Institucional de Alta Legibilidade */}
         <div className="flex-1 min-w-0">
-          <nav aria-label="Breadcrumb" className="mb-3 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#F4CF6A]/70">
-            <Link href="/" className="hover:text-[#F4CF6A] transition-colors">Início</Link>
-            <span aria-hidden>›</span>
+          <nav aria-label="Breadcrumb" className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-[#8C6218]">
+            <Link href="/" className="hover:text-[#0F3B63] transition-colors">Início</Link>
+            <span aria-hidden className="text-[#C9993B]">›</span>
             <span>Institucional</span>
-            <span aria-hidden>›</span>
-            <span className="text-[#F4CF6A]">Mesa Diretora</span>
+            <span aria-hidden className="text-[#C9993B]">›</span>
+            <span className="text-[#0F3B63]">Mesa Diretora</span>
           </nav>
 
-          <h1 className="font-serif font-black leading-none text-white">
-            <span className="block text-4xl sm:text-5xl lg:text-7xl">MESA</span>
-            <span className="block text-4xl sm:text-5xl lg:text-7xl text-[#F4CF6A]">DIRETORA</span>
+          <h1 className="font-serif font-black leading-none">
+            <span className="block text-4xl sm:text-5xl lg:text-7xl text-[#0F3B63] drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)]">
+              MESA
+            </span>
+            <span className="block text-4xl sm:text-5xl lg:text-7xl text-[#B37E1C] drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)]">
+              DIRETORA
+            </span>
           </h1>
 
-          <p className="mt-3 max-w-xl text-xs font-semibold uppercase tracking-[0.16em] leading-relaxed text-white/70 sm:text-sm">
+          <p className="mt-3 max-w-xl text-xs font-bold uppercase tracking-[0.16em] leading-relaxed text-[#1E3A5F] sm:text-sm drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)]">
             Convenção Interestadual de Ministros<br className="hidden sm:block" /> e Igrejas Evangélicas Assembleias de Deus no Pará
           </p>
 
           {/* Versículo */}
-          <p className="mt-4 text-xs italic text-[#F4CF6A]/80 font-medium">
+          <p className="mt-3 text-xs italic font-semibold text-[#8C6218] drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)]">
             &ldquo;Servindo à Igreja, para a Glória de Deus&rdquo; — 1 Pedro 5.2
           </p>
-        </div>
-
-        {/* Imagem da sede (direita, visível em desktop) */}
-        <div className="relative hidden shrink-0 overflow-hidden rounded-sm border border-[#C9993B]/30 shadow-[0_0_32px_rgba(0,0,0,0.4)] lg:block lg:h-44 lg:w-64 xl:h-52 xl:w-80">
-          <Image
-            src="/assets/sede-comieadepa.png"
-            alt="Sede COMIEADEPA"
-            fill
-            className="object-cover object-center"
-            unoptimized
-          />
-          <div className="absolute inset-0 border border-[#C9993B]/20 rounded-sm pointer-events-none" />
         </div>
       </div>
 

@@ -111,7 +111,30 @@ ON CONFLICT (slug) DO UPDATE SET
   descricao = EXCLUDED.descricao,
   updated_at = now();
 
--- 5. Adicionar coluna subgrupo à tabela de membros (para dividir Titulares/Suplentes no Conselho Fiscal)
+-- 5. Compatibilidade da tabela de membros:
+-- A coluna legada 'grupo' possuía NOT NULL e um CHECK constraint restrito a slugs antigos.
+-- Tornamos 'grupo' anulável (DROP NOT NULL) e removemos seu check constraint legado,
+-- pois agora a relação oficial é feita via 'grupo_id' apontando para site.cms_mesa_grupos.
+ALTER TABLE site.cms_mesa_diretora
+  ALTER COLUMN grupo DROP NOT NULL;
+
+DO $$
+DECLARE
+  r RECORD;
+BEGIN
+  FOR r IN (
+    SELECT conname
+    FROM pg_constraint c
+    JOIN pg_attribute a ON a.attrelid = c.conrelid AND a.attnum = ANY(c.conkey)
+    WHERE c.conrelid = 'site.cms_mesa_diretora'::regclass
+      AND c.contype = 'c'
+      AND a.attname = 'grupo'
+  ) LOOP
+    EXECUTE 'ALTER TABLE site.cms_mesa_diretora DROP CONSTRAINT ' || quote_ident(r.conname);
+  END LOOP;
+END $$;
+
+-- Adicionar coluna subgrupo à tabela de membros (para dividir Titulares/Suplentes no Conselho Fiscal)
 ALTER TABLE site.cms_mesa_diretora
   ADD COLUMN IF NOT EXISTS subgrupo text
     CHECK (subgrupo IS NULL OR subgrupo IN ('titular', 'suplente'));

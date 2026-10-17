@@ -98,6 +98,7 @@ export function MesaDiretoraManager({
       nome: (formData.get("nome") as string)?.trim(),
       cargo: activeRole.cargo,
       grupo_id: grupoId,
+      grupo: activeRole.groupSlug,
       subgrupo: activeRole.subgrupo ?? null,
       campo: ((formData.get("campo") as string) || "").trim() || null,
       foto_url: ((formData.get("foto_url") as string) || "").trim() || null,
