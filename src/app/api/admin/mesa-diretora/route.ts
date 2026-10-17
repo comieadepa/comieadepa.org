@@ -29,7 +29,7 @@ export async function GET(request: Request) {
   const status = url.searchParams.get("status");
   const query = url.searchParams.get("q");
 
-  const baseSelect = "select=id,nome,cargo,grupo_id,grupo,campo,foto_url,bio,ordem,status,destaque,created_at,updated_at,created_by";
+  const baseSelect = "select=id,nome,cargo,grupo_id,grupo,subgrupo,campo,foto_url,bio,ordem,status,destaque,created_at,updated_at,created_by";
 
   if (id) {
     const rows = await selectSupabaseRows<CmsMesaDiretora>(
@@ -89,6 +89,7 @@ export async function POST(request: Request) {
       nome: body.nome,
       cargo: body.cargo,
       grupo_id: body.grupo_id,
+      subgrupo: body.subgrupo,
       campo: body.campo,
       foto_url: body.foto_url,
       bio: body.bio,
@@ -107,7 +108,7 @@ export async function POST(request: Request) {
       entity: "mesa_diretora",
       entityId: inserted[0]?.id,
       entityTitle: body.nome,
-      metadata: { grupo_id: body.grupo_id, status: body.status },
+      metadata: { grupo_id: body.grupo_id, subgrupo: body.subgrupo, status: body.status },
     });
 
     const isHtmlRedirect = !(request.headers.get("content-type") ?? "").includes("application/json");
@@ -149,6 +150,7 @@ export async function PUT(request: Request) {
       nome: body.nome,
       cargo: body.cargo,
       grupo_id: body.grupo_id,
+      subgrupo: body.subgrupo,
       campo: body.campo,
       foto_url: body.foto_url,
       bio: body.bio,
@@ -166,7 +168,7 @@ export async function PUT(request: Request) {
       entity: "mesa_diretora",
       entityId: body.id,
       entityTitle: body.nome,
-      metadata: { grupo_id: body.grupo_id, status: body.status },
+      metadata: { grupo_id: body.grupo_id, subgrupo: body.subgrupo, status: body.status },
     });
 
     const isHtmlRedirect = !(request.headers.get("content-type") ?? "").includes("application/json");
@@ -227,6 +229,14 @@ export async function DELETE(request: Request) {
   }
 }
 
+function normalizeSubgrupo(value: unknown): "titular" | "suplente" | null {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "titular") return "titular";
+  if (normalized === "suplente") return "suplente";
+  return null;
+}
+
 async function parseBody(request: Request) {
   const contentType = request.headers.get("content-type") ?? "";
   if (contentType.includes("application/json")) {
@@ -236,6 +246,7 @@ async function parseBody(request: Request) {
       nome: json.nome,
       cargo: json.cargo,
       grupo_id: json.grupo_id ?? null,
+      subgrupo: normalizeSubgrupo(json.subgrupo),
       campo: json.campo ?? null,
       foto_url: json.foto_url ?? null,
       bio: json.bio ?? null,
@@ -250,6 +261,7 @@ async function parseBody(request: Request) {
       nome: requiredString(formData, "nome"),
       cargo: requiredString(formData, "cargo"),
       grupo_id: optionalString(formData, "grupo_id"),
+      subgrupo: normalizeSubgrupo(formData.get("subgrupo")),
       campo: optionalString(formData, "campo"),
       foto_url: optionalString(formData, "foto_url"),
       bio: optionalString(formData, "bio"),

@@ -6,7 +6,7 @@ import {
   deleteSupabaseRows,
 } from "@/lib/supabase-admin";
 
-export type MesaDiretoraLayout = "hero" | "center" | "grid2" | "grid3" | "grid4";
+export type MesaDiretoraLayout = "hero" | "center" | "grid2" | "grid3" | "grid4" | "grid5" | "grid6" | "conselho_fiscal";
 
 export type CmsMesaGrupo = {
   id: string;
@@ -30,6 +30,7 @@ export type CmsMesaDiretora = {
   cargo: string;
   grupo_id: string | null;
   grupo: string | null; // Legado para compatibilidade de dados
+  subgrupo: string | null; // Ex: 'titular' | 'suplente' para conselho fiscal
   campo: string | null;
   foto_url: string | null;
   bio: string | null;

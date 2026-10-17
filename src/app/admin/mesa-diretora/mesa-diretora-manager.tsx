@@ -41,6 +41,16 @@ export function MesaDiretoraManager({
   const editingMember = members.find((member) => member.id === editingId);
   const canWrite = editingMember ? canUpdate : canCreate;
 
+  const [selectedGroupId, setSelectedGroupId] = useState(editingMember?.grupo_id ?? "");
+
+  // Atualizar selectedGroupId ao alternar entre criar novo e editar
+  const currentGroupId = selectedGroupId || (editingMember?.grupo_id ?? "");
+  const selectedGroup = groups.find((g) => g.id === currentGroupId);
+  const isConselhoFiscal =
+    selectedGroup?.slug === "conselho_fiscal" ||
+    selectedGroup?.layout === "conselho_fiscal" ||
+    selectedGroup?.nome?.toLowerCase().includes("conselho fiscal");
+
   const filteredMembers = useMemo(() => {
     const term = search.trim().toLowerCase();
 
@@ -75,11 +85,15 @@ export function MesaDiretoraManager({
     const id = formData.get("id") as string;
     const isEditing = Boolean(id);
 
+    const subgrupoRaw = formData.get("subgrupo") as string;
+    const subgrupo = isConselhoFiscal && (subgrupoRaw === "titular" || subgrupoRaw === "suplente") ? subgrupoRaw : null;
+
     // Convert FormData to JSON
     const payload: Record<string, string | number | boolean | null> = {
       nome: formData.get("nome") as string,
       cargo: formData.get("cargo") as string,
       grupo_id: formData.get("grupo_id") as string,
+      subgrupo,
       campo: (formData.get("campo") as string) || null,
       foto_url: (formData.get("foto_url") as string) || null,
       bio: (formData.get("bio") as string) || null,
@@ -189,7 +203,8 @@ export function MesaDiretoraManager({
                 name="grupo_id"
                 required
                 disabled={!canWrite}
-                defaultValue={editingMember?.grupo_id ?? ""}
+                value={currentGroupId}
+                onChange={(e) => setSelectedGroupId(e.target.value)}
                 className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b] disabled:opacity-60"
               >
                 <option value="">Selecione um grupo...</option>
@@ -201,6 +216,38 @@ export function MesaDiretoraManager({
               </select>
             </label>
 
+            {isConselhoFiscal ? (
+              <label className="grid gap-2 animate-in fade-in duration-200">
+                <span className="text-sm font-black uppercase tracking-[0.12em] text-[#8b2f2b]">
+                  Subgrupo (Conselho Fiscal) *
+                </span>
+                <select
+                  name="subgrupo"
+                  required
+                  disabled={!canWrite}
+                  defaultValue={editingMember?.subgrupo ?? "titular"}
+                  className="border border-[#8b2f2b]/40 bg-[#fff5f2] px-4 py-3 font-semibold text-[#8b2f2b] outline-none focus:border-[#8b2f2b] disabled:opacity-60"
+                >
+                  <option value="titular">Titular</option>
+                  <option value="suplente">Suplente</option>
+                </select>
+              </label>
+            ) : (
+              <label className="grid gap-2">
+                <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Campo Eclesiástico / Cidade</span>
+                <input
+                  type="text"
+                  name="campo"
+                  disabled={!canWrite}
+                  defaultValue={editingMember?.campo ?? ""}
+                  className="border border-[#d8c38b] bg-[#fffaf0] px-4 py-3 outline-none focus:border-[#8b2f2b] disabled:opacity-60"
+                  placeholder="Ex: Belém - PA"
+                />
+              </label>
+            )}
+          </div>
+
+          {isConselhoFiscal && (
             <label className="grid gap-2">
               <span className="text-sm font-black uppercase tracking-[0.12em] text-[#5a472c]">Campo Eclesiástico / Cidade</span>
               <input
@@ -212,7 +259,7 @@ export function MesaDiretoraManager({
                 placeholder="Ex: Belém - PA"
               />
             </label>
-          </div>
+          )}
 
           <MediaUrlField
             name="foto_url"
@@ -364,6 +411,11 @@ export function MesaDiretoraManager({
                     {member.destaque && (
                       <span className="bg-[#f4cf6a] text-[#171006] px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.12em]">
                         Destaque
+                      </span>
+                    )}
+                    {member.subgrupo && (
+                      <span className="border border-[#f4cf6a]/40 bg-[#f4cf6a]/15 text-[#f4cf6a] px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.12em]">
+                        {member.subgrupo === "titular" ? "Titular" : "Suplente"}
                       </span>
                     )}
                     <span className="text-[10px] text-white/40">Ordem: {member.ordem}</span>

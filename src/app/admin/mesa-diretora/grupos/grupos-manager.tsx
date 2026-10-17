@@ -19,6 +19,9 @@ const layoutLabels: Record<MesaDiretoraLayout, string> = {
   grid2: "Grade de 2 colunas",
   grid3: "Grade de 3 colunas",
   grid4: "Grade de 4 colunas",
+  grid5: "Grade de 5 colunas",
+  grid6: "Grade de 6 colunas",
+  conselho_fiscal: "Conselho Fiscal (Titulares e Suplentes)",
 };
 
 export function MesaDiretoraGroupsManager({

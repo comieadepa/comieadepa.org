@@ -12,6 +12,7 @@ const unlockedRoutes = new Set([
   "/admin/noticias",
   "/admin/galerias",
   "/admin/usuarios",
+  "/admin/mesa-diretora",
 ]);
 
 function isRouteActive(item: AdminNavItem, currentPath: string): boolean {
