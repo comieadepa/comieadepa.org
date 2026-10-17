@@ -48,8 +48,8 @@ export default async function AdminMesaDiretoraPage({
       <AdminPageHeader
         icon={Users}
         eyebrow="Mesa Diretora"
-        title="Membros da Mesa Diretora"
-        description="Gerencie os pastores e líderes que compõem a diretoria e conselhos da convenção, organizados por hierarquia e exibidos dinamicamente no portal."
+        title="Quadro Oficial da Mesa Diretora"
+        description="Gerencie os 27 cargos oficiais da convenção de forma visual e direta. Atribua o ministro e a fotografia oficial para cada posição."
       />
 
       <MesaDiretoraManager
