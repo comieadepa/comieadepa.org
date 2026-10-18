@@ -66,12 +66,20 @@ export function Header({ eventsPortalUrl, ministerPortalUrl }: HeaderProps) {
                 setInstitutionalMenuOpen(true);
               }}
             />
-            <div className="mx-auto mt-4 max-w-7xl">
+            <div className="mx-auto mt-4 max-w-7xl flex flex-col gap-2.5">
+              <a
+                href={eventsPortalUrl || "https://eventos.siscomieadepa.org/eventos-publicos"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block rounded-lg border border-[#D4A24C] bg-gradient-to-r from-[#D4A24C] via-[#DFB15B] to-[#C2903B] px-4 py-3 text-center text-sm font-black uppercase text-[#051423] shadow-sm"
+              >
+                Portal de Eventos
+              </a>
               <a
                 href={targetMinisterUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block rounded-lg bg-[#0F3B63] px-4 py-3 text-center text-sm font-black uppercase !text-white hover:!text-white"
+                className="block rounded-lg bg-[#0F3B63] px-4 py-3 text-center text-sm font-black uppercase !text-white hover:!text-white shadow-sm"
               >
                 Área do Ministro
               </a>

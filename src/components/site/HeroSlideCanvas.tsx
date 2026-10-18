@@ -83,30 +83,30 @@ export function HeroSlideCanvas({
           </div>
 
           {/* Bloco de Ações (CTA) — Destaque visual total à frente dos demais elementos com tamanho ampliado */}
-          <div className="shrink-0 max-w-full flex flex-wrap items-center gap-3 sm:gap-3.5 pt-1 lg:pt-0 lg:pb-1">
+          <div className="shrink-0 max-w-full flex flex-wrap items-center gap-2.5 sm:gap-3.5 pt-1 lg:pt-0 lg:pb-1">
             {slide.buttonText ? (
               isPreview ? (
-                <div className="inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-[#D4A24C] via-[#DFB15B] to-[#C2903B] px-6 sm:px-8 py-3.5 sm:py-4 text-xs sm:text-sm md:text-base font-black uppercase tracking-[0.14em] text-[#051423] shadow-[0_6px_22px_rgba(212,162,76,0.5)] whitespace-nowrap">
+                <div className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#D4A24C] via-[#DFB15B] to-[#C2903B] px-4 sm:px-8 py-2.5 sm:py-4 text-xs sm:text-sm md:text-base font-black uppercase tracking-[0.14em] text-[#051423] shadow-[0_6px_22px_rgba(212,162,76,0.5)] whitespace-nowrap">
                   <span>{slide.buttonText}</span>
-                  <ArrowRight size={17} className="shrink-0" />
-                  {slide.openInNewTab && <ExternalLink size={13} className="shrink-0 opacity-75" />}
+                  <ArrowRight size={15} className="shrink-0" />
+                  {slide.openInNewTab && <ExternalLink size={12} className="shrink-0 opacity-75" />}
                 </div>
               ) : (
                 <a
                   href={slide.buttonUrl || "#"}
                   target={slide.openInNewTab ? "_blank" : undefined}
                   rel={slide.openInNewTab ? "noreferrer" : undefined}
-                  className="group inline-flex items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-[#D4A24C] via-[#DFB15B] to-[#C2903B] px-6 sm:px-8 py-3.5 sm:py-4 text-xs sm:text-sm md:text-base font-black uppercase tracking-[0.14em] text-[#051423] shadow-[0_6px_22px_rgba(212,162,76,0.5)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(212,162,76,0.7)] whitespace-nowrap"
+                  className="group inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#D4A24C] via-[#DFB15B] to-[#C2903B] px-4 sm:px-8 py-2.5 sm:py-4 text-xs sm:text-sm md:text-base font-black uppercase tracking-[0.14em] text-[#051423] shadow-[0_6px_22px_rgba(212,162,76,0.5)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(212,162,76,0.7)] whitespace-nowrap"
                 >
                   <span>{slide.buttonText}</span>
-                  <ArrowRight size={17} className="shrink-0 transition group-hover:translate-x-1" />
+                  <ArrowRight size={15} className="shrink-0 transition group-hover:translate-x-1" />
                 </a>
               )
             ) : null}
 
             {secondaryButtonLabel ? (
               isPreview ? (
-                <div className="hidden sm:inline-flex items-center rounded-xl border border-white/30 bg-[#0F3B63]/90 px-5 sm:px-7 py-3.5 sm:py-4 text-xs sm:text-sm md:text-base font-black uppercase tracking-[0.12em] text-white shadow-md backdrop-blur-md whitespace-nowrap">
+                <div className="inline-flex items-center rounded-xl border border-white/30 bg-[#0F3B63]/90 px-4 sm:px-7 py-2.5 sm:py-4 text-xs sm:text-sm md:text-base font-black uppercase tracking-[0.12em] text-white shadow-md backdrop-blur-md whitespace-nowrap">
                   {secondaryButtonLabel}
                 </div>
               ) : (
@@ -114,7 +114,7 @@ export function HeroSlideCanvas({
                   href={secondaryButtonUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="hidden sm:inline-flex items-center justify-center rounded-xl border border-white/30 bg-[#0F3B63]/90 px-5 sm:px-7 py-3.5 sm:py-4 text-xs sm:text-sm md:text-base font-black uppercase tracking-[0.12em] !text-white shadow-md backdrop-blur-md transition hover:-translate-y-0.5 hover:border-[#D4A24C] hover:bg-[#1D5A8C] whitespace-nowrap"
+                  className="inline-flex items-center justify-center rounded-xl border border-white/30 bg-[#0F3B63]/90 px-4 sm:px-7 py-2.5 sm:py-4 text-xs sm:text-sm md:text-base font-black uppercase tracking-[0.12em] !text-white shadow-md backdrop-blur-md transition hover:-translate-y-0.5 hover:border-[#D4A24C] hover:bg-[#1D5A8C] whitespace-nowrap"
                 >
                   {secondaryButtonLabel}
                 </a>
