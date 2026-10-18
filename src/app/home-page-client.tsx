@@ -553,12 +553,21 @@ export function HomePageClient({ initialSlides, initialPosts = [] }: HomePageCli
         </div>
       </section>
 
-      <section className="relative bg-white px-5 sm:px-8 py-10 md:py-14" aria-label="Números institucionais">
-        <div className="mx-auto grid max-w-7xl overflow-hidden rounded-xl border border-[#0F3B63]/10 bg-white shadow-[0_20px_50px_rgba(15,59,99,.10)] backdrop-blur-xl md:grid-cols-4">
+      <section className="relative bg-white px-3 sm:px-6 md:px-8 py-4 sm:py-7 md:py-14" aria-label="Números institucionais">
+        <div className="mx-auto grid grid-cols-4 max-w-7xl overflow-hidden rounded-lg sm:rounded-xl border border-[#0F3B63]/10 bg-white shadow-[0_8px_30px_rgba(15,59,99,.06)] md:shadow-[0_20px_50px_rgba(15,59,99,.10)] backdrop-blur-xl">
           {stats.map((stat, index) => (
-            <div key={stat.label} className={`relative overflow-hidden border-b border-[#0F3B63]/10 p-7 md:border-b-0 md:border-r ${index > 1 ? "hidden md:block" : ""}`}>
-              <p className="font-serif text-5xl font-black text-[#0F3B63]">{stat.value}</p>
-              <p className="mt-2 text-sm font-bold uppercase tracking-[0.16em] text-[#6B7280]">{stat.label}</p>
+            <div
+              key={stat.label}
+              className={`relative overflow-hidden flex flex-col justify-center px-1.5 py-3 sm:px-4 sm:py-5 md:p-7 text-center md:text-left ${
+                index < 3 ? "border-r border-[#0F3B63]/10" : ""
+              }`}
+            >
+              <p className="font-serif text-base min-[360px]:text-lg min-[400px]:text-xl sm:text-3xl md:text-5xl font-black text-[#0F3B63] leading-none">
+                {stat.value}
+              </p>
+              <p className="mt-1 sm:mt-2 text-[8px] min-[360px]:text-[9px] min-[400px]:text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-[0.06em] sm:tracking-[0.12em] md:tracking-[0.16em] text-[#6B7280] leading-tight break-words hyphens-auto">
+                {stat.label}
+              </p>
             </div>
           ))}
         </div>
