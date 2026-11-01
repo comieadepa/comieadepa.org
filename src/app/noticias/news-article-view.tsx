@@ -180,9 +180,16 @@ function renderContent(content: string) {
       flushParagraph();
       flushList();
       blocks.push(
-        <figure key={`img-${blocks.length}`} className="overflow-hidden rounded-xl border border-[#0F3B63]/10 bg-[#F4F6F8]">
-          <div aria-label={image[1]} role="img" className="aspect-video w-full bg-cover bg-center" style={{ backgroundImage: `url(${image[2]})` }} />
-          {image[1] ? <figcaption className="px-4 py-3 text-sm text-[#6B7280]">{image[1]}</figcaption> : null}
+        <figure key={`img-${blocks.length}`} className="my-6 overflow-hidden rounded-xl border border-[#0F3B63]/10 bg-[#F4F6F8]">
+          <div className="flex w-full items-center justify-center bg-[#F4F6F8]/60 p-2 sm:p-4">
+            <img
+              src={image[2]}
+              alt={image[1] || "Imagem da matéria"}
+              loading="lazy"
+              className="h-auto max-h-[85vh] w-auto max-w-full rounded-lg object-contain shadow-xs"
+            />
+          </div>
+          {image[1] ? <figcaption className="border-t border-[#0F3B63]/5 px-4 py-3 text-center text-sm italic text-[#6B7280]">{image[1]}</figcaption> : null}
         </figure>,
       );
       return;

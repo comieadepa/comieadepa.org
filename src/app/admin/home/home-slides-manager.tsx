@@ -157,21 +157,30 @@ export function HomeSlidesManager({
         message: isEditing ? "Slide atualizado com sucesso!" : "Novo slide cadastrado com sucesso!",
       });
 
-      // Update local state and refresh
+      // Reload updated slides list directly from API (cache-busted)
+      try {
+        const fetchList = await fetch(`/api/admin/home/slides?_ts=${Date.now()}`, {
+          cache: "no-store",
+          headers: { Accept: "application/json" },
+        });
+        if (fetchList.ok) {
+          const updatedList = await fetchList.json();
+          if (Array.isArray(updatedList)) {
+            setSlides(updatedList);
+          }
+        }
+      } catch (fetchErr) {
+        console.warn("Aviso ao recarregar lista atualizada de slides:", fetchErr);
+      }
+
+      // Update server component state and refresh router
       startTransition(() => {
         router.refresh();
       });
 
-      // Reload updated slides list
-      const fetchList = await fetch("/api/admin/home/slides", { headers: { Accept: "application/json" } });
-      if (fetchList.ok) {
-        const updatedList = await fetchList.json();
-        if (Array.isArray(updatedList)) setSlides(updatedList);
-      }
-
       setTimeout(() => {
         closeForm();
-      }, 900);
+      }, 700);
     } catch (err) {
       setFeedback({
         type: "error",
@@ -778,6 +787,19 @@ export function HomeSlidesManager({
                   >
                     Editar
                   </button>
+
+                  {slide.botao_url && (
+                    <a
+                      href={slide.botao_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 border border-[#D4A24C] bg-[#fffaf0] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#8b2f2b] transition hover:bg-[#D4A24C] hover:text-[#051423]"
+                      title={`Abrir em nova aba: ${slide.botao_url}`}
+                    >
+                      <ExternalLink size={12} />
+                      <span>Testar link</span>
+                    </a>
+                  )}
 
                   <button
                     type="button"

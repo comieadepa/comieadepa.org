@@ -86,8 +86,14 @@ export function HeroSlideCanvas({
           <div className="shrink-0 max-w-full flex flex-wrap items-center gap-2.5 sm:gap-3.5 pt-1 lg:pt-0 lg:pb-1">
             {slide.buttonText ? (
               isPreview ? (
-                <div className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#D4A24C] via-[#DFB15B] to-[#C2903B] px-4 sm:px-8 py-2.5 sm:py-4 text-xs sm:text-sm md:text-base font-black uppercase tracking-[0.14em] text-[#051423] shadow-[0_6px_22px_rgba(212,162,76,0.5)] whitespace-nowrap">
+                <div
+                  title="Prévia visual do botão CTA: cliques e navegação desativados no editor"
+                  className="inline-flex cursor-default select-none items-center gap-2 rounded-xl bg-gradient-to-r from-[#D4A24C] via-[#DFB15B] to-[#C2903B] px-4 sm:px-8 py-2.5 sm:py-4 text-xs sm:text-sm md:text-base font-black uppercase tracking-[0.14em] text-[#051423] opacity-95 shadow-[0_6px_22px_rgba(212,162,76,0.5)] ring-1 ring-white/40 whitespace-nowrap"
+                >
                   <span>{slide.buttonText}</span>
+                  <span className="rounded bg-black/20 px-1.5 py-0.5 text-[9px] font-bold tracking-normal uppercase text-black/80">
+                    Visual
+                  </span>
                   <ArrowRight size={15} className="shrink-0" />
                   {slide.openInNewTab && <ExternalLink size={12} className="shrink-0 opacity-75" />}
                 </div>

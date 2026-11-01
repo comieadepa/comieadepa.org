@@ -286,7 +286,7 @@ export function RichTextField({
 
       {isModalOpen ? (
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/62 p-4 backdrop-blur-sm">
-          <div className="flex max-h-[88vh] w-full max-w-5xl flex-col overflow-hidden border border-[#d8c38b] bg-[#f7efd6] text-[#171006] shadow-[0_28px_80px_rgba(0,0,0,.35)]">
+          <div className="flex max-h-[88vh] w-full max-w-6xl flex-col overflow-hidden border border-[#d8c38b] bg-[#f7efd6] text-[#171006] shadow-[0_28px_80px_rgba(0,0,0,.35)]">
             <div className="flex flex-col gap-4 border-b border-[#d8c38b] p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-[#8b2f2b]">Biblioteca de Mídia</p>
@@ -331,29 +331,29 @@ export function RichTextField({
 
             {uploadError ? <div className="bg-red-100 p-3 text-xs font-bold text-red-700">{uploadError}</div> : null}
 
-            <div className="grid gap-4 overflow-y-auto p-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 overflow-y-auto p-4 sm:grid-cols-3 sm:gap-3.5 sm:p-5 lg:grid-cols-6">
               {imageAssets.map((asset) => (
                 <button
                   key={asset.id}
                   type="button"
                   onClick={() => insertImageMarkup(asset.arquivo_url, asset.titulo ?? undefined)}
-                  className="group relative overflow-hidden border border-[#d8c38b] bg-white/76 text-left transition hover:-translate-y-1 hover:border-[#8b2f2b] hover:bg-white hover:shadow-md"
+                  className="group relative flex flex-col overflow-hidden rounded border border-[#d8c38b] bg-white/80 text-left transition hover:-translate-y-0.5 hover:border-[#8b2f2b] hover:bg-white hover:shadow-md"
                 >
-                  <span className="relative block aspect-video bg-[#171006]/10">
+                  <span className="relative block aspect-square w-full bg-[#171006]/5">
                     <Image
                       src={asset.arquivo_url}
                       alt={asset.titulo ?? "Imagem da biblioteca"}
                       fill
-                      className="object-cover"
+                      className="object-contain p-2"
                       unoptimized
                     />
                   </span>
-                  <span className="block p-4">
-                    <span className="text-[11px] font-black uppercase tracking-[0.16em] text-[#8b2f2b]">
+                  <span className="flex flex-1 flex-col justify-center border-t border-[#d8c38b]/40 bg-white/90 p-2">
+                    <span className="block truncate text-[9px] font-black uppercase tracking-wider text-[#8b2f2b]">
                       {asset.pasta ?? "noticias"}
                     </span>
-                    <span className="mt-1 block font-serif text-xl font-black leading-tight text-[#171006]">
-                      {asset.titulo ?? "Imagem sem título"}
+                    <span className="mt-0.5 block truncate text-xs font-semibold leading-tight text-[#171006]" title={asset.titulo ?? ""}>
+                      {asset.titulo ?? "Sem título"}
                     </span>
                   </span>
                 </button>
