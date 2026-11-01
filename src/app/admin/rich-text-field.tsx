@@ -337,18 +337,22 @@ export function RichTextField({
                   key={asset.id}
                   type="button"
                   onClick={() => insertImageMarkup(asset.arquivo_url, asset.titulo ?? undefined)}
-                  className="group relative flex flex-col overflow-hidden rounded border border-[#d8c38b] bg-white/80 text-left transition hover:-translate-y-0.5 hover:border-[#8b2f2b] hover:bg-white hover:shadow-md"
+                  className="group relative flex w-full flex-col overflow-hidden rounded border border-[#d8c38b] bg-white/80 text-left transition hover:-translate-y-0.5 hover:border-[#8b2f2b] hover:bg-white hover:shadow-md"
                 >
-                  <span className="relative block aspect-square w-full bg-[#171006]/5">
+                  <span
+                    className="relative block w-full shrink-0 overflow-hidden bg-[#171006]/5 min-h-[140px] sm:min-h-[160px]"
+                    style={{ aspectRatio: "1 / 1" }}
+                  >
                     <Image
                       src={asset.arquivo_url}
                       alt={asset.titulo ?? "Imagem da biblioteca"}
                       fill
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
                       className="object-contain p-2"
                       unoptimized
                     />
                   </span>
-                  <span className="flex flex-1 flex-col justify-center border-t border-[#d8c38b]/40 bg-white/90 p-2">
+                  <span className="flex flex-col justify-center border-t border-[#d8c38b]/40 bg-white/90 p-2">
                     <span className="block truncate text-[9px] font-black uppercase tracking-wider text-[#8b2f2b]">
                       {asset.pasta ?? "noticias"}
                     </span>

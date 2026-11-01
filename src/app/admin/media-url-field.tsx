@@ -310,27 +310,31 @@ export function MediaUrlField({
                       updateValue(asset.arquivo_url);
                       setOpen(false);
                     }}
-                    className={`group relative flex flex-col overflow-hidden rounded border text-left transition hover:-translate-y-0.5 hover:shadow-md ${
+                    className={`group relative flex w-full flex-col overflow-hidden rounded border text-left transition hover:-translate-y-0.5 hover:shadow-md ${
                       isSelected
                         ? "border-[#8b2f2b] bg-white ring-2 ring-[#8b2f2b]"
                         : "border-[#d8c38b] bg-white/80 hover:border-[#8b2f2b] hover:bg-white"
                     }`}
                   >
-                    <span className="relative block aspect-square w-full bg-[#171006]/5">
+                    <span
+                      className="relative block w-full shrink-0 overflow-hidden bg-[#171006]/5 min-h-[140px] sm:min-h-[160px]"
+                      style={{ aspectRatio: "1 / 1" }}
+                    >
                       <Image
                         src={asset.arquivo_url}
                         alt={asset.titulo ?? "Imagem da biblioteca"}
                         fill
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
                         className="object-contain p-2"
                         unoptimized
                       />
                       {isSelected ? (
-                        <span className="absolute right-1.5 top-1.5 grid h-5 w-5 place-items-center rounded-full bg-[#8b2f2b] text-white shadow">
+                        <span className="absolute right-1.5 top-1.5 z-10 grid h-5 w-5 place-items-center rounded-full bg-[#8b2f2b] text-white shadow">
                           <Check size={12} strokeWidth={3} />
                         </span>
                       ) : null}
                     </span>
-                    <span className="flex flex-1 flex-col justify-center border-t border-[#d8c38b]/40 bg-white/90 p-2">
+                    <span className="flex flex-col justify-center border-t border-[#d8c38b]/40 bg-white/90 p-2">
                       <span className="block truncate text-[9px] font-black uppercase tracking-wider text-[#8b2f2b]">
                         {asset.pasta ?? "geral"}
                       </span>
