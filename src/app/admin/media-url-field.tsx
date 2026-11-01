@@ -310,15 +310,19 @@ export function MediaUrlField({
                       updateValue(asset.arquivo_url);
                       setOpen(false);
                     }}
-                    className={`group relative flex w-full flex-col overflow-hidden rounded border text-left transition hover:-translate-y-0.5 hover:shadow-md ${
+                    className={`group relative flex w-full shrink-0 flex-col overflow-hidden rounded border text-left transition hover:-translate-y-0.5 hover:shadow-md ${
                       isSelected
                         ? "border-[#8b2f2b] bg-white ring-2 ring-[#8b2f2b]"
                         : "border-[#d8c38b] bg-white/80 hover:border-[#8b2f2b] hover:bg-white"
                     }`}
                   >
                     <span
-                      className="relative block w-full shrink-0 overflow-hidden bg-[#171006]/5 min-h-[140px] sm:min-h-[160px]"
-                      style={{ aspectRatio: "1 / 1" }}
+                      className="relative block w-full shrink-0 overflow-hidden bg-[#171006]/5"
+                      style={{
+                        aspectRatio: "1 / 1",
+                        minHeight: "160px",
+                        height: "160px"
+                      }}
                     >
                       <Image
                         src={asset.arquivo_url}

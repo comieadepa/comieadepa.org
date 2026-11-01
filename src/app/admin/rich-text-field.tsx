@@ -337,11 +337,15 @@ export function RichTextField({
                   key={asset.id}
                   type="button"
                   onClick={() => insertImageMarkup(asset.arquivo_url, asset.titulo ?? undefined)}
-                  className="group relative flex w-full flex-col overflow-hidden rounded border border-[#d8c38b] bg-white/80 text-left transition hover:-translate-y-0.5 hover:border-[#8b2f2b] hover:bg-white hover:shadow-md"
+                  className="group relative flex w-full shrink-0 flex-col overflow-hidden rounded border border-[#d8c38b] bg-white/80 text-left transition hover:-translate-y-0.5 hover:border-[#8b2f2b] hover:bg-white hover:shadow-md"
                 >
                   <span
-                    className="relative block w-full shrink-0 overflow-hidden bg-[#171006]/5 min-h-[140px] sm:min-h-[160px]"
-                    style={{ aspectRatio: "1 / 1" }}
+                    className="relative block w-full shrink-0 overflow-hidden bg-[#171006]/5"
+                    style={{
+                      aspectRatio: "1 / 1",
+                      minHeight: "160px",
+                      height: "160px"
+                    }}
                   >
                     <Image
                       src={asset.arquivo_url}
