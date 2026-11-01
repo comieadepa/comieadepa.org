@@ -331,20 +331,38 @@ export function RichTextField({
 
             {uploadError ? <div className="bg-red-100 p-3 text-xs font-bold text-red-700">{uploadError}</div> : null}
 
-            <div className="grid grid-cols-2 gap-3 overflow-y-auto p-4 sm:grid-cols-3 sm:gap-3.5 sm:p-5 lg:grid-cols-6">
+            <div
+              className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 sm:gap-3.5 sm:p-5 lg:grid-cols-6"
+              style={{
+                flex: "1 1 auto",
+                minHeight: 0,
+                overflowY: "auto",
+                maxHeight: "calc(88vh - 160px)",
+                gridAutoRows: "max-content",
+                alignContent: "start",
+              }}
+            >
               {imageAssets.map((asset) => (
                 <button
                   key={asset.id}
                   type="button"
                   onClick={() => insertImageMarkup(asset.arquivo_url, asset.titulo ?? undefined)}
-                  className="group relative flex w-full shrink-0 flex-col overflow-hidden rounded border border-[#d8c38b] bg-white/80 text-left transition hover:-translate-y-0.5 hover:border-[#8b2f2b] hover:bg-white hover:shadow-md"
+                  className="group relative flex w-full flex-col overflow-hidden rounded border border-[#d8c38b] bg-white/80 text-left transition hover:-translate-y-0.5 hover:border-[#8b2f2b] hover:bg-white hover:shadow-md"
+                  style={{
+                    minHeight: "215px",
+                    height: "auto",
+                    flexShrink: 0,
+                    alignSelf: "start",
+                  }}
                 >
                   <span
-                    className="relative block w-full shrink-0 overflow-hidden bg-[#171006]/5"
+                    className="relative block w-full overflow-hidden bg-[#171006]/5"
                     style={{
-                      aspectRatio: "1 / 1",
                       minHeight: "160px",
-                      height: "160px"
+                      height: "160px",
+                      width: "100%",
+                      flexShrink: 0,
+                      display: "block",
                     }}
                   >
                     <Image
@@ -356,7 +374,14 @@ export function RichTextField({
                       unoptimized
                     />
                   </span>
-                  <span className="flex flex-col justify-center border-t border-[#d8c38b]/40 bg-white/90 p-2">
+                  <span
+                    className="flex flex-col justify-center border-t border-[#d8c38b]/40 bg-white/90 p-2"
+                    style={{
+                      minHeight: "48px",
+                      flexShrink: 0,
+                      width: "100%",
+                    }}
+                  >
                     <span className="block truncate text-[9px] font-black uppercase tracking-wider text-[#8b2f2b]">
                       {asset.pasta ?? "noticias"}
                     </span>
