@@ -358,7 +358,7 @@ export function MediaLibraryManager({
         </div>
 
         {/* Asset Cards Grid */}
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-3.5 lg:grid-cols-6">
           {filteredAssets.map((asset) => {
             const isImage = asset.tipo?.startsWith("image/") || /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(asset.arquivo_url);
             const isCopied = copiedId === asset.id;
@@ -366,19 +366,21 @@ export function MediaLibraryManager({
             return (
               <article
                 key={asset.id}
-                className="group relative flex flex-col justify-between overflow-hidden border border-white/10 bg-white/[0.055] transition hover:border-[#f4cf6a]/60"
+                className="group relative flex w-full flex-col justify-between overflow-hidden rounded border border-[#d8c38b]/40 bg-[#171006]/90 transition hover:border-[#f4cf6a]/80"
               >
                 {/* Media Thumbnail */}
                 <div
                   onClick={() => handleOpenInspect(asset)}
-                  className="relative aspect-video w-full cursor-pointer overflow-hidden bg-black/40"
+                  className="relative block w-full shrink-0 cursor-pointer overflow-hidden bg-black/50 min-h-[140px] sm:min-h-[160px]"
+                  style={{ aspectRatio: "1 / 1" }}
                 >
                   {isImage ? (
                     <Image
                       src={asset.arquivo_url}
                       alt={asset.titulo || "Mídia"}
                       fill
-                      className="object-cover transition duration-300 group-hover:scale-105"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                      className="object-contain p-2 transition duration-300 group-hover:scale-105"
                       unoptimized
                     />
                   ) : (
@@ -386,7 +388,7 @@ export function MediaLibraryManager({
                       <FileText size={36} />
                     </div>
                   )}
-                  <span className="absolute left-2 top-2 bg-[#171006]/85 px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.14em] text-[#f4cf6a]">
+                  <span className="absolute left-1.5 top-1.5 z-10 rounded bg-[#171006]/90 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider text-[#f4cf6a]">
                     {asset.pasta || "geral"}
                   </span>
                 </div>
